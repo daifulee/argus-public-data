@@ -1,0 +1,59 @@
+{
+  "crown_id": "#63",
+  "engine_file": "PRIMA_v5_14_Hyst_H1_LIVE.py",
+  "engine_sha256": "92d001f2d8ab0652c6ef7a662e62baf22c7ca6b4fa1ba6b5c7849ee4e49dc049",
+  "engine_label": "v5.14_Hyst_H1_LIVE",
+  "baseline_status": "VALID-B / LIVE / Crown-B Safety-Structural",
+  "data_sha256": {
+    "BT_LONG_v4_complete.csv": "5c63fc30544a710f4fe88e6d1ed2eea87e3cf91948e318706960725af70f6e85"
+  },
+  "mid_definition_official": "BT_LONG[2022-01-01~] = run_prima4(df_long, start_date='2022-01-01')",
+  "mid_definition_note": "BT_MID_2022_2026.csv 단독 사용 금지 (FA 정합 SSOT v1.10.120 정합)",
+  "bt_params": {
+    "rebal_freq_days": 5,
+    "max_positions": 5
+  },
+  "periods": {
+    "FULL": {
+      "cagr": 0.33550526584862816,
+      "sharpe": 1.610342336818287,
+      "mdd": -0.21727030752956536,
+      "period_start": "2007-01-03",
+      "period_end": "2026-04-02",
+      "n_days": 4843,
+      "method": "run_prima4(df_long)"
+    },
+    "P1": {
+      "cagr": 0.2801756988240496,
+      "sharpe": 1.376240644020581,
+      "mdd": -0.21727030752956536,
+      "period_end": "2016-12-31",
+      "method": "run_prima4(df_long, end_date='2016-12-31')"
+    },
+    "P2": {
+      "cagr": 0.3904454493352725,
+      "sharpe": 1.8470857568746273,
+      "mdd": -0.19090544621876987,
+      "period_start": "2017-01-01",
+      "method": "run_prima4(df_long, start_date='2017-01-01')"
+    },
+    "MID": {
+      "cagr": 0.45932067606354465,
+      "sharpe": 2.2149724346727924,
+      "mdd": -0.13961615593649623,
+      "period_start": "2022-01-01",
+      "method": "run_prima4(df_long, start_date='2022-01-01') ← FA 정합 정정",
+      "previous_response_used": "BT_MID_2022_2026.csv 단독 (MID = +33.7549%, DRIFT)",
+      "fa_correction": "본 응답 정정 — BT_LONG[2022~] 사용 = 메모리 정합 100%"
+    }
+  },
+  "memory_match_overall": "100% MATCH",
+  "measurement_date": "2026-05-10 18:46:34 KST",
+  "context": "FA 정합 P1 #8 (MID DRIFT) 후속 정정본 — SSOT v1.10.120 정합",
+  "previous_version_drift": "sha=d01e683cfb5d57aa... → 본 정정본 (MID = BT_LONG[2022~])",
+  "fa_compliance": {
+    "p1_8_mid_drift_resolution": "CLOSED — BT_LONG[2022~] 정합 100%",
+    "previous_response_error": "BT_MID_2022_2026 단독 사용 → MID 공식 정의 미준수",
+    "self_audit_maxim_20": "PASS — 메모리는 정합, 이전 응답 데이터셋 선택이 오류"
+  }
+}
