@@ -1,0 +1,252 @@
+# REG-S83_2_NLR_REPLACEMENT_PHASEA — QLD/XLG/IVW Phase A 7-항목 종합 + QLD 단일 Phase B 후보 확정
+
+## 🎯 0. 문서 메타
+
+| 항목 | 값 |
+|:--|:--|
+| 작성일 | 🌟 **2026-05-12 (S83 #1 P0 Step 2)** 🌟 |
+| 작성자 | Claude (Anthropic Opus 4.7) |
+| Commander 결정 1 | QLD 조건부 보류 → ⑥/⑦ 완료 + XLG/IVW Phase A 7-항목 의무 |
+| Commander 결정 2 | 🌟 **NLR 대체 Phase B 후보 = QLD 단일 확정** 🌟 |
+| 출처 | REG-S79_2 § 11 (10단계 절차) + 외부 분석 문서 |
+| 본 결정 본질 | 🌟 **QLD B3+ baseline 단일 Phase B 후보 + 트랙 분리 본질 + 단일 교체 원칙** 🌟 |
+| 정합 격언 | #11 + #15 + #20 + #25 + #34 + #46 + #74 + #88 v3 + #98 + #109 (10건) |
+
+## 🌟 1. 결론 (3줄)
+
+🌟 **Phase B 진입 후보 단일 확정 = QLD (B3+ baseline)** — forward Δ 모든 horizon 양수 + Purged t-test 63d p=0.003 / 126d p=0.008 통계 유의.
+
+🚨 **XLG 거부 / IVW Shadow 보류** — XLG = SPY mega-cap version 알파 부재, IVW = 구간 A 8건 cover 강점 but t-test 모두 p>0.20 비유의.
+
+🚀 **Phase B 단일 교체 원칙 정합** (격언 #34) — NLR → QLD 1:1만 허용, WTI/VIX hysteresis / Top5 dynamic weighting / QQQM rescue 동시 변경 금지.
+
+## 📊 2. 트랙 분리 본질 (Commander 결정 정합)
+
+| 트랙 | 본질 | 담당 |
+|:--|:--|:--|
+| 🌟 **NLR 대체 트랙 (본 결정문)** | 🌟 **신규 알파 슬롯 발굴** (forward return / regime / t-test 우선) | QLD B3+ |
+| 🌟 **Crown #67 트랙** | 🌟 **구간 A (2013-2014) 보완** | WTI/VIX hysteresis |
+
+🚨 **격언 #46 (자산 비대칭성) 정합**: 단일 후보가 모든 구간 cover 불가. 트랙 분리 의무.
+
+🚨 **본 결정의 본질**: NLR 대체 트랙에서 구간 A cover 부재는 거부 사유 아님 (Crown #67 트랙이 담당).
+
+## 🚀 3. 데이터 인프라 갱신 (STEP 1 완료)
+
+### § 3.1 yfinance fetch 결과
+
+| 후보 | inception | BT_LONG cover | 첫 Close | 마지막 Close | 19년 CAGR |
+|:--:|:--:|:--|:--:|:--:|:--:|
+| 🥇 **QLD** | 2006-06-19 | 4843행 (2007-01-03~2026-04-02) | $1.18 | $62.60 | 🌟 **~23.4%** 🌟 |
+| 🥈 **XLG** | 2005-05-04 | 4843행 | $7.71 | $54.91 | ~11.0% |
+| 🥉 **IVW** | 2000-05-22 | 4843행 | $12.74 | $114.66 | ~12.2% |
+
+### § 3.2 fetch 절차 (3단계 fallback)
+
+🚨 **fetch 함정 발견**:
+1. yfinance Python 패키지 → 403 (fc.yahoo.com 차단)
+2. stooq.com 직접 → 503 Service Unavailable
+3. 🌟 **query1.finance.yahoo.com v8 chart API 직접 호출** → ✅ 성공
+
+### § 3.3 BT_LONG_v5 / BT_MID_v5 merge
+
+| 파일 | 행수 | 컬럼수 | QLD/XLG/IVW NaN | sha256 |
+|:--|:--:|:--:|:--:|:--|
+| BT_LONG_v5 | 4843 | 103 | 0 / 0 / 0 | b0cb772cb3ea18e1... |
+| BT_MID_v5 | 1048 | 85 | 1 / 1 / 1 (datetime 1일 차이) | 8265d64eca6154dd... |
+
+## 📊 4. QLD Phase A 7-항목 종합 (격언 #25 정합)
+
+### § 4.1 WATCH/ENTRY 정의 sweep 결과
+
+🌟 **B3+ baseline 단일 확정**:
+```
+WATCH = (NDX_m3 -10~3) ∩ (NDX_m1 > 3) ∩ (VIX < 22) ∩ (WTI ≤ 90)
+ENTRY = WATCH (100% E/W ratio)
+```
+
+🚨 **본질 정정** (격언 #20 정합 정직 인지):
+- 초기 가설 V4/V5 + RS>3.0 = 정점 진입 시그널 → forward Δ 음수 (mean reversion)
+- 정정 본질 = **reversal 진입 시그널** (m3 약세 후 m1 강세 회복)
+
+### § 4.2 7-항목 정합 매트릭스
+
+| 항목 | 결과 | 본질 |
+|:--:|:--:|:--|
+| ① 발현률 + ENTRY/WATCH | ✅ | 9.4일/연, 100% E/W |
+| ② Forward return 21/63/126d | ✅ | **+1.79p / +5.19p / +8.17p** |
+| ③ Hit rate + median | ✅ | 79/79/72% / +5.33% |
+| ③ p5 downside tail | 🚨 | **-16~-21%** (레버리지 본질) |
+| ④ 4 regime split | ✅ | 모든 regime 양수 |
+| ⑤ 구간 A (2013-2014) cover | 🚨 | **0건** (트랙 분리, 본 결정문 사유 아님) |
+| ⑤ 구간 C (2023-2024) cover | ✅ | 18건 +4.71p |
+| ⑥ Stress proxy (2008/2020) | ✅ | B3+ entry filter가 stress 자체 차단 (cover 0건) |
+| ⑦ Purged t-test 21/63/126d | 🟡/✅/✅ | p=0.053 / **0.003** / **0.008** |
+
+### § 4.3 격언 정합 합산
+
+🌟 **B3+ baseline = 7/9 항목 ✅ + 2/9 🚨**:
+- ① ✅ + ② ✅ + ③ Hit ✅ + ④ ✅ + ⑤ 구간 C ✅ + ⑥ ✅ + ⑦ 63d/126d ✅
+- ③ p5 🚨 + ⑤ 구간 A 🚨
+
+🚨 **2 🚨 사유**:
+- ③ p5 -21% = 레버리지 ETF 본질 (격언 #46 정합, risk cap 0.25 slot으로 흡수)
+- ⑤ 구간 A 0건 = Crown #67 트랙 담당 (본 트랙 사유 아님)
+
+## 📊 5. XLG Phase A 7-항목 종합 (거부 결정)
+
+### § 5.1 A4 baseline 결과
+
+| 항목 | 결과 | 본질 |
+|:--:|:--:|:--|
+| ① 발현률 | ✅ | A4: 23.9일/연 |
+| ② Forward return Δ | 🚨 | 모든 변형 < +1.1p (기준 +1.5/+3.0/+5.0 미달) |
+| ③ Hit + median | ✅ | 64/74/79% +1.51% |
+| ③ p5 | ✅ | -6~-10% |
+| ④ 4 regime | 🚨 | 2007-2011 Δ=-1.27p |
+| ⑤ 구간 A cover | 🟡 | 2건 (QLD 0건 대비 부분 우위) |
+| ⑤ 구간 C cover | ✅ | 130건 |
+| ⑥ Stress 2008/2020 | ✅ | SPY 대비 +3~+4p 우월 |
+| ⑥ Stress 2022 bear | 🚨 | -3.5p 열위 |
+| ⑦ Purged t-test 63/126d p | 🚨/🚨 | 0.142 / 0.198 (비유의) |
+
+### § 5.2 XLG 거부 사유 (Commander 결정)
+
+🚨 **격언 #46 결정적 본질**:
+- XLG = S&P 500 Top 50 mega-cap, SPY 대비 본질 차이 작음
+- All-history Δ XLG vs SPY = +0.03 / +0.13 / +0.30p (~0)
+- 어떤 WATCH 변형이든 forward Δ < +1.1p (alpha 부재)
+
+🚨 **Commander 결정**: "XLG는 알파 부족으로 거부한다."
+
+## 📊 6. IVW Phase A 7-항목 종합 (Shadow 보류)
+
+### § 6.1 D1 baseline 결과
+
+| 항목 | 결과 | 본질 |
+|:--:|:--:|:--|
+| ① 발현률 | ✅ | D1: 22.2일/연 |
+| ② Forward return Δ | 🚨 | < +1.0p (기준 미달) |
+| ③ Hit + median | ✅ | 71/76/87% +1.82% |
+| ③ p5 | ✅ | -5~-10% (양호) |
+| ④ 4 regime | 🚨 | 2012-2016 Δ=-0.86p |
+| ⑤ **구간 A cover** | ✅ | **8건** (QLD 0건, XLG 2건 대비 결정적 우위) |
+| ⑤ 구간 C cover | ✅ | 33건 |
+| ⑥ Stress 2008/2020 | ✅ | SPY 대비 +2~+5p 우월 |
+| ⑥ Stress 2022 bear | 🚨 | **-7.8p** (성장주 약세 unfair) |
+| ⑦ Purged t-test | 🚨 | 모두 p>0.20 비유의 |
+
+### § 6.2 IVW Shadow 보류 사유 (Commander 결정)
+
+🌟 **격언 #74 (보더라인 자동 폐기 금지) + #97 v2 (외부 audit) 정합**:
+- 강점 ✅: 구간 A 8건 cover (NLR 대체 트랙 아닌 Crown #67 트랙 보강 후보로 의미)
+- 약점 🚨: forward Δ < +1.0p + t-test 모두 p>0.20
+
+🚨 **Commander 결정**: "IVW는 구간 A cover 장점은 인정하되 통계 비유의로 Shadow 후보로만 보류한다."
+
+🌟 **Shadow 후보 운영 본질**:
+- LIVE 미진입 (Phase B 본 후보 아님)
+- 다음 사이클 결정 의뢰 baseline 보존
+- Crown #67 트랙 보강 후보로 재검토 가능
+
+## 🚀 7. Phase B 단일 교체 원칙 (격언 #34 정합)
+
+### § 7.1 절대 원칙 (Commander 명시)
+
+🌟 **Phase B에서 NLR → QLD 단일 교체만 허용**:
+- ✅ **허용**: ENTRY_FUNCTIONS dict에서 NLR 항목 → QLD 1:1 교체
+- ✅ **허용**: ENTRY_THRESHOLD['QLD'] 신규 등재
+- 🛑 **금지**: WTI/VIX hysteresis 변경 (Crown #67 트랙 별개)
+- 🛑 **금지**: Top5 dynamic weighting (REG-S82 V2 거부 정합 보존)
+- 🛑 **금지**: QQQM rescue exception
+- 🛑 **금지**: 기타 entry 함수 변경
+
+### § 7.2 격언 #34 결정적 정합
+
+🌟 **변수 분리 원칙**:
+- 1번에 1개 변수만 변경 = 원인 분해 가능
+- 동시 변경 = 알파 원인 추적 불가
+
+🚨 **REG-S82 V2 (Top5 dynamic weighting) 거부 사이클 정합** — γ2.0/cap0.45/eta0 통합 변경 = 격언 #34 위반.
+
+## 🌟 8. QLD B3+ entry 함수 설계 본질 (S84 STEP 4 baseline)
+
+```python
+def entry_QLD(m, m1, m3):
+    """QLD — Nasdaq-100 2배 레버리지 (NLR 1:1 대체, S83 #1 Phase A 통과).
+    
+    Phase A 정합 본질 (B3+ baseline):
+    - WATCH: NDX_m3 -10~3 ∩ NDX_m1>3 ∩ VIX<22 ∩ WTI≤90
+    - 발현률: 9.4일/연
+    - Forward return Δ: 21d +1.79p / 63d +5.19p / 126d +8.17p
+    - Purged t-test: 63d p=0.003, 126d p=0.008
+    """
+    if _wk(m): return False, 0           # Crown #67 hysteresis gate
+    
+    vix = _s(m.get('VIX'))
+    if not np.isnan(vix) and vix >= 22: return False, 0  # 변동성 차단
+    
+    ndx_m1 = _s(m1)
+    ndx_m3 = _s(m3)
+    if np.isnan(ndx_m1) or np.isnan(ndx_m3): return False, 0
+    
+    # B3+ baseline 조건 (reversal 진입)
+    in_reversal_zone = (-10 <= ndx_m3 <= 3) and (ndx_m1 > 3)
+    if not in_reversal_zone: return False, 0
+    
+    s = 3.5  # base score (Phase A 통과 시 활성)
+    return s >= 3.5, max(s, 0)
+```
+
+🚨 **본 함수는 baseline 설계** — S84 STEP 4에서 정식 패치 시 risk cap 0.25 slot + 매개변수 미세 조정 가능.
+
+## 📋 9. S84 STEP 4~10 후속 절차 매트릭스
+
+| STEP | 작업 | 예상 시간 | 본질 |
+|:--:|:--|:--:|:--|
+| 🥇 4 | QLD entry 함수 PRIMA_v5_20.py 패치 | ~20분 | NLR ENTRY_FUNCTIONS 항목 → QLD 1:1 교체 |
+| 🥈 5 | 1:1 NLR → QLD 4기간 BT 실행 | ~30분 | FULL/P1/P2/MID (격언 #109 정합) |
+| 🥉 6 | STRESS 14 BT + 부작용 진단 | ~25분 | 14/14 PASS 또는 해명 |
+| 🔵 7 | RULE 29 v2 최종 판정 | ~10분 | CAGR / Sharpe / MDD 자동 거부 기준 |
+| 🔵 8 | REG-S84_X 작성 (채택/거부) | ~15분 | Commander 결정 정합 |
+| 🟢 9 | 채택 시: PRIMA_v5_20.py LIVE + Crown #68 후보 | ~10분 | SSOT 갱신 |
+| 🟢 10 | 거부 시: IVW Shadow 정식 등재 또는 fallback | ~10분 | 보수적 fallback |
+
+🌟 **S84 총 예상 시간**: ~120분 (별도 세션 의무).
+
+## 🚀 10. 격언 정합 (10건 동시)
+
+| 격언 | 본 결정문 정합 |
+|:--:|:--|
+| 🌟 #11 (CAGR 1순위) | QLD CAGR 23.4% 최고 + forward return 우월 |
+| 🌟 #15 (Commander 절대 결정) | QLD 단일 Phase B 후보 확정 |
+| 🌟 #20 (정직 인지) | Phase A 7/9 ✅ + 2/9 🚨 정직 보고 |
+| 🌟 #25 (Phase A ≠ Phase B) | Phase A 7-항목 정합 완료 + Phase B는 S84 |
+| 🌟 #34 (변수 분리 원칙) | Phase B 단일 교체 원칙 결정적 정합 |
+| 🌟 #46 (자산 비대칭성) | 트랙 분리 본질 + XLG 부적합 정합 |
+| 🌟 #74 (보더라인 자동 폐기 금지) | IVW Shadow 보류 + QLD 조건부 보류 정합 |
+| 🌟 #88 v3 (BT 재현성) | sha256 검증 + Phase A 결과 재현 가능 |
+| 🌟 #98 (결정 지연 ≠ 중립) | Phase A 7-항목 즉시 진행 결정 |
+| 🌟 #109 (BT 기간 SSOT) | 4843행 19.0년 평가 baseline 정합 |
+
+## 🛡️ 11. LIVE 변경 금지 (격언 #56 정합)
+
+🚨 **본 결정문 단계에서 LIVE 변경 절대 금지**:
+- Crown #67 (PRIMA_v5_19_VIX_HYST_LIVE) 영구 유지
+- TLT 100% 보유 9일차 (S82 #1 baseline 정합)
+- QLD entry 함수 = S84 STEP 4까지 미적용
+- Phase B BT + RULE 29 v2 통과 전까지 본 baseline 보존
+
+## 🌟 12. 종합 결론
+
+🌟 **QLD B3+ baseline 단일 Phase B 후보 확정** — 격언 #34 변수 분리 + #11 CAGR + #97 v2 통계 유의 정합 결정.
+
+🚨 **XLG 거부 / IVW Shadow 보류** — 격언 #46 자산 비대칭성 + #74 보더라인 보존 정합.
+
+🚀 **S84 STEP 4 PRIMA_v5_20.py 패치 + 4기간 BT + STRESS 14 + RULE 29 v2 정합 의무**.
+
+🛡️ **본 결정은 NLR 대체 트랙과 Crown #67 트랙 분리 본질 결정적 정합**.
+
+---
+
+🦅 *Omnioculus Vigilantia* — REG-S83_2 정식 등재. QLD = NLR 대체 단일 후보 + 트랙 분리 + 단일 교체 원칙.
