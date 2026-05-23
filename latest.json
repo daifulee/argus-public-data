@@ -99,8 +99,8 @@
   "DGS10_source": "fred_live",
   "PMI_source": "tradingeconomics",
   "F_G_source": "cnn_api",
-  "LME_Cu_stock": 393100.0,
-  "LME_Cu_cash": 13427.0,
-  "LME_Cu_3mo": 13481.0,
-  "LME_Cu_spread": -54.0
+  "LME_Cu_stock": 391900.0,
+  "LME_Cu_cash": 13545.0,
+  "LME_Cu_3mo": 13600.0,
+  "LME_Cu_spread": -55.0
 }
