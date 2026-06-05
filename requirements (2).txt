@@ -1,0 +1,8 @@
+# 🦅 ARGUS argus-public-data 데이터 갱신 의존 패키지
+# argus_data_fetcher.py v3.1 + make_latest_json.py 실행에 필요
+# (yfinance 가 lxml / beautifulsoup4 등 보조 의존성을 자동 설치)
+pandas>=2.0
+numpy>=1.24
+requests>=2.31
+yfinance>=0.2.40
+xlrd>=2.0.1          # Shiller ie_data.xls (.xls / BIFF) 파싱 — v3.1 ECY/CAPE
