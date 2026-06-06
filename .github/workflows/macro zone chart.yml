@@ -1,0 +1,42 @@
+name: ARGUS Macro Zone Chart
+
+on:
+  schedule:
+    - cron: '30 21 * * *'   # 매일 21:30 UTC (브리핑 직전)
+  workflow_dispatch:          # 수동 실행
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pandas numpy scipy
+
+      - name: Generate chart
+        run: python3 gen_macro_zone_chart.py
+
+      - name: Enable Pages
+        uses: actions/configure-pages@v4
+        continue-on-error: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
