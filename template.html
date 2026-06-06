@@ -32,8 +32,9 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 .bar .cap{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);align-self:center;padding-left:4px;letter-spacing:1px;}
 .stage{display:grid;grid-template-columns:1fr;gap:18px;margin-top:16px;}
 @media(max-width:920px){.stage{grid-template-columns:1fr;}}
-.plotcard{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:16px;padding:10px 8px 4px;min-height:560px;}
-#plot{width:100%;height:560px;}
+.plotcard{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:16px;padding:10px 8px 4px;min-height:document.getElementById('plot').clientHeight||560px;}
+#plot{width:100%;height:document.getElementById('plot').clientHeight||560px;}
+@media(max-width:768px){#plot{height:75vh;}}
 .side{display:flex;flex-direction:column;gap:13px;}
 .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:14px;padding:15px 16px 17px;}
 .card h3{font-size:11px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1.4px;color:var(--amber);margin-bottom:12px;font-weight:700;}
@@ -126,15 +127,21 @@ function draw(){
  const mask={type:"heatmap",x:X,y:Y,z:maskZ,customdata:pane.n,xgap:1.5,ygap:1.5,colorscale:[[0,"#4a5160"],[1,"#4a5160"]],zmin:0,zmax:1,showscale:false,hoverongaps:false,hovertemplate:`데이터 부족<br>${yname} %{y:.2f}<br>표본 %{customdata}일 (<8)<extra></extra>`};
  const heat={type:"heatmap",x:X,y:Y,z:zz,customdata:cd,xgap:1.5,ygap:1.5,colorscale:cs,zmin:zmin,zmax:zmax,zauto:false,hoverongaps:false,
   hovertemplate:`${P.x_macro} %{x:.2f}<br>${yname} %{y:.2f}<br>fwd60 평균 <b>%{customdata[0]:.2f}%</b><br>표본 %{customdata[1]}일<extra>${cur}</extra>`,
-  colorbar:Object.assign({title:{text:cbtitle,font:{size:11,color:"#7c869a"}},thickness:13,len:.86,x:1.015,tickfont:{color:"#7c869a",size:11,family:"JetBrains Mono"},outlinecolor:"#1e2533"},cbt)};
+  colorbar:Object.assign({title:{text:cbtitle,side:"right",font:{size:11,color:"#7c869a"}},orientation:"h",y:-0.17,x:0.5,xanchor:"center",thickness:12,len:0.5,tickfont:{color:"#7c869a",size:10,family:"JetBrains Mono"},outlinecolor:"#1e2533"},cbt)};
  heat.opacity=1;
  const traces=[mask,heat];
  {var tr=P.traj;var ty=(ymode==="comp"?tr.yc:tr.ys);traces.push({type:"scatter",mode:"lines+markers",x:tr.x,y:ty,line:{color:"#9fe8ff",width:2.4},marker:{size:5,color:"#9fe8ff",line:{color:"#0c1018",width:.8}},customdata:tr.dates,hovertemplate:"%{customdata}<br>"+P.x_macro+" %{x:.2f}<br>"+yname+" %{y:.2f}<extra>궤적</extra>",opacity:.9,showlegend:false});}
  if(P.cur_x!==null&&pane.cur_y!==null){traces.push({type:"scatter",mode:"markers+text",x:[P.cur_x],y:[pane.cur_y],marker:{symbol:"star",size:19,color:"#f2c98a",line:{color:"#1a1205",width:1.5}},text:["현재"],textposition:"top center",textfont:{color:"#f2c98a",size:11,family:"JetBrains Mono"},hovertemplate:`현재<br>${P.x_macro} ${(P.cur_x_raw??P.cur_x).toFixed(2)}<br>${yname} ${(pane.cur_y_raw??pane.cur_y).toFixed(2)}<extra></extra>`,showlegend:false});}
  const ylab=(ymode==="comp"?pane.y_label+"  (표준화 σ)":"단일 Y · "+pane.y_label);
- const layout={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"#0c1018",margin:{l:72,r:72,t:14,b:58},height:560,font:{family:"Archivo,sans-serif",color:"#cdd6e6"},
-  xaxis:{title:{text:P.x_label+"  →",font:{size:13,color:"#9aa6bd"}},gridcolor:"#161c28",tickfont:{family:"JetBrains Mono",size:11,color:"#8a93a8"},range:[P.x_edges[0],P.x_edges[P.x_edges.length-1]]},
-  yaxis:{title:{text:ylab+"  ↑",font:{size:12,color:"#9aa6bd"}},gridcolor:"#161c28",tickfont:{family:"JetBrains Mono",size:11,color:"#8a93a8"},range:[pane.y_edges[0],pane.y_edges[pane.y_edges.length-1]]}};
+ const layout={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"#0c1018",margin:{l:72,r:24,t:14,b:88},height:document.getElementById('plot').clientHeight||560,font:{family:"Archivo,sans-serif",color:"#cdd6e6"},
+  xaxis:{title:{text:P.x_label+"  →",font:{size:13,color:"#9aa6bd"}},gridcolor:"#161c28",tickfont:{family:"JetBrains Mono",size:11,color:"#8a93a8"},range:(function(){
+      let a=P.x_edges[0],b=P.x_edges[P.x_edges.length-1],p=(b-a)*0.06;
+      if(P.cur_x!=null){a=Math.min(a,P.cur_x-p);b=Math.max(b,P.cur_x+p);}
+      return[a,b];})()},
+  yaxis:{title:{text:ylab+"  ↑",font:{size:12,color:"#9aa6bd"}},gridcolor:"#161c28",tickfont:{family:"JetBrains Mono",size:11,color:"#8a93a8"},range:(function(){
+      let a=pane.y_edges[0],b=pane.y_edges[pane.y_edges.length-1],p=(b-a)*0.06;
+      if(pane.cur_y!=null){a=Math.min(a,pane.cur_y-p);b=Math.max(b,pane.cur_y+p);}
+      return[a,b];})()} };
  Plotly.react("plot",traces,layout,{displayModeBar:false,responsive:true});
  var pc=document.getElementById("plotcard");pc.style.borderColor=RT[1];pc.style.boxShadow="0 0 0 1px "+RT[1]+",0 0 24px -8px "+RT[1];var rb=document.getElementById("relbadge");rb.textContent="신뢰도 "+rel;rb.style.background=RT[1];var rf=document.getElementById("relfill");rf.style.width=rel+"%";rf.style.background=RT[1];var rtl=document.getElementById("reltier");rtl.textContent=RT[0];rtl.style.color=RT[1];
  document.getElementById("axTitle").textContent=cur+" 축 정보";
