@@ -85,7 +85,17 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 <div class="bar"><span class="cap">색</span><button class="t on" data-m="cont">연속</button><button class="t" data-m="bin">영역</button></div>
 </div></div>
 <div class="stage">
-<div class="plotcard" id="plotcard"><div class="relstrip"><span class="ytag" id="ytag">— Y</span><span class="relbadge" id="relbadge">신뢰도 —</span><div class="relgauge"><div class="relfill" id="relfill"></div></div><span class="reltier" id="reltier">—</span><span class="relcap">평면 신뢰도 = 축 예측력 + 데이터 커버리지</span></div><div id="plot"></div><div class="graycap"><span class="gsw"></span>회색 = 데이터 부족 (표본 &lt; 8영업일) &nbsp;·&nbsp; ⭐ 현재 좌표 &nbsp;·&nbsp; 청색 선 = 최근 10영업일 궤적 &nbsp;·&nbsp; ⚠ 축 = forward IC 선택(in-sample 진단, 신호·자본 근거 아님)</div></div>
+<div class="plotcard" id="plotcard"><div class="relstrip"><span class="ytag" id="ytag">— Y</span><span class="relbadge" id="relbadge">신뢰도 —</span><div class="relgauge"><div class="relfill" id="relfill"></div></div><span class="reltier" id="reltier">—</span><span class="relcap">평면 신뢰도 = 축 예측력 + 데이터 커버리지</span></div><div id="plot"></div><div class="graycap"><span class="gsw"></span>회색 = 데이터 부족 (표본 &lt; 8영업일) &nbsp;·&nbsp; ⭐ 현재 좌표 &nbsp;·&nbsp; 청색 선 = 최근 10영업일 궤적 &nbsp;·&nbsp; ⚠ 축 = forward IC 선택(in-sample 진단, 신호·자본 근거 아님)</div>
+<div style="font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;font-size:12px;color:#7c869a;padding:14px 8px 6px;line-height:1.7;max-width:960px;margin:0 auto;">
+<div style="color:#9aa6bd;font-weight:600;margin-bottom:6px;">📊 본 지도와 PRIMA 브리핑 비교 시 유의점</div>
+<div style="display:grid;grid-template-columns:18px 1fr;gap:4px 8px;">
+<span>①</span><span><b style="color:#c9d1d9;">시간축 차이</b> — 지도 셀 = 향후 60영업일 평균 수익. 브리핑 = 주간 리밸런싱 즉시 판단. 지도가 초록이어도 단기 하락 후 60일 뒤 회복하는 패턴 포함.</span>
+<span>②</span><span><b style="color:#c9d1d9;">매크로 축 차이</b> — 지도는 종목별 최고 IC 매크로를 자동 선택(예: SMH→WTI). 브리핑 시그널은 별도 임계값(예: TNX&gt;4.0). 같은 종목이라도 다른 매크로를 볼 수 있음.</span>
+<span>③</span><span><b style="color:#c9d1d9;">Gate 미반영</b> — WTI&gt;$90 셧다운 게이트 등 PRIMA 차단 규칙은 히트맵 색상에 반영되지 않음. 브리핑의 게이트 상태가 항상 우선.</span>
+<span>④</span><span><b style="color:#c9d1d9;">불일치 = 전환 단서</b> — 동일 BT 데이터 기반이므로, 지도 초록 + 브리핑 미진입 = 임박 시그널 후보. 지도 빨강 + 브리핑 보유 중 = 청산 시그널 주시.</span>
+<span>⑤</span><span><b style="color:#c9d1d9;">복합 Y 해석</b> — comp Y는 IC가중 직교화 잔차(σ 단위)로 직접 관측 불가. 방향만 참고 (Y축 라벨 화살표 ↑↓).</span>
+</div>
+</div></div>
 <div class="side">
 <div class="card"><h3 id="axTitle">축 정보</h3>
 <div class="axline"><span class="ax" id="ax_x">—</span> <span class="meta" id="ax_xic"></span></div>
