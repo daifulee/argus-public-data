@@ -173,8 +173,8 @@ async function loadOverlay() {
         DATA.per[tk].traj      = o.traj;
         if (DATA.per[tk].single && o.single_cur_y !== undefined)
           DATA.per[tk].single.cur_y = o.single_cur_y;
-        if (DATA.per[tk].comp && o.comp_cur_y !== undefined)
-          DATA.per[tk].comp.cur_y = o.comp_cur_y;
+        if (DATA.per[tk].comp)
+          DATA.per[tk].comp.cur_y = (o.comp_cur_y != null) ? o.comp_cur_y : o.single_cur_y;
       }
       if (OV.as_of) {
         document.querySelector('.sub') &&
