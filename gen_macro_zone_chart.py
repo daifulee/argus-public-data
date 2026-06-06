@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# gen_macro_zone_chart.py v5.0
+# gen_macro_zone_chart.py v5.1
+# 신규 파생 지표 (GSR/MOVE_VIX/VIX_VIX3M) 일간 궤적 대응
 # traj 60영업일 누적 + zone_data_v4.json 매일 갱신
 # comp_cur_y: comp_params 회귀계수로 정확 계산
 import json, pathlib, csv, datetime, hashlib, sys
@@ -13,11 +14,47 @@ SITE_DIR  = BASE_DIR / "site"
 OVERLAY   = SITE_DIR / "overlay.json"
 INDEX     = SITE_DIR / "index.html"
 
-def load_tail(path, n=15):
+def load_tail(path, n=65):
+    """최근 n행 로드 (파생 지표 rolling 계산용 65행 기본)"""
     rows = []
     with open(path, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f): rows.append(row)
     return rows[-n:] if len(rows) >= n else rows
+
+def _float(v):
+    """문자열 → float 안전 변환"""
+    if v is None: return None
+    try: return float(str(v).strip())
+    except: return None
+
+def enrich_derived(rows):
+    """파생 지표를 각 row에 주입: GSR, MOVE_VIX, VIX_VIX3M"""
+    # VIX 60일 이동평균 계산 (VIX_VIX3M용)
+    vix_vals = [_float(r.get("VIX")) for r in rows]
+    vix_ma60 = [None] * len(rows)
+    for i in range(len(rows)):
+        window = [v for v in vix_vals[max(0,i-59):i+1] if v is not None]
+        if len(window) >= 20:  # 최소 20일
+            vix_ma60[i] = sum(window) / len(window)
+
+    for i, row in enumerate(rows):
+        # GSR = GLD / SLV (종가 비율)
+        gld = _float(row.get("GLD_Close"))
+        slv = _float(row.get("SLV_Close"))
+        if gld and slv and slv > 0:
+            row["GSR"] = str(round(gld / slv, 4))
+
+        # MOVE_VIX = MOVE / VIX
+        move = _float(row.get("MOVE"))
+        vix = _float(row.get("VIX"))
+        if move is not None and vix and vix > 0:
+            row["MOVE_VIX"] = str(round(move / vix, 4))
+
+        # VIX_VIX3M = VIX / VIX_60d_MA
+        if vix is not None and vix_ma60[i] and vix_ma60[i] > 0:
+            row["VIX_VIX3M"] = str(round(vix / vix_ma60[i], 4))
+    
+    return rows
 
 def get_val(rows, col):
     for row in reversed(rows):
@@ -53,7 +90,7 @@ def calc_comp_cur_y(x_val, live_rows, comp_params):
         return None
 
 def main():
-    print("[gen_macro_zone_chart v4.3] 시작")
+    print("[gen_macro_zone_chart v5.1] 시작")
     SITE_DIR.mkdir(parents=True, exist_ok=True)
 
     # index.html 복사 (최우선)
@@ -76,9 +113,10 @@ def main():
 
     live_src = LIVE_CSV if LIVE_CSV.exists() else LONG_CSV
     print(f"  live 소스: {live_src.name}")
-    rows = load_tail(live_src, n=15)
+    rows = load_tail(live_src, n=65)
+    rows = enrich_derived(rows)  # 파생 지표 주입 (GSR/MOVE_VIX/VIX_VIX3M)
     as_of = get_as_of(rows)
-    print(f"  as_of: {as_of}")
+    print(f"  as_of: {as_of} ({len(rows)}행 로드, 파생 3종 주입)")
 
     overlay_per = {}
     comp_ok, comp_fail = 0, 0
@@ -137,7 +175,7 @@ def main():
     print(f"  zone_data_v4.json 갱신 ({len(zd_json)//1024}KB / sha={zd_sha})")
 
     print(f"  site/ 파일: {[f.name for f in SITE_DIR.iterdir()]}")
-    print("[gen_macro_zone_chart v4.3] 완료")
+    print("[gen_macro_zone_chart v5.1] 완료")
 
 if __name__ == "__main__":
     main()
