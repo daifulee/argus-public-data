@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# gen_macro_zone_chart.py v4.3
+# gen_macro_zone_chart.py v5.0
+# traj 60영업일 누적 + zone_data_v4.json 매일 갱신
 # comp_cur_y: comp_params 회귀계수로 정확 계산
 import json, pathlib, csv, datetime, hashlib, sys
 
@@ -107,7 +108,7 @@ def main():
             last_yc = traj["yc"][-1] if traj.get("yc") else last_ys
             traj.setdefault("yc",[]).append(round(comp_yv,3) if comp_yv else last_yc)
             for k in ["dates","x","ys","yc"]:
-                if k in traj: traj[k] = traj[k][-60:]  # 60영업일 궤적 (10일 구간별 색상 대응)
+                if k in traj: traj[k] = traj[k][-60:]  # 60영업일 궤적
 
         overlay_per[tk] = {
             "cur_x":        round(xv,3) if xv is not None else None,
@@ -123,6 +124,18 @@ def main():
     OVERLAY.write_text(ov_json, encoding="utf-8")
     sha8 = hashlib.sha256(OVERLAY.read_bytes()).hexdigest()[:8]
     print(f"  overlay.json: {len(ov_json)//1024}KB / sha={sha8}")
+
+    # ── zone_data_v4.json에 갱신된 traj 반영 (매일 누적) ──
+    for tk, ov in overlay_per.items():
+        if tk in data.get("per", {}) and "traj" in ov:
+            data["per"][tk]["traj"] = ov["traj"]
+    data["traj_range"] = f"{as_of}"
+    data["as_of"] = as_of
+    zd_json = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+    ZONE_JSON.write_text(zd_json, encoding="utf-8")
+    zd_sha = hashlib.sha256(ZONE_JSON.read_bytes()).hexdigest()[:8]
+    print(f"  zone_data_v4.json 갱신 ({len(zd_json)//1024}KB / sha={zd_sha})")
+
     print(f"  site/ 파일: {[f.name for f in SITE_DIR.iterdir()]}")
     print("[gen_macro_zone_chart v4.3] 완료")
 
