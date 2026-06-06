@@ -107,7 +107,7 @@ def main():
             last_yc = traj["yc"][-1] if traj.get("yc") else last_ys
             traj.setdefault("yc",[]).append(round(comp_yv,3) if comp_yv else last_yc)
             for k in ["dates","x","ys","yc"]:
-                if k in traj: traj[k] = traj[k][-12:]
+                if k in traj: traj[k] = traj[k][-60:]  # 60영업일 궤적 (10일 구간별 색상 대응)
 
         overlay_per[tk] = {
             "cur_x":        round(xv,3) if xv is not None else None,
