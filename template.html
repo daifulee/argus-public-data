@@ -168,13 +168,12 @@ async function loadOverlay() {
       for (const tk in OV.per) {
         if (!DATA.per[tk]) continue;
         const o = OV.per[tk];
-        DATA.per[tk].cur_x     = o.cur_x;
-        DATA.per[tk].cur_x_raw = o.cur_x_raw;
-        DATA.per[tk].traj      = o.traj;
-        if (DATA.per[tk].single && o.single_cur_y !== undefined)
+        if (o.cur_x != null) { DATA.per[tk].cur_x = o.cur_x; DATA.per[tk].cur_x_raw = o.cur_x_raw; }
+        if (o.traj && o.traj.dates && o.traj.dates.length) DATA.per[tk].traj = o.traj;
+        if (DATA.per[tk].single && o.single_cur_y != null)
           DATA.per[tk].single.cur_y = o.single_cur_y;
-        if (DATA.per[tk].comp)
-          DATA.per[tk].comp.cur_y = (o.comp_cur_y != null) ? o.comp_cur_y : o.single_cur_y;
+        if (DATA.per[tk].comp && o.comp_cur_y != null)
+          DATA.per[tk].comp.cur_y = o.comp_cur_y;
       }
       if (OV.as_of) {
         document.querySelector('.sub') &&
