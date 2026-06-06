@@ -296,9 +296,11 @@ OUTPUT_WEEKLY_PATH  = os.path.join(SCRIPT_DIR, "argus_data_weekly.csv")
 OUTPUT_MONTHLY_PATH = os.path.join(SCRIPT_DIR, "argus_data_monthly.csv")
 
 # 컬럼 frequency 분류 (FRED_SERIES + 주간/월간 발표 정합)
-WEEKLY_COLS = ['OAS_HY', 'OAS_IG', 'NFCI', 'ICSA', 'CCSA',
+# 🌟 v3.2 (S178): OAS_HY/OAS_IG/T10Y3M은 FRED 일간 발표 → daily로 전환
+#   (기존 주간 분류는 "변동 부재 → ffill 잘못 인식"에 의한 오분류였음)
+WEEKLY_COLS = ['NFCI', 'ICSA', 'CCSA',
                'WALCL', 'WTREGEN', 'RRPONTSYD', 'Net_Liquidity',
-               'T10Y3M', 'T10Y2Y']
+               'T10Y2Y']
 MONTHLY_COLS = ['PMI', 'UMCSENT', 'SAHMCURRENT', 'F_G_Score', 'F_G_Rating', 'ECY', 'CAPE']
 
 # 🌟 v3.1 (S141): Shiller ECY/CAPE fetch 설정
