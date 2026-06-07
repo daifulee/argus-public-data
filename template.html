@@ -83,13 +83,6 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 <div class="bars">
 
 <div class="bar"><span class="cap">모드</span><button class="t on" data-m="edge">진입적기</button><button class="t" data-m="argus">ARGUS</button><span class="cap" style="margin-left:14px;">격자</span><button class="t on" data-bm="q">균일분위</button><button class="t" data-bm="a">실제분위</button></div>
-<details id="modeguide" style="margin:4px 0 0;font-size:11px;color:#9aa6bd;background:#0f141c;border:1px solid #1a2230;border-radius:8px;padding:0 11px;">
-<summary style="cursor:pointer;color:#7fd1a8;font-weight:600;padding:8px 0;">ⓘ 모드 안내 — 설명·의미·활용 (펼치기)</summary>
-<div style="padding:0 0 10px;line-height:1.65;">
-<div style="margin-bottom:8px;"><b style="color:#7fd1a8;">🟢 진입적기 (기본)</b><br>· <b>설명</b>: 칸 forward 60일 수익 − 종목 전체 평균(baseline), baseline 대비 유의성으로 신뢰가중<br>· <b>의미</b>: 초록 = 평소보다 유리한 진입 / 빨강 = 불리 / 회색 = 평소 수준(edge≈0)<br>· <b>활용</b>: "지금 이 거시 환경이 이 종목 진입에 유리한가" — 종목 자체 기준이라 종목 간 기본수익 차이를 제거, 진입 타이밍 판단에 최적</div>
-<div style="margin-top:8px;"><b style="color:#2fd072;">🟩 ARGUS</b><br>· <b>설명</b>: ARGUS 엔진이 그 거시 구간에서 매긴 실제 진입 점수의 평균 (look-ahead 없음 · 신호+모멘텀 종합)<br>· <b>의미</b>: 초록 = 엔진이 진입하려는 구간(양수) / 빨강 = 엔진이 회피하는 구간(음수, 약세 신호 우세) / 어두움 = 중립·게이트(0)<br>· <b>활용</b>: "지도(과거 수익)와 엔진(실제 판단)이 일치하는가" 교차 점검. 단 슬롯경쟁·게이트 前 점수라 보유 확정은 아님</div>
-</div>
-</details>
 </div></div>
 <div class="stage">
 <div class="plotcard" id="plotcard"><div class="relstrip"><span class="ytag" id="ytag">— Y</span><span class="relbadge" id="relbadge">신뢰도 —</span><div class="relgauge"><div class="relfill" id="relfill"></div></div><span class="reltier" id="reltier">—</span><span class="corrwarn" id="corrwarn" style="font-size:11px;font-weight:600;margin-left:6px;"></span><span class="relcap">평면 신뢰도 = 축 예측력 + 데이터 커버리지</span></div><div id="plot"></div><div class="graycap"><span class="gsw"></span>회색 = 데이터 부족 (표본 &lt; 8영업일) &nbsp;·&nbsp; ⭐ 현재 좌표 &nbsp;·&nbsp; 궤적 = 최근 60영업일(과거 보라→최근 노랑 그라데이션) &nbsp;·&nbsp; ⚠ 축 = forward IC 선택(in-sample 진단, 신호·자본 근거 아님)</div><div class="trajlegend" id="trajLegend" style="margin-top:7px;padding-top:7px;border-top:1px solid #1a2230;display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;font-size:10px;font-family:'JetBrains Mono',monospace;"></div>
@@ -116,7 +109,7 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 <div class="stat"><span class="k">표본 일수</span><span class="v" id="s_n">—</span></div>
 <div class="stat"><span class="k">현재 좌표 수익</span><span class="v" id="s_here">—</span></div></div>
 <div class="card"><h3 id="legendTitle">범례</h3><div class="legend" id="legendBox"></div>
-<div class="note">⭐ = 현재 거시 좌표.<br><span class="swatch" style="background:var(--slate)"></span><b>회색 슬레이트 = 데이터 부족</b>(표본&lt;8), 짙은 남색 = 중립(0%) — 구분됨.<br>평면 테두리·배지 색 = 신뢰도(녹/앰버/적).<br><b>모드:</b> <b style="color:#7fd1a8">진입적기(기본)</b> — 칸 수익 − 종목 평균(baseline) → <b>초록=평소보다 유리한 진입 구간, 빨강=불리</b> (baseline 대비 유의성 신뢰가중). <b style="color:#2fd072">ARGUS</b> — 엔진이 매긴 실제 원점수(양수=진입 · 음수=회피 · look-ahead 없음 · 지도↔엔진 교차 점검).<br><b>격자 방식:</b> <b style="color:#7fd1a8">균일분위(기본)</b> — 칸 크기 균등·칸별 표본 균등·회색 최소·현재 지점 기대수익 정밀 / 축 눈금=분위 경계값(간격 비선형, 실거리 왜곡). <b style="color:#d6a96a">실제분위</b> — 같은 분위 칸을 실제 매크로 값 위치에 표시 → 칸 폭 불균등이나 축 실거리·궤적 속도·경계까지 거리 정확.<br><b>경계:</b> 축을 forward IC로 선택 → in-sample 진단. 신호·자본 근거 아님.</div></div>
+<div class="note">⭐ = 현재 거시 좌표.<br><span class="swatch" style="background:var(--slate)"></span><b>회색 슬레이트 = 데이터 부족</b>(표본&lt;8), 짙은 남색 = 중립(0%) — 구분됨.<br>평면 테두리·배지 색 = 신뢰도(녹/앰버/적).<br><b>모드</b> — <b style="color:#7fd1a8">🟢 진입적기(기본)</b>: 칸 forward 60일 수익 − 종목 전체 평균(baseline), baseline 대비 유의성으로 신뢰가중 → 초록=평소보다 유리한 진입 / 빨강=불리 / 회색=평소 수준(edge≈0). “지금 이 거시 환경이 이 종목 진입에 유리한가” — 종목 자체 기준이라 종목 간 기본수익 차이 제거, 진입 타이밍 판단에 최적. &nbsp;<b style="color:#2fd072">🟩 ARGUS</b>: ARGUS 엔진이 그 거시 구간에서 매긴 실제 진입 점수의 평균(look-ahead 없음 · 신호+모멘텀 종합) → 초록=엔진이 진입하려는 구간(양수) / 빨강=엔진이 회피(음수, 약세 신호 우세) / 어두움=중립·게이트(0). “지도(과거 수익)와 엔진(실제 판단)이 일치하는가” 교차 점검 — 슬롯경쟁·게이트 前 점수라 보유 확정은 아님.<br><b>격자 방식:</b> <b style="color:#7fd1a8">균일분위(기본)</b> — 칸 크기 균등·칸별 표본 균등·회색 최소·현재 지점 기대수익 정밀 / 축 눈금=분위 경계값(간격 비선형, 실거리 왜곡). <b style="color:#d6a96a">실제분위</b> — 같은 분위 칸을 실제 매크로 값 위치에 표시 → 칸 폭 불균등이나 축 실거리·궤적 속도·경계까지 거리 정확.<br><b>경계:</b> 축을 forward IC로 선택 → in-sample 진단. 신호·자본 근거 아님.</div></div>
 </div></div></div>
 <button class="arr" id="aR" onclick="navArr(1)">&#8594;</button>
 
