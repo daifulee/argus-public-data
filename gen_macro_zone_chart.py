@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# gen_macro_zone_chart.py v5.1
+# gen_macro_zone_chart.py v5.2
+# zone_data_v4.json → template.html DATA 주입 (축 변경 자동 반영)
 # 신규 파생 지표 (GSR/MOVE_VIX/VIX_VIX3M) 일간 궤적 대응
 # traj 60영업일 누적 + zone_data_v4.json 매일 갱신
 # comp_cur_y: comp_params 회귀계수로 정확 계산
@@ -90,26 +91,41 @@ def calc_comp_cur_y(x_val, live_rows, comp_params):
         return None
 
 def main():
-    print("[gen_macro_zone_chart v5.1] 시작")
+    print("[gen_macro_zone_chart v5.2] 시작")
     SITE_DIR.mkdir(parents=True, exist_ok=True)
 
-    # index.html 복사 (최우선)
-    if TEMPLATE.exists():
-        t_bytes = TEMPLATE.read_bytes()
-        t_sha = hashlib.sha256(t_bytes).hexdigest()[:8]
-        i_sha = hashlib.sha256(INDEX.read_bytes()).hexdigest()[:8] if INDEX.exists() else ""
-        if t_sha != i_sha:
-            INDEX.write_bytes(t_bytes)
-            print(f"  index.html 갱신 ({len(t_bytes)//1024}KB)")
-        else:
-            print(f"  index.html 최신 (변경 없음)")
-    else:
+    if not TEMPLATE.exists():
         print("ERROR: template.html 없음"); sys.exit(1)
-
     if not ZONE_JSON.exists():
         print(f"ERROR: zone_data_v4.json 없음"); sys.exit(1)
+
+    # zone_data 로드 (index.html DATA 주입 + overlay 생성 공용)
     with open(ZONE_JSON) as f:
         data = json.load(f)
+
+    # index.html 생성: template.html의 /**DATA**/ 마커 뒤 const DATA={...}를 zone_data로 교체
+    t_text = TEMPLATE.read_text(encoding="utf-8")
+    marker = "/**DATA**/"
+    if marker in t_text:
+        mi = t_text.index(marker)
+        ds = t_text.index("const DATA=", mi)
+        # 중괄호 매칭으로 DATA 끝 찾기
+        brace_start = t_text.index("{", ds)
+        depth, i = 0, brace_start
+        for i in range(brace_start, len(t_text)):
+            if t_text[i] == "{": depth += 1
+            elif t_text[i] == "}": depth -= 1
+            if depth == 0: break
+        data_end = i + 1
+        # zone_data JSON 주입
+        data_json = json.dumps(data, ensure_ascii=False, separators=(",",":"))
+        new_text = t_text[:ds] + "const DATA=" + data_json + t_text[data_end:]
+        INDEX.write_text(new_text, encoding="utf-8")
+        print(f"  index.html 생성 (DATA 주입 {len(data_json)//1024}KB, 총 {len(new_text)//1024}KB)")
+    else:
+        # 마커 없으면 단순 복사 (폴백)
+        INDEX.write_bytes(TEMPLATE.read_bytes())
+        print(f"  index.html 복사 (DATA 마커 없음, 단순 복사)")
 
     live_src = LIVE_CSV if LIVE_CSV.exists() else LONG_CSV
     print(f"  live 소스: {live_src.name}")
@@ -175,7 +191,7 @@ def main():
     print(f"  zone_data_v4.json 갱신 ({len(zd_json)//1024}KB / sha={zd_sha})")
 
     print(f"  site/ 파일: {[f.name for f in SITE_DIR.iterdir()]}")
-    print("[gen_macro_zone_chart v5.1] 완료")
+    print("[gen_macro_zone_chart v5.2] 완료")
 
 if __name__ == "__main__":
     main()
