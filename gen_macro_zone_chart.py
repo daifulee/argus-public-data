@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# gen_macro_zone_chart.py v5.3
+# gen_macro_zone_chart.py v5.4
 # 궤적·cur_y 모두 LIVE data + zparams 고정 z-score로 통일 (궤적 마지막=현재 보장)
 # zone_data_v4.json → template.html DATA 주입 (축 변경 자동 반영)
-# 신규 파생 지표 (GSR/MOVE_VIX/VIX_VIX3M) 일간 궤적 대응
+# 신규 파생 지표 (GSR/MOVE_VIX/VIX_MA60_RATIO) 일간 궤적 대응
 # traj 60영업일 = LIVE 데이터에서 매 실행 재구축
 import json, pathlib, csv, datetime, hashlib, sys
 
@@ -29,8 +29,8 @@ def _float(v):
     except: return None
 
 def enrich_derived(rows):
-    """파생 지표를 각 row에 주입: GSR, MOVE_VIX, VIX_VIX3M"""
-    # VIX 60일 이동평균 계산 (VIX_VIX3M용)
+    """파생 지표를 각 row에 주입: GSR, MOVE_VIX, VIX_MA60_RATIO"""
+    # VIX 60일 이동평균 계산 (VIX_MA60_RATIO용)
     vix_vals = [_float(r.get("VIX")) for r in rows]
     vix_ma60 = [None] * len(rows)
     for i in range(len(rows)):
@@ -51,9 +51,9 @@ def enrich_derived(rows):
         if move is not None and vix and vix > 0:
             row["MOVE_VIX"] = str(round(move / vix, 4))
 
-        # VIX_VIX3M = VIX / VIX_60d_MA
+        # VIX_MA60_RATIO = VIX / VIX_60d_MA
         if vix is not None and vix_ma60[i] and vix_ma60[i] > 0:
-            row["VIX_VIX3M"] = str(round(vix / vix_ma60[i], 4))
+            row["VIX_MA60_RATIO"] = str(round(vix / vix_ma60[i], 4))
     
     return rows
 
@@ -72,23 +72,27 @@ def get_as_of(rows):
             if v: return v[:10]
     return datetime.date.today().isoformat()
 
-def calc_comp_zscore(get_macro, zparams):
-    """zparams 고정 z-score로 comp_y 계산. get_macro(mc)는 해당 매크로 값 반환(None 가능)"""
-    if not zparams:
+def calc_comp_resid(get_macro, comp_params):
+    """comp_params 잔차회귀로 comp_y 계산 (X 상관 제거).
+    get_macro(mc)는 매크로 값 반환(None 가능). x값은 'x_macro' 키로 전달."""
+    if not comp_params:
+        return None
+    x_val = get_macro("__x__")
+    if x_val is None:
         return None
     zvals = []
-    for p in zparams:
+    for p in comp_params:
         v = get_macro(p["mc"])
-        if v is None or p["std"] == 0:
+        if v is None or p["rstd"] == 0:
             continue
-        z = (v - p["mean"]) / p["std"]
-        zvals.append(p["dir"] * z)
+        resid = (v - (p["slope"] * x_val + p["intercept"])) / p["rstd"]
+        zvals.append(p["dir"] * resid)
     if not zvals:
         return None
     return round(sum(zvals) / len(zvals), 3)
 
 def main():
-    print("[gen_macro_zone_chart v5.3] 시작")
+    print("[gen_macro_zone_chart v5.4] 시작")
     SITE_DIR.mkdir(parents=True, exist_ok=True)
 
     if not TEMPLATE.exists():
@@ -127,7 +131,7 @@ def main():
     live_src = LIVE_CSV if LIVE_CSV.exists() else LONG_CSV
     print(f"  live 소스: {live_src.name}")
     rows = load_tail(live_src, n=65)
-    rows = enrich_derived(rows)  # 파생 지표 주입 (GSR/MOVE_VIX/VIX_VIX3M)
+    rows = enrich_derived(rows)  # 파생 지표 주입 (GSR/MOVE_VIX/VIX_MA60_RATIO)
     as_of = get_as_of(rows)
     print(f"  as_of: {as_of} ({len(rows)}행 로드, 파생 3종 주입)")
 
@@ -143,7 +147,7 @@ def main():
         xmc = P.get("x_macro","")
         ymc_s = P.get("single",{}).get("y_macro","")
         comp = P.get("comp",{})
-        zparams = comp.get("zparams",[])
+        comp_params = comp.get("comp_params",[])
         chosen = P.get("chosen","single")
 
         # ── 궤적: LIVE 60행에서 전체 재구축 (항상 live data만) ──
@@ -156,17 +160,19 @@ def main():
             yv = row_macro(row, ymc_s)
             if xv is None: continue
             if yv is None: yv = traj["ys"][-1] if traj["ys"] else 0.0
-            # comp yc: zparams z-score
+            # comp yc: comp_params 잔차회귀 (x값은 __x__ 키로 전달)
             yc = None
-            if chosen == "comp" and zparams:
-                yc = calc_comp_zscore(lambda mc: row_macro(row, mc), zparams)
+            if chosen == "comp" and comp_params:
+                def gm(mc, _row=row, _xv=xv):
+                    if mc == "__x__": return _xv
+                    return row_macro(_row, mc)
+                yc = calc_comp_resid(gm, comp_params)
             if yc is None:
                 yc = traj["yc"][-1] if traj["yc"] else round(yv,3)
             traj["dates"].append(dt)
             traj["x"].append(round(xv,3))
             traj["ys"].append(round(yv,3))
             traj["yc"].append(round(yc,3))
-        # 60영업일로 제한
         for k in ["dates","x","ys","yc"]:
             traj[k] = traj[k][-60:]
 
@@ -184,7 +190,7 @@ def main():
             "traj":         traj,
         }
 
-    print(f"  comp z-score 계산: {comp_cnt}개 (궤적 마지막=현재 보장)")
+    print(f"  comp 잔차회귀 계산: {comp_cnt}개 (궤적 마지막=현재 보장)")
     overlay = {"as_of": as_of, "per": overlay_per}
     ov_json = json.dumps(overlay, separators=(",",":"), ensure_ascii=False)
     OVERLAY.write_text(ov_json, encoding="utf-8")
@@ -203,7 +209,7 @@ def main():
     print(f"  zone_data_v4.json 갱신 ({len(zd_json)//1024}KB / sha={zd_sha})")
 
     print(f"  site/ 파일: {[f.name for f in SITE_DIR.iterdir()]}")
-    print("[gen_macro_zone_chart v5.3] 완료")
+    print("[gen_macro_zone_chart v5.4] 완료")
 
 if __name__ == "__main__":
     main()
