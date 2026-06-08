@@ -9,7 +9,7 @@
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 <style>
 
-:root{--bg:#0a0d13;--panel:#11151f;--panel2:#0e121a;--edge:#1e2533;--ink:#cdd6e6;--dim:#7c869a;--amber:#e0a458;--amber2:#f2c98a;--green:#2fc46b;--red:#d24b3e;--slate:#4a5160;}
+:root{--plot-h:min(74vh,760px);--plot-min-h:560px;--bg:#0a0d13;--panel:#11151f;--panel2:#0e121a;--edge:#1e2533;--ink:#cdd6e6;--dim:#7c869a;--amber:#e0a458;--amber2:#f2c98a;--green:#2fc46b;--red:#d24b3e;--slate:#4a5160;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:radial-gradient(1200px 600px at 80% -10%,rgba(224,164,88,.07),transparent 60%),radial-gradient(900px 500px at -10% 110%,rgba(47,196,107,.05),transparent 60%),var(--bg);color:var(--ink);font-family:'Archivo',sans-serif;min-height:100vh;padding:26px clamp(16px,3vw,46px) 60px;}
 .wrap{max-width:1330px;margin:0 auto;}
@@ -18,12 +18,12 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 .sub{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--dim);margin-top:8px;letter-spacing:.2px;}
 .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:16px 0 4px;}
 .grp{display:flex;flex-direction:column;gap:5px;}
-.grp .lbl{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim);}
+.grp .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);}
 .btns{display:flex;flex-wrap:wrap;gap:5px;}
-.tk{position:relative;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;color:var(--ink);background:var(--panel);border:1px solid var(--edge);padding:6px 9px;border-radius:7px;cursor:pointer;transition:.14s;}
+.tk{position:relative;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--edge);padding:7px 11px;min-height:34px;border-radius:8px;cursor:pointer;transition:.14s;}
 .tk:hover{border-color:var(--amber);color:var(--amber2);}
 .tk.on{background:var(--amber);color:#1a1205;border-color:var(--amber);box-shadow:0 0 0 3px rgba(224,164,88,.18);}
-.tk.lq::after{content:"";position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--red);}
+.tk.lq::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 1.5px var(--panel);}
 .tk.on.lq::after{background:#5a1109;}
 .bars{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
 .bar{display:flex;gap:5px;background:var(--panel);border:1px solid var(--edge);padding:4px;border-radius:9px;}
@@ -32,8 +32,8 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 .bar .cap{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);align-self:center;padding-left:4px;letter-spacing:1px;}
 .stage{display:grid;grid-template-columns:1fr;gap:18px;margin-top:16px;}
 @media(max-width:920px){.stage{grid-template-columns:1fr;}}
-.plotcard{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:16px;padding:10px 8px 4px;min-height:document.getElementById('plot').clientHeight||560px;}
-#plot{width:100%;height:document.getElementById('plot').clientHeight||560px;}
+.plotcard{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:16px;padding:10px 8px 4px;min-height:calc(var(--plot-min-h) + 64px);}
+#plot{width:100%;height:var(--plot-h);min-height:var(--plot-min-h);}
 @media(max-width:768px){#plot{height:75vh;}}
 .side{display:flex;flex-direction:column;gap:13px;}
 .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:14px;padding:15px 16px 17px;}
@@ -66,6 +66,13 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 .arr{position:fixed;top:50%;transform:translateY(-50%);background:rgba(224,164,88,.75);border:none;color:#1a1205;font-size:18px;font-weight:900;padding:10px 13px;border-radius:8px;cursor:pointer;z-index:100;transition:background .15s;}
 .arr:hover{background:rgba(224,164,88,1);}
 #aL{left:4px;} #aR{right:4px;}
+
+details.helpbox{margin-top:8px;border-top:1px solid #1a2230;padding:6px 6px 2px;}
+details.helpbox>summary{cursor:pointer;color:#cdd6e6;font-weight:700;font-size:12px;font-family:'JetBrains Mono',monospace;list-style:none;padding:5px 2px;user-select:none;}
+details.helpbox>summary::-webkit-details-marker{display:none;}
+details.helpbox>summary::before{content:'\25B8  ';color:#7c869a;}
+details.helpbox[open]>summary::before{content:'\25BE  ';color:#e0a458;}
+.corrwarn:empty{display:none;}
 </style>
 </head>
 <body>
@@ -85,9 +92,8 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 <div class="bar"><span class="cap">모드</span><button class="t on" data-m="edge">진입적기</button><button class="t" data-m="argus">ARGUS</button><span class="cap" style="margin-left:14px;">격자</span><button class="t on" data-bm="q">균일분위</button><button class="t" data-bm="a">실제분위</button></div>
 </div></div>
 <div class="stage">
-<div class="plotcard" id="plotcard"><div class="relstrip"><span class="ytag" id="ytag">— Y</span><span class="relbadge" id="relbadge">신뢰도 —</span><div class="relgauge"><div class="relfill" id="relfill"></div></div><span class="reltier" id="reltier">—</span><span class="corrwarn" id="corrwarn" style="font-size:11px;font-weight:600;margin-left:6px;"></span><span id="partBadge" style="font-size:11px;font-weight:700;margin-left:6px;color:#cdd6e6;">편입 —</span><span class="relcap">평면 신뢰도 = 축 예측력 + 데이터 커버리지</span></div><div id="plot"></div><div class="graycap"><span class="gsw"></span>회색 = 데이터 부족 (표본 &lt; 8영업일) &nbsp;·&nbsp; ⭐ 현재 좌표 &nbsp;·&nbsp; 궤적 = 최근 60영업일(과거 보라→최근 노랑 그라데이션) &nbsp;·&nbsp; ⚠ 축 = forward IC 선택(in-sample 진단, 신호·자본 근거 아님)</div><div style="margin-top:9px;padding-top:9px;border-top:1px solid #1a2230;font-size:11px;color:#9aa6bd;line-height:1.62;"><b style="color:#cdd6e6;">모드</b> — <b style="color:#7fd1a8">🟢 진입적기(기본)</b>: 칸 forward 60일 수익 − 종목 전체 평균(baseline), baseline 대비 유의성으로 신뢰가중 → 초록=평소보다 유리한 진입 / 빨강=불리 / 회색=평소 수준(edge≈0). 진입 타이밍 판단에 최적. &nbsp;<b style="color:#2fd072">🟩 ARGUS</b>: 엔진이 그 거시 구간에서 매긴 실제 진입 점수 평균(look-ahead 없음 · 신호+모멘텀 종합) → 초록=엔진 진입(양수) / 빨강=엔진 회피(음수) / 어두움=중립·게이트(0). 지도↔엔진 교차 점검(슬롯경쟁·게이트 前이라 보유 확정 아님).<br><b style="color:#cdd6e6;">격자</b> — <b style="color:#7fd1a8">균일분위(기본)</b>: 칸 크기 균등·표본 균등·축눈금=분위 경계값(간격 비선형). &nbsp;<b style="color:#d6a96a">실제분위</b>: 같은 분위 칸을 실제 매크로 값 위치에 표시 → 칸 폭 불균등이나 축 실거리·궤적 속도 정확.<br><b style="color:#e0a458;">⚠ 한계</b> — 이 지도는 종목별 forward IC 최상위 2개 축에만 투영한 in-sample 진단이며, <b>엔진의 모든 신호를 반영하지 않습니다</b>. 어두운 종목도 다른 축의 신호로 편입될 수 있습니다(예: QQQM 편입 18.6%). 그래서 ARGUS 밝기는 실제 19년 Top5 편입빈도로 약간 보정했습니다(편입↑=소폭 밝게, 편입↓=소폭 어둡게). 원점수는 hover에 그대로 표시됩니다.</div><div class="trajlegend" id="trajLegend" style="margin-top:7px;padding-top:7px;border-top:1px solid #1a2230;display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;font-size:10px;font-family:'JetBrains Mono',monospace;"></div>
-<div style="font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;font-size:12px;color:#7c869a;padding:14px 8px 6px;line-height:1.7;max-width:960px;margin:0 auto;">
-<div style="color:#9aa6bd;font-weight:600;margin-bottom:6px;">📊 본 지도와 PRIMA 브리핑 비교 시 유의점</div>
+<div class="plotcard" id="plotcard"><div class="relstrip"><span class="ytag" id="ytag">— Y</span><span class="relbadge" id="relbadge">신뢰도 —</span><div class="relgauge"><div class="relfill" id="relfill"></div></div><span class="reltier" id="reltier">—</span><span class="corrwarn" id="corrwarn" style="font-size:12px;font-weight:700;margin-left:8px;"></span><span id="partBadge" style="font-size:11px;font-weight:700;margin-left:6px;color:#cdd6e6;">편입 —</span><span class="relcap">평면 신뢰도 = 축 예측력 + 데이터 커버리지</span></div><div id="plot"></div><div class="graycap"><span style="display:inline-block;width:11px;height:11px;border-radius:2px;background:var(--green);"></span>유리 <span style="display:inline-block;width:11px;height:11px;border-radius:2px;background:var(--red);"></span>불리 <span style="opacity:.4;">·</span> <span class="gsw"></span>회색 = 데이터 부족 (표본 &lt; 8영업일) &nbsp;·&nbsp; ⭐ 현재 좌표 &nbsp;·&nbsp; 궤적 = 최근 60영업일(과거 보라→최근 노랑 그라데이션) &nbsp;·&nbsp; ⚠ 축 = forward IC 선택(in-sample 진단, 신호·자본 근거 아님)</div><details class="helpbox"><summary>📘 모드 · 격자 · 한계 설명</summary><div style="margin-top:9px;padding-top:9px;border-top:1px solid #1a2230;font-size:11px;color:#9aa6bd;line-height:1.62;"><b style="color:#cdd6e6;">모드</b> — <b style="color:#7fd1a8">🟢 진입적기(기본)</b>: 칸 forward 60일 수익 − 종목 전체 평균(baseline), baseline 대비 유의성으로 신뢰가중 → 초록=평소보다 유리한 진입 / 빨강=불리 / 회색=평소 수준(edge≈0). 진입 타이밍 판단에 최적. &nbsp;<b style="color:#2fd072">🟩 ARGUS</b>: 엔진이 그 거시 구간에서 매긴 실제 진입 점수 평균(look-ahead 없음 · 신호+모멘텀 종합) → 초록=엔진 진입(양수) / 빨강=엔진 회피(음수) / 어두움=중립·게이트(0). 지도↔엔진 교차 점검(슬롯경쟁·게이트 前이라 보유 확정 아님).<br><b style="color:#cdd6e6;">격자</b> — <b style="color:#7fd1a8">균일분위(기본)</b>: 칸 크기 균등·표본 균등·축눈금=분위 경계값(간격 비선형). &nbsp;<b style="color:#d6a96a">실제분위</b>: 같은 분위 칸을 실제 매크로 값 위치에 표시 → 칸 폭 불균등이나 축 실거리·궤적 속도 정확.<br><b style="color:#e0a458;">⚠ 한계</b> — 이 지도는 종목별 forward IC 최상위 2개 축에만 투영한 in-sample 진단이며, <b>엔진의 모든 신호를 반영하지 않습니다</b>. 어두운 종목도 다른 축의 신호로 편입될 수 있습니다(예: QQQM 편입 18.6%). 그래서 ARGUS 밝기는 실제 19년 Top5 편입빈도로 약간 보정했습니다(편입↑=소폭 밝게, 편입↓=소폭 어둡게). 원점수는 hover에 그대로 표시됩니다.</div></details><div class="trajlegend" id="trajLegend" style="margin-top:7px;padding-top:7px;border-top:1px solid #1a2230;display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;font-size:10px;font-family:'JetBrains Mono',monospace;"></div>
+<details class="helpbox"><summary>📊 PRIMA 브리핑 비교 시 유의점</summary><div style="font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;font-size:12px;color:#7c869a;padding:10px 8px 6px;line-height:1.7;max-width:960px;margin:0;">
 <div style="display:grid;grid-template-columns:18px 1fr;gap:4px 8px;">
 <span>①</span><span><b style="color:#c9d1d9;">시간축 차이</b> — 지도 셀 = 향후 60영업일 평균 수익. 브리핑 = 주간 리밸런싱 즉시 판단. 지도가 초록이어도 단기 하락 후 60일 뒤 회복하는 패턴 포함.</span>
 <span>②</span><span><b style="color:#c9d1d9;">매크로 축 차이</b> — 지도는 종목별 최고 IC 매크로를 자동 선택(예: SMH→WTI). 브리핑 시그널은 별도 임계값(예: TNX&gt;4.0). 같은 종목이라도 다른 매크로를 볼 수 있음.</span>
@@ -95,7 +101,7 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 <span>④</span><span><b style="color:#c9d1d9;">불일치 = 전환 단서</b> — 동일 BT 데이터 기반이므로, 지도 초록 + 브리핑 미진입 = 임박 시그널 후보. 지도 빨강 + 브리핑 보유 중 = 청산 시그널 주시.</span>
 <span>⑤</span><span><b style="color:#c9d1d9;">복합 Y 해석</b> — comp Y는 IC가중 직교화 잔차(σ 단위)로 직접 관측 불가. 방향만 참고 (Y축 라벨 화살표 ↑↓).</span>
 </div>
-</div></div>
+</div></details></div>
 <div class="side">
 <div class="card"><h3 id="axTitle">축 정보</h3>
 <div class="axline"><span class="ax" id="ax_x">—</span> <span class="meta" id="ax_xic"></span></div>
@@ -137,6 +143,8 @@ function draw(){
  const P=DATA.per[cur],pane=curPane();const X=P.x_centers,Y=pane.y_centers;const ZS=pane.z,NS=pane.n,XE=P.x_edges,YE=pane.y_edges,ST=pane.stats,ZADJ=pane.z_adj,ZEDGE=pane.z_edge,ZARGUS=pane.z_argus;const rel=reliability(P,pane,ymode,ST.valid_cells);const RT=relTier(rel);
  // ── 균일분위 모드: 매크로 값 → 균일 인덱스 좌표 (칸 크기 균등). 경계 e[j] ↔ 인덱스 (j-0.5), 칸 j 중심=인덱스 j ──
  function toIdx(v,e){var m=e.length-1;if(v<=e[0])return -0.5+(v-e[0])/(e[1]-e[0]);for(var jj=0;jj<m;jj++){if(v<=e[jj+1])return (jj-0.5)+(v-e[jj])/(e[jj+1]-e[jj]);}return (m-1-0.5)+(v-e[m-1])/(e[m]-e[m-1]);}
+ function clampIdx(v){return Math.max(-0.5,Math.min(7.5,v));}
+ function clampVal(v,e){return Math.max(e[0],Math.min(e[e.length-1],v));}
  const useIdx=(binmode==="q");const IDX=[0,1,2,3,4,5,6,7];const XP=useIdx?IDX:X,YP=useIdx?IDX:Y;
  const cd=ZS.map((r,i)=>r.map((v,j)=>[v,NS[i][j],(ZADJ&&ZADJ[i]?ZADJ[i][j]:null),(ZEDGE&&ZEDGE[i]?ZEDGE[i][j]:null),(ZARGUS&&ZARGUS[i]?ZARGUS[i][j]:null),X[j],Y[i]]));
  const maskZ=ZS.map(r=>r.map(v=>v===null?1:null));
@@ -152,8 +160,8 @@ function draw(){
   colorbar:Object.assign({title:{text:cbtitle,side:"right",font:{size:11,color:"#7c869a"}},thickness:12,len:0.92,x:1.015,xanchor:"left",y:0.5,yanchor:"middle",tickfont:{color:"#7c869a",size:10,family:"JetBrains Mono"},outlinecolor:"#1e2533"},cbt)};
  heat.opacity=1;
  const traces=[mask,heat];
- {var tr=P.traj;var ty=(ymode==="comp"?tr.yc:tr.ys);var n=tr.x.length;var ss=10;var ns=Math.ceil(n/ss);for(var si=0;si<ns;si++){var s0=si*ss;var s1=Math.min((si+1)*ss,n);var a0=si>0?s0-1:s0;var rawx=tr.x.slice(a0,s1),rawy=ty.slice(a0,s1),sd=tr.dates.slice(a0,s1);var sx=useIdx?rawx.map(function(v){return toIdx(v,XE);}):rawx;var sy=useIdx?rawy.map(function(v){return toIdx(v,YE);}):rawy;var cdd=sd.map(function(d,ii){return [d,rawx[ii],rawy[ii]];});var cc=plasmaColor(ns<=1?1:si/(ns-1));traces.push({type:"scatter",mode:"lines+markers",x:sx,y:sy,line:{color:cc,width:si===ns-1?2.8:1.8},marker:{size:si===ns-1?5:3,color:cc,line:{color:"#0c1018",width:.6}},customdata:cdd,hovertemplate:"%{customdata[0]}<br>"+P.x_macro+" %{customdata[1]:.2f}<br>"+yname+" %{customdata[2]:.2f}<extra>궤적</extra>",opacity:si===ns-1?0.95:0.7,showlegend:false});}}
- if(P.cur_x!==null&&pane.cur_y!==null){traces.push({type:"scatter",mode:"markers+text",x:[useIdx?toIdx(P.cur_x,XE):P.cur_x],y:[useIdx?toIdx(pane.cur_y,YE):pane.cur_y],marker:{symbol:"star",size:19,color:"#f2c98a",line:{color:"#1a1205",width:1.5}},text:["현재"],textposition:"top center",textfont:{color:"#f2c98a",size:11,family:"JetBrains Mono"},hovertemplate:`현재<br>${P.x_macro} ${(P.cur_x_raw??P.cur_x).toFixed(2)}<br>${yname} ${(pane.cur_y_raw??pane.cur_y).toFixed(2)}<extra></extra>`,showlegend:false});}
+ {var tr=P.traj;var ty=(ymode==="comp"?tr.yc:tr.ys);var n=tr.x.length;var ss=10;var ns=Math.ceil(n/ss);for(var si=0;si<ns;si++){var s0=si*ss;var s1=Math.min((si+1)*ss,n);var a0=si>0?s0-1:s0;var rawx=tr.x.slice(a0,s1),rawy=ty.slice(a0,s1),sd=tr.dates.slice(a0,s1);var sx=useIdx?rawx.map(function(v){return clampIdx(toIdx(v,XE));}):rawx.map(function(v){return clampVal(v,XE);});var sy=useIdx?rawy.map(function(v){return clampIdx(toIdx(v,YE));}):rawy.map(function(v){return clampVal(v,YE);});var cdd=sd.map(function(d,ii){return [d,rawx[ii],rawy[ii]];});var cc=plasmaColor(ns<=1?1:si/(ns-1));traces.push({type:"scatter",mode:"lines+markers",x:sx,y:sy,line:{color:cc,width:si===ns-1?2.8:1.8},marker:{size:si===ns-1?5:3,color:cc,line:{color:"#0c1018",width:.6}},customdata:cdd,hovertemplate:"%{customdata[0]}<br>"+P.x_macro+" %{customdata[1]:.2f}<br>"+yname+" %{customdata[2]:.2f}<extra>궤적</extra>",opacity:si===ns-1?0.95:0.7,showlegend:false});}}
+ if(P.cur_x!==null&&pane.cur_y!==null){traces.push({type:"scatter",mode:"markers+text",x:[useIdx?clampIdx(toIdx(P.cur_x,XE)):clampVal(P.cur_x,XE)],y:[useIdx?clampIdx(toIdx(pane.cur_y,YE)):clampVal(pane.cur_y,YE)],marker:{symbol:"star",size:19,color:"#f2c98a",line:{color:"#1a1205",width:1.5}},text:["현재"],textposition:"top center",textfont:{color:"#f2c98a",size:11,family:"JetBrains Mono"},hovertemplate:`현재<br>${P.x_macro} ${(P.cur_x_raw??P.cur_x).toFixed(2)}<br>${yname} ${(pane.cur_y_raw??pane.cur_y).toFixed(2)}<extra></extra>`,showlegend:false});}
  const ylab=(ymode==="comp"?pane.y_label+"  (표준화 σ)":"단일 Y · "+pane.y_label);
  const layout={paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"#0c1018",margin:{l:72,r:66,t:14,b:56},height:document.getElementById('plot').clientHeight||560,font:{family:"Archivo,sans-serif",color:"#cdd6e6"},
   xaxis:(function(){var ax={title:{text:P.x_label+"  →",font:{size:13,color:"#9aa6bd"}},gridcolor:"#161c28",tickfont:{family:"JetBrains Mono",size:11,color:"#8a93a8"}};
@@ -165,7 +173,7 @@ function draw(){
       else{var a=YE[0],b=YE[YE.length-1],p=(b-a)*0.06;if(pane.cur_y!=null){a=Math.min(a,pane.cur_y-p);b=Math.max(b,pane.cur_y+p);}ay.range=[a,b];}
       return ay;})() };
  Plotly.react("plot",traces,layout,{displayModeBar:false,responsive:true});
- var pc=document.getElementById("plotcard");pc.style.borderColor=RT[1];pc.style.boxShadow="0 0 0 1px "+RT[1]+",0 0 24px -8px "+RT[1];var rb=document.getElementById("relbadge");rb.textContent="신뢰도 "+rel;rb.style.background=RT[1];var rf=document.getElementById("relfill");rf.style.width=rel+"%";rf.style.background=RT[1];var rtl=document.getElementById("reltier");rtl.textContent=RT[0];rtl.style.color=RT[1];var cw=document.getElementById("corrwarn");var CT=corrTier(pane.y_corr);if(CT[0]){cw.textContent="⚠ "+CT[0]+" "+Math.abs(pane.y_corr).toFixed(2);cw.style.color=CT[1];}else{cw.textContent="";}var pb=document.getElementById("partBadge");if(pb)pb.textContent="편입 "+(PART[cur]!=null?PART[cur]+"%":"—");
+ var pc=document.getElementById("plotcard");pc.style.borderColor=RT[1];pc.style.boxShadow="0 0 0 1px "+RT[1]+",0 0 24px -8px "+RT[1];var rb=document.getElementById("relbadge");rb.textContent="신뢰도 "+rel;rb.style.background=RT[1];var rf=document.getElementById("relfill");rf.style.width=rel+"%";rf.style.background=RT[1];var rtl=document.getElementById("reltier");rtl.textContent=RT[0];rtl.style.color=RT[1];var cw=document.getElementById("corrwarn");var CT=corrTier(pane.y_corr);if(CT[0]){cw.textContent="⚠ "+CT[0]+" "+Math.abs(pane.y_corr).toFixed(2);cw.style.color=CT[1];cw.style.background=CT[1]+"22";cw.style.border="1px solid "+CT[1]+"77";cw.style.padding="4px 9px";cw.style.borderRadius="7px";cw.style.fontWeight="800";}else{cw.textContent="";cw.style.background="none";cw.style.border="none";cw.style.padding="0";}var pb=document.getElementById("partBadge");if(pb)pb.textContent="편입 "+(PART[cur]!=null?PART[cur]+"%":"—");
  document.getElementById("axTitle").textContent=cur+" 축 정보";
  document.getElementById("ax_x").textContent="X (최우선): "+P.x_label;
  document.getElementById("ax_xic").textContent="IC "+P.x_ic;
@@ -201,11 +209,15 @@ async function loadOverlay() {
       for (const tk in OV.per) {
         if (!DATA.per[tk]) continue;
         const o = OV.per[tk];
-        if (o.cur_x != null) { DATA.per[tk].cur_x = o.cur_x; DATA.per[tk].cur_x_raw = o.cur_x_raw; }
-        if (o.traj && o.traj.dates && o.traj.dates.length) DATA.per[tk].traj = o.traj;
-        if (DATA.per[tk].single && o.single_cur_y != null)
+        // 축 정합 가드: overlay가 만들어진 축(macro)이 로드된 페이지와 다르면(캐시 전환) 덮어쓰기 차단
+        const xMatch = (o.x_macro == null) || (o.x_macro === DATA.per[tk].x_macro);
+        const sMatch = (o.single_y_macro == null) || !DATA.per[tk].single || (o.single_y_macro === DATA.per[tk].single.y_macro);
+        const cMatch = (o.comp_y_macro == null) || !DATA.per[tk].comp || (o.comp_y_macro === DATA.per[tk].comp.y_macro);
+        if (xMatch && o.cur_x != null) { DATA.per[tk].cur_x = o.cur_x; DATA.per[tk].cur_x_raw = o.cur_x_raw; }
+        if (xMatch && sMatch && o.traj && o.traj.dates && o.traj.dates.length) DATA.per[tk].traj = o.traj;
+        if (sMatch && DATA.per[tk].single && o.single_cur_y != null)
           DATA.per[tk].single.cur_y = o.single_cur_y;
-        if (DATA.per[tk].comp && o.comp_cur_y != null)
+        if (cMatch && DATA.per[tk].comp && o.comp_cur_y != null)
           DATA.per[tk].comp.cur_y = o.comp_cur_y;
       }
       if (OV.as_of) {
