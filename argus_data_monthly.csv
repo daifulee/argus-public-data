@@ -10,3 +10,4 @@ Date,PMI,UMCSENT,SAHMCURRENT,F_G_Score,F_G_Rating,ECY,CAPE,PMI_source,UMCSENT_so
 2026-05-22,52.7,53.3,0.13,60.4857142857143,greed,,,tradingeconomics,fred_live,fred_live,cnn_api
 2026-05-25,52.7,49.8,0.13,58.5714285714286,greed,,,tradingeconomics,fred_live,fred_live,cnn_api
 2026-06-05,52.7,49.8,0.1,42.0571428571429,fear,,,tradingeconomics,fred_live,fred_live,cnn_api
+2026-06-08,52.7,49.8,0.1,40.1142857142857,fear,,,tradingeconomics,fred_live,fred_live,cnn_api
