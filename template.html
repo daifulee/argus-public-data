@@ -34,7 +34,18 @@ h1{font-weight:900;font-size:clamp(20px,3vw,31px);letter-spacing:-.5px;line-heig
 @media(max-width:920px){.stage{grid-template-columns:1fr;}}
 .plotcard{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:16px;padding:10px 8px 4px;min-height:calc(var(--plot-min-h) + 64px);}
 #plot{width:100%;height:var(--plot-h);min-height:var(--plot-min-h);}
-@media(max-width:768px){#plot{height:75vh;}}
+@media(max-width:768px){
+  #plot{height:75vh;}
+  /* 화살표: 뷰포트 중앙 고정 → 하단 모서리(엄지 영역)로 이동, 축소·반투명 */
+  .arr{top:auto;bottom:calc(14px + env(safe-area-inset-bottom));transform:none;font-size:15px;padding:8px 10px;opacity:.62;}
+  .arr:active{opacity:1;}
+  /* 신뢰도 행: 게이지 고정폭 해제 → 배지 짓눌림·편입% 잘림 방지, 줄바꿈 허용 */
+  .relstrip{flex-wrap:wrap;gap:6px 8px;}
+  .relstrip>span{white-space:nowrap;}
+  .relgauge{flex:1 1 70px;min-width:60px;}
+  .relcap{display:none;}
+  .sub{font-size:10.5px;line-height:1.55;}
+}
 .side{display:flex;flex-direction:column;gap:13px;}
 .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:14px;padding:15px 16px 17px;}
 .card h3{font-size:11px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1.4px;color:var(--amber);margin-bottom:12px;font-weight:700;}
