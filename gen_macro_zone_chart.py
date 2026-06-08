@@ -188,6 +188,9 @@ def main():
             "single_cur_y": cur_ys,
             "comp_cur_y":   comp_yv,
             "traj":         traj,
+            "x_macro":        xmc,
+            "single_y_macro": ymc_s,
+            "comp_y_macro":   P.get("comp", {}).get("y_macro"),
         }
 
     print(f"  comp 잔차회귀 계산: {comp_cnt}개 (궤적 마지막=현재 보장)")
