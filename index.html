@@ -1,0 +1,339 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🦅 ARGUS Brief — 366</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #0f172a; color: #e2e8f0; font-size: 10px; line-height: 1.5; padding: 16px; max-width: 900px; margin: 0 auto; }
+.hdr { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(135deg,#1e293b,#0f172a); border-radius:10px; margin-bottom:12px; border-left:4px solid #3b82f6; flex-wrap:wrap; }
+.hdr h1 { font-size:18px; font-weight:900; }
+.badge { display:inline-block; padding:3px 10px; border-radius:5px; font-weight:700; font-size:10px; }
+.bb { background:#3b82f6; color:#fff; } .bv { background:#1e293b; color:#64748b; }
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.card { background:#1e293b; border-radius:10px; padding:12px 16px; margin-bottom:10px; }
+.ct { font-size:13px; font-weight:700; margin-bottom:8px; color:#e2e8f0; }
+.al { border-left:4px solid #334155; padding-left:14px; }
+.hbox { padding:8px 12px; border-radius:8px; border:1.5px solid; margin-bottom:6px; }
+.stat { text-align:center; padding:8px; }
+.stat-val { font-size:28px; font-weight:900; line-height:1.1; }
+.stat-lbl { font-size:10px; color:#64748b; }
+table { width:100%; border-collapse:collapse; font-size:10px; }
+th { text-align:left; color:#64748b; font-weight:500; padding:5px 8px; border-bottom:1px solid #334155; font-size:9px; }
+td { padding:5px 8px; border-bottom:1px solid rgba(30,41,59,0.5); }
+.td { background:#0f172a; border-radius:8px; overflow:hidden; }
+.gb { display:inline-block; padding:2px 8px; border-radius:4px; font-weight:700; font-size:10px; }
+.gb-S { border:1.5px solid #facc15; color:#facc15; }
+.gb-A { border:1.5px solid #22d3ee; color:#22d3ee; }
+.gb-B { border:1.5px solid #4ade80; color:#4ade80; }
+.gb-C { border:1.5px solid #94a3b8; color:#94a3b8; }
+.sr { display:flex; align-items:center; gap:5px; padding:3px 8px; border-radius:4px; margin-bottom:1.5px; font-size:10px; }
+.sh { font-size:8px; color:#475569; }
+.si { width:16px; text-align:center; flex-shrink:0; }
+.sn { min-width:120px; font-weight:600; }
+.sc { flex:1; color:#64748b; font-size:9px; }
+.sv { min-width:110px; text-align:right; color:#94a3b8; font-size:9px; }
+.sp { min-width:38px; text-align:right; font-weight:700; }
+.su { min-width:32px; text-align:right; color:#475569; font-size:9px; }
+.sig-met { background:rgba(34,197,94,0.08); }
+.sig-met-neg { background:rgba(248,113,113,0.08); }
+.sig-open { background:rgba(59,130,246,0.06); }
+.ah { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1.5px solid #334155; margin-bottom:8px; flex-wrap:wrap; }
+.am { display:flex; gap:14px; font-size:10px; color:#94a3b8; margin-bottom:8px; }
+.warn { font-size:9px; color:#fbbf24; padding:4px 8px; background:rgba(251,191,36,0.06); border-radius:4px; margin-bottom:6px; }
+.footer { text-align:right; font-size:8px; color:#334155; margin-top:8px; }
+.kv { display:grid; grid-template-columns:auto 1fr; gap:3px 12px; font-size:11px; }
+.kv .k { color:#64748b; } .kv .v { font-weight:600; }
+details { margin-bottom: 6px; }
+details summary { cursor: pointer; font-weight: 700; font-size: 12px; padding: 6px; color: #94a3b8; }
+details summary:hover { color: #e2e8f0; }
+details[open] summary { color: #e2e8f0; }
+@media (max-width: 600px) {
+    .g2, .g3 { grid-template-columns: 1fr; }
+    .stat-val { font-size: 22px; }
+    body { padding: 8px; font-size: 9px; }
+}
+</style></head><body>
+<div class="hdr">
+<div style="display:flex;align-items:center;gap:12px"><span style="font-size:22px">🦅</span>
+<h1>ARGUS Daily Brief</h1>
+<span class="badge bb">Crown #77</span>
+<span class="badge bv">v9.1.0</span></div>
+<div style="color:#64748b;font-size:10px">366 · 2026-06-08 12:59 KST</div></div>
+<div class="card al">
+<div class="ct">🎯 Action Board</div>
+<div class="g3" style="margin-bottom:10px">
+<div class="stat"><div class="stat-val" style="color:#fb923c">유지</div><div class="stat-lbl">결론</div></div>
+<div class="stat"><div class="stat-val" style="color:#4ade80">0건</div><div class="stat-lbl">의무 매도</div></div>
+<div class="stat"><div class="stat-val" style="color:#94a3b8">0.0%</div><div class="stat-lbl">현금</div></div>
+</div><div class="hbox" style="border-color:#f87171;background:rgba(248,113,113,0.06);font-size:11px">
+<span style="font-weight:700;color:#f87171">🔒 _wk Gate BLOCKED:</span>
+WTI=90.25 &gt; 90 ∩ VIX=21.51 ≥ 18.5 → TLT 제외 전 종목 차단.
+해제: WTI≤89 or VIX&lt;17.5</div><div class="hbox" style="border-color:#3b82f6;background:rgba(59,130,246,0.06);font-size:11px">
+<span style="font-weight:700;color:#3b82f6">📡 Next Trigger:</span>
+VIX &lt; 17.5 → Gate 해제 ·
+TLT ExSn T10YIE&gt;2.5 감시(현 2.36) ·
+DXY≥100 TLT 50%청산(현 100.07)</div>
+</div><div class="card" style="border-left:4px solid #f87171;padding-left:14px">
+<div class="ct" style="color:#f87171">🔴 Risk Board</div>
+<div class="g2">
+<div class="hbox" style="border-color:#f87171;background:rgba(248,113,113,0.06)">
+<div>📈 <span style="font-size:14px;font-weight:900">TLT 45.5%</span></div>
+<div style="font-size:10px;margin-top:4px">duration ~17년 · 1bp↑→-0.17% · T10YIE=2.36(임계 2.5)</div>
+</div>
+<div class="hbox" style="border-color:#f87171;background:rgba(248,113,113,0.06)">
+<div>🔒 <span style="font-size:14px;font-weight:900">Gate BLOCKED</span></div>
+<div style="font-size:10px;margin-top:4px">WTI 90.25 · VIX 21.51 → 차단</div>
+</div></div></div>
+<div class="card al"><div class="ct">📊 목표비중</div><div class="td"><table>
+<tr><th>종목</th><th>비중</th><th>점수</th><th>Gate</th><th>1M</th><th>3M</th></tr>
+<tr><td>📈 <b>TLT</b></td><td style="font-size:13px;font-weight:900">45.5%</td><td>+3.5/1.5</td><td style="color:#4ade80">🔓 면제</td><td style="color:#4ade80">+0.1%</td><td style="color:#f87171">-3.3%</td></tr>
+<tr><td>⛽ <b>XLE</b></td><td style="font-size:13px;font-weight:900">54.5%</td><td>+3.9/2.5</td><td style="color:#4ade80">🔓 OPEN</td><td style="color:#f87171">-2.9%</td><td style="color:#4ade80">+4.4%</td></tr>
+<tr style="color:#475569"><td>💵 현금</td><td>0.0%</td><td colspan="4">—</td></tr>
+</table></div></div>
+<div class="g2">
+<div class="card al"><div class="ct">🛡️ STORM v2</div><div style="display:flex;align-items:center;gap:12px"><span style="font-size:28px;font-weight:900;color:#4ade80">PSS 0/4</span><span style="font-size:11px">노출 <b style="color:#4ade80">100%</b></span></div></div>
+<div class="card al"><div class="ct">📡 매크로</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px"><div><span style="color:#64748b">VIX</span> <b>21.51</b></div><div><span style="color:#64748b">WTI</span> <b>90.25</b></div><div><span style="color:#64748b">TNX</span> <b>4.54</b></div><div><span style="color:#64748b">DXY</span> <b>100.07</b></div><div><span style="color:#64748b">NFCI</span> <b>-0.49</b></div><div><span style="color:#64748b">DFII10</span> <b>2.11</b></div><div><span style="color:#64748b">T10YIE</span> <b>2.36</b></div><div><span style="color:#64748b">MOVE</span> <b>75.20</b></div></div></div></div>
+<div class="card al"><div class="ct">💼 보유 종목 상세</div>
+<details><summary>📈 <b>TLT</b> 45.5% · +3.5/1.5</summary>
+<div style="padding:4px 8px">
+<div class="warn">⚠️ duration ~17년 / 1bp↑→-0.17% / 안전자산 아님</div>
+<div class="am"><span>종가 $85.06</span><span style="color:#4ade80">+0.1%</span><span style="color:#f87171">-3.3%</span></div>
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr sig-open"><span class="si">🔓</span><span class="sn" style="color:#60a5fa">Gate · TLT 면제</span><span class="sc">WTI>90∩T10YIE≤2.6</span><span class="sv">WTI=90.25 T10YIE=2.36</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.5</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx35</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+0.8</span></span><span class="su">2.3</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti_70_90</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.3</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95</span><span class="sc"></span><span class="sv">— (73%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.3</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.3</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · wti90_disinf</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">4.3</span></div>
+</div></details>
+<details><summary>⛽ <b>XLE</b> 54.5% · +3.9/2.5</summary>
+<div style="padding:4px 8px">
+<div class="am"><span>종가 $57.67</span><span style="color:#f87171">-2.9%</span><span style="color:#4ade80">+4.4%</span></div>
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr sig-open"><span class="si">🔓</span><span class="sn" style="color:#60a5fa">Gate · WTI-XLE</span><span class="sc">WTI > 110</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii1</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_crash5</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · bullstack_wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+2.4</span></span><span class="su">2.4</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · bearstack_wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-2.4</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix16</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.5</span></div>
+</div></details>
+</div>
+<div class="card al"><div class="ct">🔍 매수 후보 상세</div>
+<details><summary>🥈 <b>SLV</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#4ade80;font-weight:700">+17.0</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+7.5</span></span><span class="su">7.5</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx35</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+4.0</span></span><span class="su">11.5</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">11.5</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vix18</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">13.5</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · oasig089</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">15.5</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">17.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">17.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc"></span><span class="sv">— (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">17.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95_t10yie20h</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">17.0</span></div>
+</div></details>
+<details><summary>🥇 <b>GLD</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#4ade80;font-weight:700">+9.4</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx41</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+6.4</span></span><span class="su">6.4</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx35</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+3.0</span></span><span class="su">9.4</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc"></span><span class="sv">— (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">9.4</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · oasig089</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">11.4</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">12.9</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-3.5</span></span><span class="su">9.4</span></div>
+</div></details>
+<details><summary>🇮🇳 <b>INDA</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#4ade80;font-weight:700">+5.8</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · m3_crash5</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+4.3</span></span><span class="su">4.3</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · m3_neg</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">5.8</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.8</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc"></span><span class="sv">— (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.8</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix16</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.8</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · sahm24</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.8</span></div>
+</div></details>
+<details><summary>🇻🇳 <b>VNM</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#4ade80;font-weight:700">+5.5</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vnm_bull_dfii2</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+4.0</span></span><span class="su">4.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · dfii2</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">6.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii1</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">6.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">6.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx35</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">7.5</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">7.5</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">7.5</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-2.0</span></span><span class="su">5.5</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · move5238</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.5</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · sahm24</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.5</span></div>
+</div></details>
+<details><summary>💡 <b>XLU</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#4ade80;font-weight:700">+4.5</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · m1_drop3</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.3</span></span><span class="su">1.3</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · m1_neg</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+0.5</span></span><span class="su">1.8</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.2</span></span><span class="su">3.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_rise3</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">4.5</span></div>
+</div></details>
+<details><summary>🏗️ <b>PAVE</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#4ade80;font-weight:700">+3.0</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vix18</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+3.0</span></span><span class="su">3.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m3_crash5</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti_70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix16</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95_t10yie20</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
+</div></details>
+<details><summary>✈️ <b>ITA</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#4ade80;font-weight:700">+1.7</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+2.6</span></span><span class="su">2.6</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_drop3</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.6</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.6</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-2.4</span></span><span class="su">0.2</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.7</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95_t10yie20</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">1.7</span></div>
+</div></details>
+<details><summary>🇧🇷 <b>EWZ</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#4ade80;font-weight:700">+1.5</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · pmi48</span><span class="sc"></span><span class="sv">— (51%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · pmi50</span><span class="sc"></span><span class="sv">— (73%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.5</span></div>
+</div></details>
+<details><summary>💊 <b>XLV</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#4ade80;font-weight:700">+0.8</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii05</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · nfci_neg05</span><span class="sc"></span><span class="sv">— (94%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · nfci0</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+0.8</span></span><span class="su">0.8</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m3_crash5</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.8</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · tnx_low25</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.8</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · pmi48</span><span class="sc"></span><span class="sv">— (51%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.8</span></div>
+</div></details>
+<details><summary>💻 <b>QQQM</b> <span style="color:#f87171">🔒 BLOCKED</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · bull_only</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+</div></details>
+<details><summary>📊 <b>IWM</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#f87171;font-weight:700">-1.0</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vix18</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.5</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m3_crash5</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">1.5</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">1.5</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">1.5</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-2.5</span></span><span class="su">-1.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · move5238</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-1.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · fvx077</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-1.0</span></div>
+</div></details>
+<details><summary>🇨🇳 <b>CQQQ</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#f87171;font-weight:700">-2.3</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · vix16_22</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-2.3</span></span><span class="su">-2.3</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95_sahm03</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-2.3</span></div>
+</div></details>
+<details><summary>🌍 <b>VEA</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#f87171;font-weight:700">-2.4</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-3.4</span></span><span class="su">-3.4</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · fvx077</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-3.4</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · move5238</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-3.4</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+1.0</span></span><span class="su">-2.4</span></div>
+</div></details>
+<details><summary>🟤 <b>COPX</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#f87171;font-weight:700">-2.7</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vix18</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#4ade80">+5.0</span></span><span class="su">5.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · sahm24</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dev120_n30</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dev120_n25</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-7.7</span></span><span class="su">-2.7</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix16</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-2.7</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dev120_p35</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-2.7</span></div>
+</div></details>
+<details><summary>🏦 <b>XLF</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#f87171;font-weight:700">-3.1</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii05</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · tnx_low25</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-3.1</span></span><span class="su">-3.1</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · fvx077</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-3.1</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · move5238</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-3.1</span></div>
+</div></details>
+<details><summary>☢️ <b>NLR</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#f87171;font-weight:700">-4.0</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · tnx40</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc"></span><span class="sv">— (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-4.0</span></span><span class="su">-4.0</span></div>
+</div></details>
+<details><summary>🔬 <b>SMH</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#f87171;font-weight:700">-5.3</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc"></span><span class="sv">— (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-5.3</span></span><span class="su">-5.3</span></div>
+</div></details>
+<details><summary>🛡️ <b>CIBR</b> <span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#f87171;font-weight:700">-6.0</span></summary>
+<div style="padding:4px 8px">
+<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_drop3</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_neg</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc"></span><span class="sv">— (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy93</span><span class="sc"></span><span class="sv">— (62%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
+<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc"></span><span class="sv">—</span><span class="sp"><span style="color:#f87171">-6.0</span></span><span class="su">-6.0</span></div>
+</div></details>
+</div>
+<div class="card al"><div class="ct">🚦 Gate 해제 시 진입 가능</div><div style="display:flex;flex-wrap:wrap;gap:8px;font-size:11px"><span>🥈 SLV <span style="color:#4ade80;font-weight:700">+17.0</span></span><span>🥇 GLD <span style="color:#4ade80;font-weight:700">+9.4</span></span><span>🇮🇳 INDA <span style="color:#4ade80;font-weight:700">+5.8</span></span><span>🇻🇳 VNM <span style="color:#4ade80;font-weight:700">+5.5</span></span><span>💡 XLU <span style="color:#4ade80;font-weight:700">+4.5</span></span><span>🏗️ PAVE <span style="color:#4ade80;font-weight:700">+3.0</span></span><span>✈️ ITA <span style="color:#4ade80;font-weight:700">+1.7</span></span><span>🇧🇷 EWZ <span style="color:#4ade80;font-weight:700">+1.5</span></span><span>💊 XLV <span style="color:#4ade80;font-weight:700">+0.8</span></span></div></div>
+<div class="footer">
+v9.1.0 / Crown #77 / PRIMA2_v0_5_4_COPX_TNX_LT2_BOOST_LIVE / 2026-06-08 12:59 KST<br>
+<span style="color:#475569">격언 #80: Phase A fwd60 ≠ portfolio BT alpha</span>
+</div>
+</body></html>
