@@ -1,561 +1,533 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🦅 ARGUS Brief — 366</title>
+<title>🔭 ARGUS Oracle Briefing — 2026-06-08</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; background: #0f172a; color: #e2e8f0; font-size: 10px; line-height: 1.5; padding: 16px; max-width: 900px; margin: 0 auto; }
-.hdr { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(135deg,#1e293b,#0f172a); border-radius:10px; margin-bottom:12px; border-left:4px solid #3b82f6; flex-wrap:wrap; }
-.hdr h1 { font-size:18px; font-weight:900; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #0f172a; color: #e2e8f0;
+       font-size: 11px; line-height: 1.6; padding: 20px; max-width: 960px; margin: 0 auto; }
+code, .mono { font-family: 'JetBrains Mono', monospace; }
+.hdr { display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+       background:linear-gradient(135deg,#1e293b,#0f172a); border-radius:12px;
+       margin-bottom:14px; border-left:5px solid #3b82f6; flex-wrap:wrap; gap:8px; }
+.hdr h1 { font-size:20px; font-weight:900; letter-spacing:-0.5px; }
 .badge { display:inline-block; padding:3px 10px; border-radius:5px; font-weight:700; font-size:10px; }
-.bb { background:#3b82f6; color:#fff; } .bv { background:#1e293b; color:#64748b; }
+.bb { background:#3b82f6; color:#fff; } .bv { background:#1e293b; color:#64748b; border:1px solid #334155; }
+.bg { background:#065f46; color:#34d399; } .br { background:#7f1d1d; color:#fca5a5; }
+.card { background:#1e293b; border-radius:12px; padding:14px 18px; margin-bottom:12px; }
+.card-t { font-size:14px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.card-accent { border-left:4px solid; padding-left:16px; }
 .g2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-.card { background:#1e293b; border-radius:10px; padding:12px 16px; margin-bottom:10px; }
-.ct { font-size:13px; font-weight:700; margin-bottom:8px; color:#e2e8f0; }
-.al { border-left:4px solid #334155; padding-left:14px; }
-.hbox { padding:8px 12px; border-radius:8px; border:1.5px solid; margin-bottom:6px; }
-.stat { text-align:center; padding:8px; }
+.g4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; }
+.stat { text-align:center; padding:10px 6px; background:#0f172a; border-radius:8px; }
 .stat-val { font-size:28px; font-weight:900; line-height:1.1; }
-.stat-lbl { font-size:10px; color:#64748b; }
+.stat-lbl { font-size:9px; color:#64748b; margin-top:4px; text-transform:uppercase; letter-spacing:0.5px; }
 table { width:100%; border-collapse:collapse; font-size:10px; }
-th { text-align:left; color:#64748b; font-weight:500; padding:5px 8px; border-bottom:1px solid #334155; font-size:9px; }
+th { text-align:left; color:#64748b; font-weight:500; padding:6px 8px; border-bottom:1px solid #334155; font-size:9px; }
 td { padding:5px 8px; border-bottom:1px solid rgba(30,41,59,0.5); }
-.td { background:#0f172a; border-radius:8px; overflow:hidden; }
-.gb { display:inline-block; padding:2px 8px; border-radius:4px; font-weight:700; font-size:10px; }
-.gb-S { border:1.5px solid #facc15; color:#facc15; }
-.gb-A { border:1.5px solid #22d3ee; color:#22d3ee; }
-.gb-B { border:1.5px solid #4ade80; color:#4ade80; }
-.gb-C { border:1.5px solid #94a3b8; color:#94a3b8; }
-.sr { display:flex; align-items:center; gap:5px; padding:3px 8px; border-radius:4px; margin-bottom:1.5px; font-size:10px; }
-.sh { font-size:8px; color:#475569; }
-.si { width:16px; text-align:center; flex-shrink:0; }
-.sn { min-width:120px; font-weight:600; }
-.sc { flex:1; color:#64748b; font-size:9px; }
-.sv { min-width:110px; text-align:right; color:#94a3b8; font-size:9px; }
-.sp { min-width:38px; text-align:right; font-weight:700; }
-.su { min-width:32px; text-align:right; color:#475569; font-size:9px; }
-.sig-met { background:rgba(34,197,94,0.08); }
-.sig-met-neg { background:rgba(248,113,113,0.08); }
-.sig-open { background:rgba(59,130,246,0.06); }
-.ah { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1.5px solid #334155; margin-bottom:8px; flex-wrap:wrap; }
-.am { display:flex; gap:14px; font-size:10px; color:#94a3b8; margin-bottom:8px; }
-.warn { font-size:9px; color:#fbbf24; padding:4px 8px; background:rgba(251,191,36,0.06); border-radius:4px; margin-bottom:6px; }
-.footer { text-align:right; font-size:8px; color:#334155; margin-top:8px; }
-.kv { display:grid; grid-template-columns:auto 1fr; gap:3px 12px; font-size:11px; }
-.kv .k { color:#64748b; } .kv .v { font-weight:600; }
-details { margin-bottom: 6px; }
-details summary { cursor: pointer; font-weight: 700; font-size: 12px; padding: 6px; color: #94a3b8; }
-details summary:hover { color: #e2e8f0; }
-details[open] summary { color: #e2e8f0; }
-@media (max-width: 600px) {
-    .g2, .g3 { grid-template-columns: 1fr; }
-    .stat-val { font-size: 22px; }
-    body { padding: 8px; font-size: 9px; }
+.bar-h { height:6px; border-radius:3px; background:#334155; overflow:hidden; }
+.bar-fill { height:100%; border-radius:3px; }
+.pill { display:inline-block; padding:2px 8px; border-radius:4px; font-weight:700; font-size:9px; }
+.warn { font-size:10px; color:#fbbf24; padding:6px 10px; background:rgba(251,191,36,0.06);
+        border:1px solid rgba(251,191,36,0.15); border-radius:6px; margin-bottom:6px; }
+details { margin-bottom:8px; }
+details summary { cursor:pointer; font-weight:700; font-size:12px; padding:8px 0; color:#94a3b8; }
+details summary:hover { color:#e2e8f0; }
+details[open] summary { color:#e2e8f0; }
+.footer { text-align:right; font-size:8px; color:#475569; margin-top:14px; padding-top:10px;
+          border-top:1px solid #1e293b; }
+@media (max-width: 640px) {
+    .g2, .g3, .g4 { grid-template-columns: 1fr; }
+    .stat-val { font-size:22px; }
+    body { padding:10px; font-size:10px; }
 }
 </style></head><body>
 <div class="hdr">
-<div style="display:flex;align-items:center;gap:12px"><span style="font-size:22px">🦅</span>
-<h1>ARGUS Daily Brief</h1>
-<span class="badge bb">Crown #77</span>
-<span class="badge bv">v9.1.0</span></div>
-<div style="color:#64748b;font-size:10px">366 · 2026-06-08 14:27 KST</div></div>
-<div class="card al">
-<div class="ct">🎯 Action Board</div>
-<div class="g3" style="margin-bottom:10px">
-<div class="stat"><div class="stat-val" style="color:#fb923c">유지</div><div class="stat-lbl">결론</div></div>
-<div class="stat"><div class="stat-val" style="color:#4ade80">0건</div><div class="stat-lbl">의무 매도</div></div>
-<div class="stat"><div class="stat-val" style="color:#94a3b8">0.0%</div><div class="stat-lbl">현금</div></div>
-</div><div class="hbox" style="border-color:#f87171;background:rgba(248,113,113,0.06);font-size:11px">
-<span style="font-weight:700;color:#f87171">🔒 _wk Gate BLOCKED:</span>
-WTI=90.25 &gt; 90 ∩ VIX=21.51 ≥ 18.5 → TLT 제외 전 종목 차단.
-해제: WTI≤89 or VIX&lt;17.5</div><div class="hbox" style="border-color:#3b82f6;background:rgba(59,130,246,0.06);font-size:11px">
-<span style="font-weight:700;color:#3b82f6">📡 Next Trigger:</span>
-VIX &lt; 17.5 → Gate 해제 ·
-TLT ExSn T10YIE&gt;2.5 감시(현 2.36) ·
-DXY≥100 TLT 50%청산(현 100.07)</div>
-</div><div class="card" style="border-left:4px solid #f87171;padding-left:14px">
-<div class="ct" style="color:#f87171">🔴 Risk Board</div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<span style="font-size:24px">🔭</span>
+<h1>ARGUS Oracle Briefing</h1>
+<span class="badge bb">v1.0.5</span>
+<span class="badge" style="background:#4ade80;color:#0f172a">EXPANSION</span>
+</div>
+<div style="color:#64748b;font-size:10px" class="mono">2026-06-08 · 2026-06-09 09:10 KST</div>
+</div>
+<div class="card card-accent" style="border-color:#3b82f6">
+<div class="card-t">🎯 Executive Summary</div>
+<div class="g4">
+<div class="stat"><div class="stat-val" style="color:#4ade80">EXPANSION</div>
+<div class="stat-lbl">레짐 · G22</div></div>
+<div class="stat"><div class="stat-val" style="color:#f87171">38</div>
+<div class="stat-lbl">확신도 / 100</div></div>
+<div class="stat"><div class="stat-val" style="color:#4ade80">0.1%</div>
+<div class="stat-lbl">기대수익</div></div>
+<div class="stat"><div class="stat-val" style="color:#4ade80">✅</div>
+<div class="stat-lbl">검증 25/25</div></div>
+</div>
+<div style="margin-top:10px;font-size:11px;color:#94a3b8">
+<b style="color:#e2e8f0">최선호:</b> ☢️ NLR +0.2% · 🥇 GLD +0.2% · ✈️ ITA +0.2%
+</div></div>
+<div class="card"><div class="card-t">📊 8축 매크로 현황</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🔴</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#f87171">WAR</span>
+<span class="mono" style="min-width:100px">regional</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:61%;background:#f87171"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">61%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 0%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🔴</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#f97316">OIL</span>
+<span class="mono" style="min-width:100px">blocked</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:77%;background:#f97316"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">77%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 0%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟡</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#fbbf24">MONETARY</span>
+<span class="mono" style="min-width:100px">hold</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:60%;background:#fbbf24"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">60%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 0%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟡</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#fb923c">CREDIT</span>
+<span class="mono" style="min-width:100px">tight</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:60%;background:#fb923c"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">60%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 0%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟡</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#a78bfa">TARIFF</span>
+<span class="mono" style="min-width:100px">status_quo</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:92%;background:#a78bfa"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">92%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 0%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟢</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#4ade80">GROWTH</span>
+<span class="mono" style="min-width:100px">steady</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:87%;background:#4ade80"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">87%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 0%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟡</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#60a5fa">FISCAL</span>
+<span class="mono" style="min-width:100px">expansive</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:85%;background:#60a5fa"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">85%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 0%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟢🟢</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#22d3ee">AI_POWER</span>
+<span class="mono" style="min-width:100px">peak_demand</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:75%;background:#22d3ee"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">75%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 0%</span>
+</div></div><div class="card card-accent" style="border-color:#4ade80">
+<div class="card-t">🌊 레짐 판정</div>
+<div class="g3">
+<div class="stat"><div class="stat-val" style="color:#4ade80;font-size:18px">🟢 확장기 (EXPANSION)</div>
+<div class="stat-lbl">매크로 레짐</div></div>
+<div class="stat"><div class="stat-val" style="font-size:18px">22.4</div>
+<div class="stat-lbl">그래디언트 / 100</div></div>
+<div class="stat"><div class="stat-val" style="font-size:14px">{"SGOV": 10, "GLD": 20, "attack_core": 70}</div>
+<div class="stat-lbl">프리셋 배분</div></div>
+</div></div>
+<div class="card"><div class="card-t">🔭 Oracle 임팩트 — 종목별 기대수익률</div><div class="g2"><div><div style="font-weight:700;color:#4ade80;margin-bottom:6px">🟢 순풍 TOP</div><table><tr><th>종목</th><th>수익률</th><th>주요 축</th></tr><tr><td>☢️ <b>NLR</b></td><td style="color:#4ade80;font-weight:700">+0.2%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>🥇 <b>GLD</b></td><td style="color:#4ade80;font-weight:700">+0.2%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>✈️ <b>ITA</b></td><td style="color:#4ade80;font-weight:700">+0.2%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>🛢️ <b>PDBC</b></td><td style="color:#4ade80;font-weight:700">+0.2%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>🥈 <b>SLV</b></td><td style="color:#4ade80;font-weight:700">+0.2%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>⛽ <b>XLE</b></td><td style="color:#4ade80;font-weight:700">+0.1%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>💡 <b>XLU</b></td><td style="color:#4ade80;font-weight:700">+0.1%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>🟤 <b>COPX</b></td><td style="color:#4ade80;font-weight:700">+0.1%</td><td class="mono" style="font-size:9px"></td></tr></table></div><div><div style="font-weight:700;color:#f87171;margin-bottom:6px">🔴 역풍 BOTTOM</div><table><tr><th>종목</th><th>수익률</th><th>주요 축</th></tr><tr><td> <b>SPY</b></td><td style="color:#f87171;font-weight:700">-0.1%</td><td class="mono" style="font-size:9px"></td></tr><tr><td> <b>EWJ</b></td><td style="color:#f87171;font-weight:700">-0.1%</td><td class="mono" style="font-size:9px"></td></tr><tr><td> <b>VWO</b></td><td style="color:#f87171;font-weight:700">-0.2%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>🇻🇳 <b>VNM</b></td><td style="color:#f87171;font-weight:700">-0.2%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>🇮🇳 <b>INDA</b></td><td style="color:#f87171;font-weight:700">-0.2%</td><td class="mono" style="font-size:9px"></td></tr><tr><td>🇨🇳 <b>CQQQ</b></td><td style="color:#f87171;font-weight:700">-0.2%</td><td class="mono" style="font-size:9px"></td></tr></table></div></div></div><div class="card"><div class="card-t">📈 시나리오 확률</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S2</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:42%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">41.8%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S5</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:19%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">19.4%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S7</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:12%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">12.2%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S9</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:12%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">12.2%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S1</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:11%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">10.9%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S10</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:2%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">1.7%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S6</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:1%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">0.9%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S11</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:1%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">0.8%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div></div><div class="card card-accent" style="border-color:#3b82f6"><div class="card-t">💼 포트폴리오 비중</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">🥇</span>
+<span class="mono" style="min-width:50px;font-weight:700">GLD</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:100%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">20.0%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +0.2%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">☢️</span>
+<span class="mono" style="min-width:50px;font-weight:700">NLR</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:82%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">16.4%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +0.2%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">✈️</span>
+<span class="mono" style="min-width:50px;font-weight:700">ITA</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:80%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">16.0%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +0.2%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">🥈</span>
+<span class="mono" style="min-width:50px;font-weight:700">SLV</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:70%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">14.1%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +0.2%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">💵</span>
+<span class="mono" style="min-width:50px;font-weight:700">SGOV</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:50%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">10.0%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">⛽</span>
+<span class="mono" style="min-width:50px;font-weight:700">XLE</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:46%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">9.2%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +0.1%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">💡</span>
+<span class="mono" style="min-width:50px;font-weight:700">XLU</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:36%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">7.3%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +0.1%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">🟤</span>
+<span class="mono" style="min-width:50px;font-weight:700">COPX</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:35%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">7.0%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +0.1%</span>
+</div><div style="margin-top:8px;font-size:9px;color:#64748b">가드레일: GLD캡 35.0% · 합계 ✅ 100%</div></div><div class="card"><div class="card-t">🛡️ 리스크 메트릭</div><div class="g3"><div class="stat"><div class="stat-val" style="font-size:20px;color:#4ade80">+0.09</div><div class="stat-lbl">E[R]</div></div><div class="stat"><div class="stat-val" style="font-size:20px;color:#4ade80">0.04</div><div class="stat-lbl">Sigma</div></div><div class="stat"><div class="stat-val" style="font-size:20px;color:#4ade80">2.27</div><div class="stat-lbl">Sharpe</div></div></div></div><div class="card"><div class="card-t">🚨 비상 프로토콜</div>
 <div class="g2">
-<div class="hbox" style="border-color:#f87171;background:rgba(248,113,113,0.06)">
-<div>📈 <span style="font-size:14px;font-weight:900">TLT 45.5%</span></div>
-<div style="font-size:10px;margin-top:4px">duration ~17년 · 1bp↑→-0.17% · T10YIE=2.36(임계 2.5)</div>
-</div>
-<div class="hbox" style="border-color:#f87171;background:rgba(248,113,113,0.06)">
-<div>🔒 <span style="font-size:14px;font-weight:900">Gate BLOCKED</span></div>
-<div style="font-size:10px;margin-top:4px">WTI 90.25 · VIX 21.51 → 차단</div>
-</div></div></div>
-<div class="card al"><div class="ct">📊 목표비중</div><div class="td"><table>
-<tr><th>종목</th><th>비중</th><th>ratio</th><th>등급</th><th>Gate</th><th>청산조건</th><th>보유일</th><th>1M</th><th>3M</th><th>점수</th></tr>
-<tr><td>📈 <b>TLT</b></td><td style="font-size:13px;font-weight:900">45.5%</td><td>2.33x</td><td><span class="gb gb-A">A급</span></td><td style="color:#4ade80">🔓 면제</td><td>없음</td><td>—</td><td style="color:#4ade80">+0.1%</td><td style="color:#f87171">-3.3%</td><td>+3.5/1.5</td></tr>
-<tr><td>⛽ <b>XLE</b></td><td style="font-size:13px;font-weight:900">54.5%</td><td>1.56x</td><td><span class="gb gb-B">B급</span></td><td style="color:#4ade80">🔓 OPEN</td><td>없음</td><td>—</td><td style="color:#f87171">-2.9%</td><td style="color:#4ade80">+4.4%</td><td>+3.9/2.5</td></tr>
-<tr style="color:#475569"><td>💵 현금</td><td>0.0%</td><td colspan="8">—</td></tr>
-</table></div></div>
-<div class="g2">
-<div class="card al"><div class="ct">🛡️ STORM v2</div><div style="display:flex;align-items:center;gap:14px;margin-bottom:8px"><span style="font-size:28px;font-weight:900;color:#4ade80">PSS 0/4</span><div><div style="font-size:11px">노출 <b style="color:#4ade80">100%</b></div><div style="color:#64748b">방어현금 0%</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px"><div><span style="width:9px;height:9px;border-radius:50%;display:inline-block;border:1px solid #334155;background:#1e293b"></span> C1 · HY 신용↑ OFF <span style="color:#475569;font-size:9px">OAS_HY=2.74</span></div><div><span style="width:9px;height:9px;border-radius:50%;display:inline-block;border:1px solid #334155;background:#1e293b"></span> C2 · HYG 약세 OFF <span style="color:#475569;font-size:9px">—</span></div><div><span style="width:9px;height:9px;border-radius:50%;display:inline-block;border:1px solid #334155;background:#1e293b"></span> B3 · MOVE 확대 OFF <span style="color:#475569;font-size:9px">MOVE=75.20</span></div><div><span style="width:9px;height:9px;border-radius:50%;display:inline-block;border:1px solid #334155;background:#1e293b"></span> L2 · SMH 압착 OFF <span style="color:#475569;font-size:9px">—</span></div></div></div>
-<div class="card al"><div class="ct">🧭 Shadow Slot</div><div class="kv"><span class="k">최강 외부</span><span class="v" style="color:#475569">Gate BLOCKED — 외부 후보 없음</span><span class="k">최약 보유</span><span class="v">⛽ XLE <span style="color:#fbbf24;font-weight:700">1.56x</span></span><span class="k">우위</span><span class="v" style="color:#a78bfa">+0.00p</span><span class="k">SCF</span><span class="v" style="color:#475569">표본 부재</span><span class="k">판정</span><span class="v">교체 안 함 (예측우위 미측정 REG-S132)</span></div></div>
-</div>
-<div class="card al"><div class="ct">📡 매크로 스냅샷</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px"><div><span style="color:#64748b">VIX</span> <b>21.51</b></div><div><span style="color:#64748b">WTI</span> <b>90.25</b></div><div><span style="color:#64748b">TNX</span> <b>4.54</b></div><div><span style="color:#64748b">TYX_30Y</span> <b>5.00</b></div><div><span style="color:#64748b">DXY</span> <b>100.07</b></div><div><span style="color:#64748b">NFCI</span> <b>-0.49</b></div><div><span style="color:#64748b">DFII10</span> <b>2.11</b></div><div><span style="color:#64748b">T10YIE</span> <b>2.36</b></div><div><span style="color:#64748b">MOVE</span> <b>75.20</b></div><div><span style="color:#64748b">OAS_IG</span> <b>0.74</b></div><div><span style="color:#64748b">OAS_HY</span> <b>2.74</b></div><div><span style="color:#64748b">PMI</span> <b>52.70</b></div></div></div>
-<div class="card al"><div class="ct">📡 Driver Cluster</div><div class="td"><table><tr><th></th><th>클러스터</th><th>매크로 (오늘)</th><th>현재 방향</th><th>과거 BT 기여</th><th>영향 종목</th></tr><tr><td>🟢</td><td style="font-weight:700">금리 고점</td><td>TNX 4.54 · TYX 5.00</td><td style="color:#4ade80">↑ 고점 지속</td><td style="color:#4ade80;font-weight:700">+18.0%</td><td style="font-size:9px">CQQQ EWZ GLD ITA SLV TLT VEA VNM</td></tr><tr><td>🟢</td><td style="font-weight:700">고유가 감산</td><td>WTI 90.25</td><td style="color:#f87171">↑ 고유가</td><td style="color:#f87171;font-weight:700">-7.0%</td><td style="font-size:9px">CIBR COPX GLD ITA IWM SMH VEA VNM</td></tr><tr><td>🟢</td><td style="font-weight:700">신용 완화</td><td>OAS_IG 0.74 · NFCI -0.49</td><td style="color:#4ade80">↓ 스프레드 축소</td><td style="color:#4ade80;font-weight:700">+12.0%</td><td style="font-size:9px">GLD SLV XLV</td></tr><tr><td>⚫</td><td style="font-weight:700">달러 활성</td><td>DXY 100.07</td><td style="color:#94a3b8">↑ 강달러</td><td style="color:#4ade80;font-weight:700">+5.0%</td><td style="font-size:9px"></td></tr><tr><td>🟢</td><td style="font-weight:700">VIX 상승</td><td>VIX 21.51</td><td style="color:#94a3b8">↑ 불안</td><td style="color:;font-weight:700"></td><td style="font-size:9px"></td></tr></table></div><div style="font-size:9px;color:#475569;margin-top:4px">※ "과거 BT 기여" = ablation 추정치(역대). 오늘 이후 예측값 <b style="color:#f87171">아님</b>.</div></div>
-<div class="card al"><div class="ct">💼 보유 종목 상세</div>
-<details><summary>📈 <b>TLT</b> 45.5% · +3.5/1.5</summary>
-<div style="padding:4px 8px">
-<div class="warn">⚠️ duration ~17년 / 1bp↑→-0.17% / 안전자산 아님</div>
-<div class="am"><span>종가 $85.06</span><span style="color:#4ade80">+0.1%</span><span style="color:#f87171">-3.3%</span></div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr sig-open"><span class="si">🔓</span><span class="sn" style="color:#60a5fa">Gate · TLT 면제</span><span class="sc">WTI>90∩T10YIE≤2.6</span><span class="sv">WTI=90.25 T10YIE=2.36</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc">미국채 10년물 금리 4.0% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.5</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx35</span><span class="sc">미국채 10년물 금리 3.5% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#4ade80">+0.8</span></span><span class="su">2.3</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti_70_90</span><span class="sc">국제유가(WTI) 70~90달러 구간</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.3</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95</span><span class="sc">달러인덱스(DXY) 95 미만</span><span class="sv">DXY=100.07 (73%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.3</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc">실질금리(DFII10) 0% 미만</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.3</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · wti90_disinf</span><span class="sc">유가 90+ 디스인플레(T10YIE≤2.5)</span><span class="sv">WTI=90.25 · T10YIE=2.36</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">4.3</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 WTI∩인플레 즉청산</span><span class="sc">WTI>90 ∩ T10YIE>2.5</span><span class="sv">WTI=90.25 · T10YIE=2.36</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 DXY 50% 부분청산</span><span class="sc">DXY≥100 → 50% 청산</span><span class="sv">DXY=100.07</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥126d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +4.3</span> = <span style="font-size:13px;font-weight:900">4.30</span> <span style="color:#94a3b8">(2.87x)</span></span></div>
-</div></details>
-<details><summary>⛽ <b>XLE</b> 54.5% · +3.9/2.5</summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $57.67</span><span style="color:#f87171">-2.9%</span><span style="color:#4ade80">+4.4%</span></div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr sig-open"><span class="si">🔓</span><span class="sn" style="color:#60a5fa">Gate · WTI-XLE</span><span class="sc">WTI > 110</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc">실질금리(DFII10) 0% 미만</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii1</span><span class="sc">실질금리(DFII10) 1.0% 이상</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_crash5</span><span class="sc">1개월 수익률 -5% 미만 (급락)</span><span class="sv">1M=-2.9%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · bullstack_wti85</span><span class="sc">유가 85+ ∩ 강세 스택(BullStack)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#4ade80">+2.4</span></span><span class="su">2.4</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · bearstack_wti85</span><span class="sc">유가 85+ ∩ 약세 스택 (elif)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-2.4</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix16</span><span class="sc">변동성 지수(VIX) 16 미만 (감산)</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc">미국채 30년물 금리 4.71% 이상</span><span class="sv">TYX_30Y=5.00</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.5</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 XLE WTI 게이트</span><span class="sc">WTI>110 (XLE 전용)</span><span class="sv">WTI=90.25</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +3.9</span> · <span style="color:#f87171">감산 -2.4</span> = <span style="font-size:13px;font-weight:900">1.50</span> <span style="color:#94a3b8">(0.60x)</span></span></div>
-</div></details>
-</div>
-<div class="card al"><div class="ct">📋 Candidate Watch (Top5 밖 감시)</div>
-<div class="td"><table>
-<tr><th>종목</th><th>ratio</th><th>점수/임계</th><th>등급</th><th>상태</th></tr>
-<tr><td>🥈 <b>SLV</b></td><td style="font-weight:700">5.67x</td><td>+17.0/3.0</td><td><span class="gb gb-S">S급</span></td><td style="font-size:9px"><span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#fb923c;font-weight:600">잠재 +17.0</span></td></tr>
-<tr><td>🥇 <b>GLD</b></td><td style="font-weight:700">4.70x</td><td>+9.4/2.0</td><td><span class="gb gb-S">S급</span></td><td style="font-size:9px"><span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#fb923c;font-weight:600">잠재 +9.4</span></td></tr>
-<tr><td>🇮🇳 <b>INDA</b></td><td style="font-weight:700">1.93x</td><td>+5.8/3.0</td><td><span class="gb gb-B">B급</span></td><td style="font-size:9px"><span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#fb923c;font-weight:600">잠재 +5.8</span></td></tr>
-<tr><td>🇻🇳 <b>VNM</b></td><td style="font-weight:700">1.83x</td><td>+5.5/3.0</td><td><span class="gb gb-B">B급</span></td><td style="font-size:9px"><span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#fb923c;font-weight:600">잠재 +5.5</span></td></tr>
-<tr><td>💡 <b>XLU</b></td><td style="font-weight:700">4.50x</td><td>+4.5/1.0</td><td><span class="gb gb-S">S급</span></td><td style="font-size:9px"><span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#fb923c;font-weight:600">잠재 +4.5</span></td></tr>
-<tr><td>🏗️ <b>PAVE</b></td><td style="font-weight:700">0.75x</td><td>+3.0/4.0</td><td style="color:#475569">—</td><td style="font-size:9px"><span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#fb923c;font-weight:600">잠재 +3.0</span></td></tr>
-<tr><td>✈️ <b>ITA</b></td><td style="font-weight:700">0.85x</td><td>+1.7/2.0</td><td style="color:#475569">—</td><td style="font-size:9px"><span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#fb923c;font-weight:600">잠재 +1.7</span></td></tr>
-<tr><td>🇧🇷 <b>EWZ</b></td><td style="font-weight:700">0.30x</td><td>+1.5/5.0</td><td style="color:#475569">—</td><td style="font-size:9px"><span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#fb923c;font-weight:600">잠재 +1.5</span></td></tr>
-<tr><td>💊 <b>XLV</b></td><td style="font-weight:700">0.53x</td><td>+0.8/1.5</td><td style="color:#475569">—</td><td style="font-size:9px"><span style="color:#f87171">🔒 BLOCKED</span> · <span style="color:#fb923c;font-weight:600">잠재 +0.8</span></td></tr>
-</table></div>
-</div>
-<div class="card al"><div class="ct">🔍 매수 후보 상세</div>
-<details><summary>🥈 <b>SLV</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 3.0</span> · <span style="color:#4ade80;font-weight:700">잠재 +17.0</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $61.57</span><span style="color:#f87171">1M -6.6%</span><span style="color:#f87171">3M -23.1%</span><span style="color:#64748b">DEV120 +2.2%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+17.0</b> (임계 3.0 → ratio 5.67x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc">미국채 10년물 금리 4.0% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#4ade80">+7.5</span></span><span class="su">7.5</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx35</span><span class="sc">미국채 10년물 금리 3.5% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#4ade80">+4.0</span></span><span class="su">11.5</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">11.5</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vix18</span><span class="sc">변동성 지수(VIX) 18 이상</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">13.5</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · oasig089</span><span class="sc">투자등급 신용스프레드(OAS_IG) 0.89 미만</span><span class="sv">OAS_IG=0.74</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">15.5</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc">미국채 30년물 금리 4.71% 이상</span><span class="sv">TYX_30Y=5.00</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">17.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc">실질금리(DFII10) 0% 미만</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">17.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc">달러인덱스(DXY) 101 초과 (감산)</span><span class="sv">DXY=100.07 (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">17.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95_t10yie20h</span><span class="sc">달러 95 미만 ∩ 기대인플레 2.0% 이상</span><span class="sv">DXY=100.07 · T10YIE=2.36</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">17.0</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +17.0</span> = <span style="font-size:13px;font-weight:900">17.00</span> <span style="color:#94a3b8">(5.67x)</span></span></div>
-</div></details>
-<details><summary>🥇 <b>GLD</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 2.0</span> · <span style="color:#4ade80;font-weight:700">잠재 +9.4</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $396.24</span><span style="color:#f87171">1M -4.5%</span><span style="color:#f87171">3M -17.1%</span><span style="color:#64748b">DEV120 -0.8%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+9.4</b> (임계 2.0 → ratio 4.70x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx41</span><span class="sc">미국채 10년물 금리 4.1% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#4ade80">+6.4</span></span><span class="su">6.4</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx35</span><span class="sc">미국채 10년물 금리 3.5% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#4ade80">+3.0</span></span><span class="su">9.4</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc">달러인덱스(DXY) 101 초과 (감산)</span><span class="sv">DXY=100.07 (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">9.4</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · oasig089</span><span class="sc">투자등급 신용스프레드(OAS_IG) 0.89 미만</span><span class="sv">OAS_IG=0.74</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">11.4</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc">미국채 30년물 금리 4.71% 이상</span><span class="sv">TYX_30Y=5.00</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">12.9</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-3.5</span></span><span class="su">9.4</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +12.9</span> · <span style="color:#f87171">감산 -3.5</span> = <span style="font-size:13px;font-weight:900">9.40</span> <span style="color:#94a3b8">(4.70x)</span></span></div>
-</div></details>
-<details><summary>🇮🇳 <b>INDA</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 3.0</span> · <span style="color:#4ade80;font-weight:700">잠재 +5.8</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $47.34</span><span style="color:#f87171">1M -2.6%</span><span style="color:#f87171">3M -5.2%</span><span style="color:#64748b">DEV120 -10.6%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+5.8</b> (임계 3.0 → ratio 1.93x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · m3_crash5</span><span class="sc">3개월 수익률 -5% 미만 (급락)</span><span class="sv">3M=-5.2%</span><span class="sp"><span style="color:#4ade80">+4.3</span></span><span class="su">4.3</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · m3_neg</span><span class="sc">3개월 수익률 0% 미만 (약세)</span><span class="sv">3M=-5.2%</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">5.8</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.8</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc">달러인덱스(DXY) 101 초과 (감산)</span><span class="sv">DXY=100.07 (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.8</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix16</span><span class="sc">변동성 지수(VIX) 16 미만 (감산)</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.8</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · sahm24</span><span class="sc">실업악화지표(SAHM) 2.4 이상 (침체)</span><span class="sv">SAHMCURRENT=0.10</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.8</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +5.8</span> = <span style="font-size:13px;font-weight:900">5.80</span> <span style="color:#94a3b8">(1.93x)</span></span></div>
-</div></details>
-<details><summary>🇻🇳 <b>VNM</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 3.0</span> · <span style="color:#4ade80;font-weight:700">잠재 +5.5</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $17.99</span><span style="color:#f87171">1M -4.2%</span><span style="color:#4ade80">3M +5.5%</span><span style="color:#64748b">DEV120 +2.8%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+5.5</b> (임계 3.0 → ratio 1.83x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vnm_bull_dfii2</span><span class="sc">실질금리 2%+ ∩ VNM 강세스택</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#4ade80">+4.0</span></span><span class="su">4.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · dfii2</span><span class="sc">실질금리(DFII10) 2.0% 이상</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#4ade80">+2.0</span></span><span class="su">6.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii1</span><span class="sc">실질금리(DFII10) 1.0% 이상</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">6.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc">미국채 10년물 금리 4.0% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">6.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx35</span><span class="sc">미국채 10년물 금리 3.5% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">7.5</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc">국제유가(WTI) 60달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">7.5</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">7.5</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-2.0</span></span><span class="su">5.5</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · move5238</span><span class="sc">채권변동성(MOVE) 52.38 이상</span><span class="sv">MOVE=75.20</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.5</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · sahm24</span><span class="sc">실업악화지표(SAHM) 2.4 이상 (침체)</span><span class="sv">SAHMCURRENT=0.10</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.5</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +7.5</span> · <span style="color:#f87171">감산 -2.0</span> = <span style="font-size:13px;font-weight:900">5.50</span> <span style="color:#94a3b8">(1.83x)</span></span></div>
-</div></details>
-<details><summary>💡 <b>XLU</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 1.0</span> · <span style="color:#4ade80;font-weight:700">잠재 +4.5</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $44.35</span><span style="color:#f87171">1M -4.4%</span><span style="color:#f87171">3M -4.1%</span><span style="color:#64748b">DEV120 +5.2%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+4.5</b> (임계 1.0 → ratio 4.50x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · m1_drop3</span><span class="sc">1개월 수익률 -3% 미만 (하락)</span><span class="sv">1M=-4.4%</span><span class="sp"><span style="color:#4ade80">+1.3</span></span><span class="su">1.3</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · m1_neg</span><span class="sc">1개월 수익률 0% 미만 (약세)</span><span class="sv">1M=-4.4%</span><span class="sp"><span style="color:#4ade80">+0.5</span></span><span class="su">1.8</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc">미국채 10년물 금리 4.0% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#4ade80">+1.2</span></span><span class="su">3.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_rise3</span><span class="sc">1개월 수익률 +3% 초과 (감산)</span><span class="sv">1M=-4.4%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc">미국채 30년물 금리 4.71% 이상</span><span class="sv">TYX_30Y=5.00</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">4.5</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +4.5</span> = <span style="font-size:13px;font-weight:900">4.50</span> <span style="color:#94a3b8">(4.50x)</span></span></div>
-</div></details>
-<details><summary>🏗️ <b>PAVE</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 4.0</span> · <span style="color:#4ade80;font-weight:700">잠재 +3.0</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $56.68</span><span style="color:#4ade80">1M +0.9%</span><span style="color:#4ade80">3M +8.8%</span><span style="color:#64748b">DEV120 +19.2%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+3.0</b> (임계 4.0 → ratio 0.75x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vix18</span><span class="sc">변동성 지수(VIX) 18 이상</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#4ade80">+3.0</span></span><span class="su">3.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m3_crash5</span><span class="sc">3개월 수익률 -5% 미만 (급락)</span><span class="sv">3M=+8.8%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti_70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix16</span><span class="sc">변동성 지수(VIX) 16 미만 (감산)</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95_t10yie20</span><span class="sc">달러 95 미만 ∩ 기대인플레 2.0% 이상</span><span class="sv">DXY=100.07 · T10YIE=2.36</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">3.0</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +3.0</span> = <span style="font-size:13px;font-weight:900">3.00</span> <span style="color:#94a3b8">(0.75x)</span></span></div>
-</div></details>
-<details><summary>✈️ <b>ITA</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 2.0</span> · <span style="color:#4ade80;font-weight:700">잠재 +1.7</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $229.45</span><span style="color:#4ade80">1M +7.0%</span><span style="color:#f87171">3M -4.2%</span><span style="color:#64748b">DEV120 +12.1%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+1.7</b> (임계 2.0 → ratio 0.85x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc">미국채 10년물 금리 4.0% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#4ade80">+2.6</span></span><span class="su">2.6</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_drop3</span><span class="sc">1개월 수익률 -3% 미만 (하락)</span><span class="sv">1M=+7.0%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.6</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">2.6</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-2.4</span></span><span class="su">0.2</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc">미국채 30년물 금리 4.71% 이상</span><span class="sv">TYX_30Y=5.00</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.7</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95_t10yie20</span><span class="sc">달러 95 미만 ∩ 기대인플레 2.0% 이상</span><span class="sv">DXY=100.07 · T10YIE=2.36</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">1.7</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +4.1</span> · <span style="color:#f87171">감산 -2.4</span> = <span style="font-size:13px;font-weight:900">1.70</span> <span style="color:#94a3b8">(0.85x)</span></span></div>
-</div></details>
-<details><summary>🇧🇷 <b>EWZ</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 5.0</span> · <span style="color:#4ade80;font-weight:700">잠재 +1.5</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $34.01</span><span style="color:#f87171">1M -12.9%</span><span style="color:#f87171">3M -9.4%</span><span style="color:#64748b">DEV120 +10.1%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+1.5</b> (임계 5.0 → ratio 0.30x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · pmi48</span><span class="sc">제조업PMI 48 미만 (위축)</span><span class="sv">PMI=52.70 (51%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · pmi50</span><span class="sc">제조업PMI 50 미만 (위축 근접)</span><span class="sv">PMI=52.70 (73%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc">국제유가(WTI) 60달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc">미국채 30년물 금리 4.71% 이상</span><span class="sv">TYX_30Y=5.00</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.5</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +1.5</span> = <span style="font-size:13px;font-weight:900">1.50</span> <span style="color:#94a3b8">(0.30x)</span></span></div>
-</div></details>
-<details><summary>💊 <b>XLV</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 1.5</span> · <span style="color:#4ade80;font-weight:700">잠재 +0.8</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $153.01</span><span style="color:#4ade80">1M +5.7%</span><span style="color:#4ade80">3M +0.3%</span><span style="color:#64748b">DEV120 +0.3%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+0.8</b> (임계 1.5 → ratio 0.53x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc">실질금리(DFII10) 0% 미만</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii05</span><span class="sc">실질금리(DFII10) 0.5% 미만</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · nfci_neg05</span><span class="sc">금융여건지수(NFCI) -0.5 미만 (완화적)</span><span class="sv">NFCI=-0.49 (94%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · nfci0</span><span class="sc">금융여건지수(NFCI) 0 미만</span><span class="sv">NFCI=-0.49</span><span class="sp"><span style="color:#4ade80">+0.8</span></span><span class="su">0.8</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m3_crash5</span><span class="sc">3개월 수익률 -5% 미만 (급락)</span><span class="sv">3M=+0.3%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.8</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · tnx_low25</span><span class="sc">미국채 10년물 금리 2.5% 미만</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.8</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · pmi48</span><span class="sc">제조업PMI 48 미만 (위축)</span><span class="sv">PMI=52.70 (51%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.8</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +0.8</span> = <span style="font-size:13px;font-weight:900">0.80</span> <span style="color:#94a3b8">(0.53x)</span></span></div>
-</div></details>
-<details><summary>💻 <b>QQQM</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 2.0</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $290.35</span><span style="color:#4ade80">1M +4.8%</span><span style="color:#4ade80">3M +16.2%</span><span style="color:#64748b">DEV120 +17.8%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>+0.0</b> (임계 2.0 → ratio 0.00x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · bull_only</span><span class="sc">VIX 16 미만 ∩ 3개월 +5% 이상 (강세장 전용)</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +0.0</span> = <span style="font-size:13px;font-weight:900">0.00</span> <span style="color:#94a3b8">(0.00x)</span></span></div>
-</div></details>
-<details><summary>📊 <b>IWM</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 2.5</span> · <span style="color:#f87171;font-weight:700">잠재 -1.0</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $281.65</span><span style="color:#4ade80">1M +1.4%</span><span style="color:#4ade80">3M +11.4%</span><span style="color:#64748b">DEV120 +14.1%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>-1.0</b> (임계 2.5 → ratio -0.40x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vix18</span><span class="sc">변동성 지수(VIX) 18 이상</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#4ade80">+1.5</span></span><span class="su">1.5</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m3_crash5</span><span class="sc">3개월 수익률 -5% 미만 (급락)</span><span class="sv">3M=+11.4%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">1.5</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc">국제유가(WTI) 60달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">1.5</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">1.5</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-2.5</span></span><span class="su">-1.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · move5238</span><span class="sc">채권변동성(MOVE) 52.38 이상</span><span class="sv">MOVE=75.20</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-1.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · fvx077</span><span class="sc">미국채 5년물 금리 0.77% 미만</span><span class="sv">FVX_5Y=4.28</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-1.0</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +1.5</span> · <span style="color:#f87171">감산 -2.5</span> = <span style="font-size:13px;font-weight:900">-1.00</span> <span style="color:#94a3b8">(-0.40x)</span></span></div>
-</div></details>
-<details><summary>🇨🇳 <b>CQQQ</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 4.0</span> · <span style="color:#f87171;font-weight:700">잠재 -2.3</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $51.11</span><span style="color:#4ade80">1M +0.2%</span><span style="color:#4ade80">3M +0.3%</span><span style="color:#64748b">DEV120 +2.0%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>-2.3</b> (임계 4.0 → ratio -0.57x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc">국제유가(WTI) 60달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tnx4</span><span class="sc">미국채 10년물 금리 4.0% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · vix16_22</span><span class="sc">변동성 지수(VIX) 16~22 구간 (감산)</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#f87171">-2.3</span></span><span class="su">-2.3</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy95_sahm03</span><span class="sc">달러 95 미만 ∩ 실업악화(SAHM<0.3)</span><span class="sv">DXY=100.07 · SAHMCURRENT=0.10</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-2.3</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +0.0</span> · <span style="color:#f87171">감산 -2.3</span> = <span style="font-size:13px;font-weight:900">-2.30</span> <span style="color:#94a3b8">(-0.57x)</span></span></div>
-</div></details>
-<details><summary>🌍 <b>VEA</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 2.5</span> · <span style="color:#f87171;font-weight:700">잠재 -2.4</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $69.17</span><span style="color:#4ade80">1M +1.9%</span><span style="color:#4ade80">3M +5.0%</span><span style="color:#64748b">DEV120 +13.6%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>-2.4</b> (임계 2.5 → ratio -0.96x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc">국제유가(WTI) 60달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-3.4</span></span><span class="su">-3.4</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · fvx077</span><span class="sc">미국채 5년물 금리 0.77% 미만</span><span class="sv">FVX_5Y=4.28</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-3.4</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · move5238</span><span class="sc">채권변동성(MOVE) 52.38 이상</span><span class="sv">MOVE=75.20</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-3.4</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · tyx471</span><span class="sc">미국채 30년물 금리 4.71% 이상</span><span class="sv">TYX_30Y=5.00</span><span class="sp"><span style="color:#4ade80">+1.0</span></span><span class="su">-2.4</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +1.0</span> · <span style="color:#f87171">감산 -3.4</span> = <span style="font-size:13px;font-weight:900">-2.40</span> <span style="color:#94a3b8">(-0.96x)</span></span></div>
-</div></details>
-<details><summary>🟤 <b>COPX</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 5.0</span> · <span style="color:#f87171;font-weight:700">잠재 -2.7</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $80.64</span><span style="color:#4ade80">1M +5.2%</span><span style="color:#f87171">3M -2.9%</span><span style="color:#64748b">DEV120 +20.0%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>-2.7</b> (임계 5.0 → ratio -0.54x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met"><span class="si">✅</span><span class="sn" style="color:#e2e8f0">EnSn · vix18</span><span class="sc">변동성 지수(VIX) 18 이상</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#4ade80">+5.0</span></span><span class="su">5.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc">국제유가(WTI) 60달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · sahm24</span><span class="sc">실업악화지표(SAHM) 2.4 이상 (침체)</span><span class="sv">SAHMCURRENT=0.10</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dev120_n30</span><span class="sc">120일 이격도 -30% 미만 (폭락)</span><span class="sv">DEV120=+20.0%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dev120_n25</span><span class="sc">120일 이격도 -25% 미만 (급락)</span><span class="sv">DEV120=+20.0%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">5.0</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-7.7</span></span><span class="su">-2.7</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix16</span><span class="sc">변동성 지수(VIX) 16 미만 (감산)</span><span class="sv">VIX=21.51</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-2.7</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dev120_p35</span><span class="sc">120일 이격도 +35% 초과 (과열)</span><span class="sv">DEV120=+20.0%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-2.7</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +5.0</span> · <span style="color:#f87171">감산 -7.7</span> = <span style="font-size:13px;font-weight:900">-2.70</span> <span style="color:#94a3b8">(-0.54x)</span></span></div>
-</div></details>
-<details><summary>🏦 <b>XLF</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 2.5</span> · <span style="color:#f87171;font-weight:700">잠재 -3.1</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $52.30</span><span style="color:#4ade80">1M +1.4%</span><span style="color:#4ade80">3M +5.0%</span><span style="color:#64748b">DEV120 -3.4%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>-3.1</b> (임계 2.5 → ratio -1.24x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii0</span><span class="sc">실질금리(DFII10) 0% 미만</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dfii05</span><span class="sc">실질금리(DFII10) 0.5% 미만</span><span class="sv">DFII10=2.11</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc">국제유가(WTI) 60달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · tnx_low25</span><span class="sc">미국채 10년물 금리 2.5% 미만</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-3.1</span></span><span class="su">-3.1</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · fvx077</span><span class="sc">미국채 5년물 금리 0.77% 미만</span><span class="sv">FVX_5Y=4.28</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-3.1</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · move5238</span><span class="sc">채권변동성(MOVE) 52.38 이상</span><span class="sv">MOVE=75.20</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">-3.1</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +0.0</span> · <span style="color:#f87171">감산 -3.1</span> = <span style="font-size:13px;font-weight:900">-3.10</span> <span style="color:#94a3b8">(-1.24x)</span></span></div>
-</div></details>
-<details><summary>☢️ <b>NLR</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 4.5</span> · <span style="color:#f87171;font-weight:700">잠재 -4.0</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $122.11</span><span style="color:#f87171">1M -14.9%</span><span style="color:#f87171">3M -14.5%</span><span style="color:#64748b">DEV120 +2.9%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>-4.0</b> (임계 4.5 → ratio -0.89x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · tnx40</span><span class="sc">미국채 10년물 금리 4.0% 이상</span><span class="sv">TNX=4.54</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc">달러인덱스(DXY) 101 초과 (감산)</span><span class="sv">DXY=100.07 (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-4.0</span></span><span class="su">-4.0</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +0.0</span> · <span style="color:#f87171">감산 -4.0</span> = <span style="font-size:13px;font-weight:900">-4.00</span> <span style="color:#94a3b8">(-0.89x)</span></span></div>
-</div></details>
-<details><summary>🔬 <b>SMH</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 3.0</span> · <span style="color:#f87171;font-weight:700">잠재 -5.3</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $569.69</span><span style="color:#4ade80">1M +12.4%</span><span style="color:#4ade80">3M +43.4%</span><span style="color:#64748b">DEV120 +68.5%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>-5.3</b> (임계 3.0 → ratio -1.77x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti60</span><span class="sc">국제유가(WTI) 60달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · wti70</span><span class="sc">국제유가(WTI) 70달러 미만</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy101</span><span class="sc">달러인덱스(DXY) 101 초과 (감산)</span><span class="sv">DXY=100.07 (95%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-5.3</span></span><span class="su">-5.3</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +0.0</span> · <span style="color:#f87171">감산 -5.3</span> = <span style="font-size:13px;font-weight:900">-5.30</span> <span style="color:#94a3b8">(-1.77x)</span></span></div>
-</div></details>
-<details><summary>🛡️ <b>CIBR</b> <span style="color:#f87171">🔒 BLOCKED</span> <span style="color:#64748b;font-size:9px">임계 3.0</span> · <span style="color:#f87171;font-weight:700">잠재 -6.0</span></summary>
-<div style="padding:4px 8px">
-<div class="am"><span>종가 $86.70</span><span style="color:#4ade80">1M +24.3%</span><span style="color:#4ade80">3M +32.0%</span><span style="color:#64748b">DEV120 +21.7%</span></div>
-<div style="font-size:10px;color:#fb923c;padding:2px 8px;margin-bottom:4px">⚡ Gate 해제 시 잠재 점수 = <b>-6.0</b> (임계 3.0 → ratio -2.00x)</div>
-<div class="sr sh"><span class="si"></span><span class="sn">시그널</span><span class="sc"></span><span class="sv">현재값</span><span class="sp">기여</span><span class="su">누적</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#60a5fa">Gate · WTI/VIX</span><span class="sc">WTI>90∩VIX≥18.5</span><span class="sv">WTI=90.25 VIX=21.51</span><span class="sp"><span style="color:#475569">—</span></span><span class="su"></span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_drop3</span><span class="sc">1개월 수익률 -3% 미만 (하락)</span><span class="sv">1M=+24.3%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · m1_neg</span><span class="sc">1개월 수익률 0% 미만 (약세)</span><span class="sv">1M=+24.3%</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · vix22</span><span class="sc">변동성 지수(VIX) 22 이상</span><span class="sv">VIX=21.51 (89%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr "><span class="si">✗</span><span class="sn" style="color:#e2e8f0">EnSn · dxy93</span><span class="sc">달러인덱스(DXY) 93 미만</span><span class="sv">DXY=100.07 (62%)</span><span class="sp"><span style="color:#475569">0</span></span><span class="su">0.0</span></div>
-<div class="sr sig-met-neg"><span class="si">✅</span><span class="sn" style="color:#fb923c">EASn · wti85</span><span class="sc">국제유가(WTI) 85달러 초과 (감산)</span><span class="sv">WTI=90.25</span><span class="sp"><span style="color:#f87171">-6.0</span></span><span class="su">-6.0</span></div>
-<div style="font-size:10px;font-weight:700;color:#fb923c;padding:4px 8px;margin:4px 0">📤 청산신호 (ExSn)</div>
-<div class="sr"><span class="si">🔴</span><span class="sn" style="color:#94a3b8">📤 WTI/VIX 스톰게이트</span><span class="sc">WTI>90 ∩ VIX≥18.5 (히스테리시스)</span><span class="sv">WTI=90.25 · VIX=21.51</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 STORM 방어</span><span class="sc">PSS≥2</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 손절</span><span class="sc">수익률≤−15%</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div class="sr"><span class="si">🟢</span><span class="sn" style="color:#94a3b8">📤 보유만기</span><span class="sc">보유≥63d</span><span class="sv">—</span><span class="sp"></span><span class="su"></span></div>
-<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#0f172a;border-radius:6px;margin-top:8px;font-size:11px"><span style="color:#94a3b8;font-weight:600">최종 점수</span><span><span style="color:#4ade80">가산 +0.0</span> · <span style="color:#f87171">감산 -6.0</span> = <span style="font-size:13px;font-weight:900">-6.00</span> <span style="color:#94a3b8">(-2.00x)</span></span></div>
-</div></details>
-</div>
-<div class="card al"><div class="ct">🚦 Gate 해제 시 진입 가능</div><div style="display:flex;flex-wrap:wrap;gap:8px;font-size:11px"><span>🥈 SLV <span style="color:#4ade80;font-weight:700">+17.0</span></span><span>🥇 GLD <span style="color:#4ade80;font-weight:700">+9.4</span></span><span>🇮🇳 INDA <span style="color:#4ade80;font-weight:700">+5.8</span></span><span>🇻🇳 VNM <span style="color:#4ade80;font-weight:700">+5.5</span></span><span>💡 XLU <span style="color:#4ade80;font-weight:700">+4.5</span></span><span>🏗️ PAVE <span style="color:#4ade80;font-weight:700">+3.0</span></span><span>✈️ ITA <span style="color:#4ade80;font-weight:700">+1.7</span></span><span>🇧🇷 EWZ <span style="color:#4ade80;font-weight:700">+1.5</span></span><span>💊 XLV <span style="color:#4ade80;font-weight:700">+0.8</span></span></div></div>
-<div class="card al">
-<div class="ct">📖 Appendix — 약어사전</div>
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#4ade80">STAGE 0</div>
+<div class="stat-lbl">AEGIS</div></div>
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#4ade80">
+🟢 OFF</div>
+<div class="stat-lbl">킬스위치</div></div>
+</div></div>
+<div class="card card-accent" style="border-color:#f87171"><div class="card-t" style="color:#f87171">🔴 Red Team 도전 (4건)</div><div class="warn"><br><span style="color:#94a3b8;font-size:9px">반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.</span></div><div class="warn"><br><span style="color:#94a3b8;font-size:9px">반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.</span></div><div class="warn"><br><span style="color:#94a3b8;font-size:9px">반증: 휴전/협상 타결 시 급반전(S9). 베팅 비대칭성 점검. 헤지 유지.</span></div><div class="warn"><br><span style="color:#94a3b8;font-size:9px">반증: 시스코 2000: 정점에서 -89%. NVDA beat에도 주가 미반응 시 saturation 조기 신호.</span></div></div><div class="card card-accent" style="border-color:#fbbf24">
+<div class="card-t">🔒 리밸런싱 차단</div>
+<div style="color:#fbbf24;font-size:11px">current_weights 미입력 — 거래 제안 차단 (오판 방지)</div></div>
+<div class="card"><div class="card-t">🛡️ 무결성 · 검증</div>
+<div class="g3">
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#4ade80">25/25</div>
+<div class="stat-lbl">무결성 (100%)</div></div>
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#f87171">FAIL</div>
+<div class="stat-lbl">스모크 테스트</div></div>
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#4ade80">PASS</div>
+<div class="stat-lbl">자가 검증</div></div>
+</div></div>
+<details><summary>📡 매크로 센서 현재값</summary><div class="card"><div class="g3"><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">18.92</div><div style="font-size:8px;color:#64748b">VIX</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">4.55</div><div style="font-size:8px;color:#64748b">DGS10</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">2.76</div><div style="font-size:8px;color:#64748b">OAS_HY</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">91.35</div><div style="font-size:8px;color:#64748b">WTI</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">100.00</div><div style="font-size:8px;color:#64748b">DXY</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">52.70</div><div style="font-size:8px;color:#64748b">PMI</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">0.10</div><div style="font-size:8px;color:#64748b">SAHMCURRENT</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">76.98</div><div style="font-size:8px;color:#64748b">MOVE</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">2.19</div><div style="font-size:8px;color:#64748b">DFII10</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">N/A</div><div style="font-size:8px;color:#64748b">GLD_CLOSE</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">N/A</div><div style="font-size:8px;color:#64748b">SMH_CLOSE</div></div></div></div></details><details><summary>📝 텍스트 브리핑 (원문)</summary><div class="card"><pre style="white-space:pre-wrap;word-break:break-word;font-size:9px;color:#94a3b8;max-height:600px;overflow-y:auto">┌──────────────────────────────────────────────────────────────────┐
+│ 🎯 EXECUTIVE SUMMARY (Commander 의사결정용)                      │
+└──────────────────────────────────────────────────────────────────┘
+  ① 레짐: 🟢 확장기 (EXPANSION) | 그래디언트 22.4/100
+  ② 확신도: 58.0/100 🟠 낮음 (신중)
+  ③ 최선호 (ARGUS): NLR(+25%), GLD(+25%), ITA(+24%)
+  ④ 기대수익 +9.4% | 하방위험 +6.0% | 스트레스 최악 +2.6%
+  ⑤ 우선 행동: Red Team 도전 4건 — 결론 재검토
 
-<details><summary>D-1. 매매 일정</summary>
-<div style="padding:4px 8px"><table>
-<tr><td><b>증시 매수</b></td><td>ratio ≥ 2.0 + Gate OPEN (당일 진입)</td></tr>
-<tr><td><b>완료일 매수</b></td><td>ratio ≥ 1.0 + Gate OPEN (정기 리밸런싱)</td></tr>
-<tr><td><b>Gate 해제 후</b></td><td>Gate 해제 → 매수</td></tr>
-<tr><td><b>보류</b></td><td>Gate BLOCKED (점수 충족이나 진입 부재)</td></tr>
-</table></div></details>
+====================================================================
+🔭 Oracle Autopilot v1.0.5 (적정자) — 종합 브리핑 풀버전
+   Oracle 2.9.0 정식 통합 + QNS v1.1 + QLS v1.0 | ARGUS 20종목 유니버스
+📅 데이터: 2026-06-08 | 실행: 2026-06-09 09:10
+====================================================================
 
-<details><summary>D-2. 등급 기준 (ratio = score / threshold)</summary>
-<div style="padding:4px 8px"><table>
-<tr><td><span class="gb gb-S">S급</span></td><td>≥ 3.0</td><td>최강 — 즉시 진입 / 집중 비중</td></tr>
-<tr><td><span class="gb gb-A">A급</span></td><td>≥ 2.0</td><td>즉시 진입 — score-proportional</td></tr>
-<tr><td><span class="gb gb-B">B급</span></td><td>≥ 1.5</td><td>정기 후보 — 등급별 고정</td></tr>
-<tr><td><span class="gb gb-C">C급</span></td><td>≥ 1.0</td><td>정기 후보 — 최소 비중</td></tr>
-</table></div></details>
+🎯 B1. 결론 (Conclusion-First)
+   레짐: 🟢 확장기 (EXPANSION) | 그래디언트 22.4/100
+   방어/공격 타겟: 27.9% / 72.1%
+   DRP 자세: NEUTRAL (방어조절 +0%)
+   포트폴리오 E[R]: +9.41% | σ 4.14% | Sharpe 2.27
+   🟢 최고 순풍 (ARGUS): NLR +25.0%, GLD +25.0%, ITA +24.4%
 
-<details><summary>D-3. 비중 산정 규칙 (단일자산 soft cap 40%)</summary>
-<div style="padding:4px 8px"><table>
-<tr><td><b>ratio 정의</b></td><td>score / threshold (자산별)</td></tr>
-<tr><td><b>강신호</b></td><td>ratio ≥ 2.0 → score-proportional (비중 ∝ ratio)</td></tr>
-<tr><td><b>약신호</b></td><td>ratio < 2.0 → LEVEL_WEIGHT: S 1.50 / A 1.10 / B 0.75 / C 0.50</td></tr>
-<tr><td><b>정규화</b></td><td>raw 합으로 나눠 비중 합계 100%</td></tr>
-<tr><td><b>단일 cap</b></td><td>40% soft clamp 후 재정규화</td></tr>
-<tr><td><b>현금</b></td><td>슬롯 미충족분 = 현금 · 슬롯 5 / 주간 리밸런싱</td></tr>
-<tr><td><b>자산 sizing</b></td><td>SLV: RS_20d>0 풀/0이하 절반 · COPX: CNY>7 1.2x / <6.5 0.8x</td></tr>
-</table></div></details>
+📊 B2. 8축 현황 (auto_prior + LEAD-5/6b + 프록시)
+   축          상태                확률   신뢰도  근거
+   ────────────────────────────────────────────────────────────────
+   🔴 WAR      regional        61%   55%  ⚠️ 시장 프록시 (뉴스 확인 권장) | WTI $91 (지역분쟁)
+   🔴 OIL      blocked         77%   80%  WTI $91.3 | 30일 -5.2% (⚠️ 호르무즈 구조 정보는 뉴스
+   🟡 MONETARY hold            60%   85%  LEAD-6b (IRX_13W 분위수+변화)
+   🟡 CREDIT   tight           60%   88%  LEAD-5 (OAS_HY 분위수 회귀)
+   🟡 TARIFF   status_quo      92%   45%  ⚠️ 환율 프록시 (정책 뉴스 확인) | USD/CNY 6.766 | D
+   🟡 GROWTH   steady          87%   82%  PMI 52.7 (확장) | SAHM 0.10 (안전) | 신규청구 22
+   🟡 FISCAL   expansive       85%   30%  ⚠️ 유동성 프록시 (재정 데이터 부족) | Fed B/S 6.7T | 
+   🟢🟢 AI_POWER peak_demand     75%   75%  SMH/SPY RS 1.38 | SMH&gt;MA200 +49% | SMH 6
 
-<details><summary>D-4. STORM v2 PSS 단계</summary>
-<div style="padding:4px 8px"><table>
-<tr><td style="color:#4ade80"><b>PSS 0</b></td><td>100%</td><td>정상</td></tr>
-<tr><td><b>PSS 1</b></td><td>100%</td><td>단일 경보</td></tr>
-<tr><td style="color:#fb923c"><b>PSS 2</b></td><td>90%</td><td>팽팽 진입 (-10%)</td></tr>
-<tr><td style="color:#f97316"><b>PSS 3</b></td><td>70%</td><td>팽팽 심화 (-30%)</td></tr>
-<tr><td style="color:#f87171"><b>PSS 4</b></td><td>50%</td><td>최대 팽팽 (-50%)</td></tr>
-</table></div></details>
+🌊 B3. 레짐 판정 (Oracle 정식 파이프라인)
+   🟢 확장기 (EXPANSION) | 달러RP 10% · GLD 20% · 공격 70% | 그래디언트 22/100
+     발동 근거: 🌊TIDE=NEUTRAL / 🔥INFERNO=STABLE / DFII10=2.19%
+     그래디언트 조정: 프리셋 기준. SGOV 10% 유지.
+   그래디언트 구간: 0~25 🟢 순풍 (저위험) | 전략: 공격 자산 비중 극대화. 방어 10~25%. SUPERBULL/BULL 
 
-<details><summary>D-5. Gate 본질</summary>
-<div style="padding:4px 8px"><table>
-<tr><td><b>WTI/VIX (일반)</b></td><td>WTI>$90 ∩ VIX≥18.5 → BLOCKED · VIX<17.5 해제</td></tr>
-<tr><td><b>WTI-XLE</b></td><td>WTI>$110 차단 (XLE 전용)</td></tr>
-<tr><td><b>DFII-Hard</b></td><td>DFII10>1% hard (VNM 전용)</td></tr>
-<tr><td><b>OAS-HY</b></td><td>OAS_HY>7 → XLU 포함 차단</td></tr>
-<tr><td><b>VIX-Hyst</b></td><td>18.5 차단 / 17.5 해제 (마진 1.0)</td></tr>
-</table></div></details>
+🔭 B4. Oracle 임팩트 — 29종목 기대 수익률 (🅰=ARGUS 유니버스)
+   INTERACTION_PAIRS 4쌍 | CAP ±25% | 포트폴리오=ARGUS 20+SGOV
+   🟢 순풍 TOP 8
+   🅰 NLR    +25.00%  AI_POWER +14.9% + WAR +5.9% ⚡
+   🅰 GLD    +25.00%  WAR +8.1% + CREDIT +5.4% ⚡
+   🅰 ITA    +24.37%  WAR +11.1% + FISCAL +6.8% ⚡
+   · PDBC   +21.53%  OIL +11.9% + WAR +7.1% ⚡
+   🅰 SLV    +21.43%  OIL +5.1% + WAR +4.7% ⚡
+   🅰 XLE    +13.90%  OIL +11.8% + AI_POWER +2.7% 
+   🅰 XLU    +11.04%  AI_POWER +11.0% + FISCAL +1.8% ⚡
+   🅰 COPX   +10.63%  AI_POWER +13.3% + FISCAL +2.6% ⚡
+   🔴 역풍 TOP 6
+   🅰 CQQQ   -22.21%  WAR -5.7% + CREDIT -5.6%
+   🅰 INDA   -15.70%  OIL -6.6% + CREDIT -4.5%
+   🅰 VNM    -15.12%  OIL -5.1% + CREDIT -5.0%
+   · VWO    -15.04%  CREDIT -4.5% + OIL -4.1%
+   · EWJ    -14.94%  OIL -5.1% + WAR -4.5%
+   · SPY    -13.12%  CREDIT -5.0% + OIL -4.1%
 
-</div>
-<div class="footer">
-v9.1.0 / Crown #77 / PRIMA2_v0_5_4_COPX_TNX_LT2_BOOST_LIVE / 2026-06-08 14:27 KST<br>
-<span style="color:#475569">격언 #80: Phase A fwd60 ≠ portfolio BT alpha</span>
-</div>
-</body></html>
+📈 B5. 시나리오 확률 + 조건부 P&amp;L
+   S2   이란 확전            41.8% ████████████ P&amp;L +7.1%
+   S5   복합 충격            19.4% █████ P&amp;L +8.7%
+   S7   연준 매파 지속         12.2% ███ P&amp;L +10.9%
+   S9   그랜드 바겐           12.2% ███ P&amp;L +6.0%
+   S1   연준 비둘기 전환        10.9% ███ P&amp;L +20.1%
+   S10  희토류 금수            1.7%  P&amp;L +14.4%
+   S6   AI 위기 (citrini)   0.9%  P&amp;L +14.0%
+   S11  AI capex 포화       0.8%  P&amp;L +15.2%
+   최악: S9 (+6.0%) | 최선: S1 (+20.1%)
+
+💼 B6. 포트폴리오 구성 + DRP + 가드레일
+   레짐 프리셋: {'SGOV': 10, 'GLD': 20, 'attack_core': 70}
+   최종 비중 (가드레일 적용):
+     GLD       20.0%
+     NLR       16.4%
+     ITA       16.0%
+     SLV       14.1%
+     SGOV      10.0%
+     XLE        9.2%
+     XLU        7.3%
+     COPX       7.0%
+   DRP 근거: 그래디언트 22 순풍 (-5%p); S5 복합충격 19% (+5%p)
+   ✅ 가드레일 위반 없음 (GLD캡 35.0%)
+
+🛡️ B7. 리스크 메트릭 + 축 민감도
+   E[R] +9.41% | σ 4.14% | Sharpe 2.27
+   하방위험(최악): +6.01%
+   축 민감도 (최악 상태 전환 시 충격):
+     MONETARY   -5.27%
+     FISCAL     -5.17%
+     GROWTH     -4.21%
+     CREDIT     -1.84%
+     WAR        -0.36%
+
+🎓 B8. 전략이론 6계통 (QNS + QLS 실엔진)
+
+   ── 1 게임이론 (9건) ──
+   🔴 [Nash 균형 (QNS)]
+      순수 Nash 2개. Iran 혼합: {'De-escalate': 0.7, 'Escalate': 0.3} US 혼합: {'De-escalate': 0.54, 'E
+      → 교착 시 실물 자산 순풍. 타협 균형 시 S9 상향.
+   🟡 [반복게임 토너먼트 (QNS,5전략x100R)]
+      미중 토너먼트 우승: Tit-for-Tat.
+      → 조건부 협력이 장기 최적.
+   🟡 [연준-시장 코디네이션 (QNS)]
+      연준-시장 코디네이션. hawkish 강도 25%. 순수 Nash 2개.
+      → 매파 연준 + 위험선호 시장 = 긴축발작 위험. 채권 듀레이션 축소.
+   🟡 [OPEC+ 공급 게임 (QNS)]
+      OPEC+ 감산/증산 게임. WTI $91. 순수 Nash 1개.
+      → 고유가 시 증산 유인 증가 → XLE/PDBC 변동성. 협조 붕괴 시 유가 하락.
+   🟡 [AI capex 투자 게임 (QNS)]
+      빅테크 capex 군비경쟁. AI=peak_demand. (Invest,Invest) 균형. 순수 Nash 1개.
+      → 군비경쟁 지속 = SMH/NLR/COPX 순풍. 균형 붕괴 = saturation 위험.
+   🟡 [이란-미국 순차 게임 (QNS 후방귀납)]
+      미국 선제(압박/협상) → 이란 대응(저항/양보). WAR=regional. 부분게임 완전균형 분석.
+      → 미국 압박 신뢰성 = 이란 양보 유인. SPR 고갈이 압박 신뢰성 약화.
+   🟢 [글로벌 게임 — 신용 임계 (QNS)]
+      신용 경색 다중균형. CREDIT=tight, 위기꼬리확률 30%. 공통지식 부족 시 자기실현적 위기 가능.
+      → 위기꼬리 확률 상승 시 OAS_HY 임계 돌파 감시. 달러RP 선제 확대.
+   🔴 [포컬포인트 + 신뢰성 (QLS)]
+      협상 포컬포인트 = '조건부 통항'. 미국 봉쇄 위협 신뢰성 = 중간(SPR 고갈로 약화).
+      → 신뢰성 약화 시 이란 양보 유인 감소 → 교착 장기화 → OIL blocked 지속.
+   🟢 [신용 죄수의 딜레마 (QNS)]
+      은행 신용 회수 게임. CREDIT=tight. 순수 Nash 1개. 스트레스 시 (Withdraw,Withdraw) 우월 → 신용 경색.
+      → 신용 스트레스 상승 시 자기실현적 회수 → OAS 급등. 달러RP 선제.
+
+   ── 2 행동경제학 (3건) ──
+   🟡 [편향 체크리스트 (QLS,1종)]
+      편향 1건 감지.
+      → 편향 대응책 적용 필요.
+   🟡 [서사 분석 (QLS)]
+      지배 서사 = AI 슈퍼사이클(자기실현적). 대항 서사 = 버블/효율혁신.
+      → 지배 서사 강할수록 SMH 모멘텀 지속. 대항 서사 부상 시 변곡점.
+   🟡 [정체성 보수 (QLS Akerlof-Kranton)]
+      연준=인플레파이터 정체성이 조기인하 제약. 이란=저항 정체성이 협상 양보 제약.
+      → 양측 정체성 보수가 합리적 타협 지연 → 교착/끈적임 장기화 베팅.
+
+   ── 3 권력 동학 (4건) ──
+   🔴 [권력 지도 (QLS,2행위자)]
+      미국=HARD+SMART, 이란=HARD+SHARP(비대칭).
+      → 이란 SHARP(호르무즈)가 미국 견제. 교착.
+   🔴 [마키아벨리+그린법칙+제도게임 (QLS)]
+      이란: 두려움 기반 권력(호르무즈) but 실제 취약. 예측불가 전략(Law17)으로 교란.
+      → 이란 비대칭 전략 = 장기 불확실성. ITA(방산)/XLE(에너지) 헤지 유효.
+   🟡 [제도 게임 심화 (QLS, 3제도)]
+      연준 2% 목표(AIT 재해석 여지), 미중 무역(관세 무기화), OPEC(쿼터 이탈 유인).
+      → 제도 규칙 변경 가능성이 레짐 전환 선행 신호. 메타게임 주시.
+   🟡 [그린의 법칙 다중 적용 (QLS, 4법칙)]
+      적용 법칙 4개: 미국 최대압박(L15), 이란 타이밍(L35)+비대칭(L48), 중국 약점공략(L33).
+      → 다중 권력 법칙 충돌 = 고불확실성. 비대칭 전략이 지배적 → 헤지 유지.
+
+   ── 4 위기 의사결정 (1건) ──
+   🔴 [OODA + Allison 3모델 (QLS)]
+      미국 OODA=DECIDE 정체, 이란 OODA=ACT 실행. Allison 최적=관료정치(III).
+      → 미국 의사결정 지연 = 이란 시간 유리. SPR 고갈이 협상 강제 시계.
+
+   ── 5 전략 기획 (2건) ──
+   🟡 [AI capex 분기 (Schwartz)]
+      AI=peak_demand. 분기 A(순풍) vs B(saturation). 변수: capex 가이던스.
+      → NVDA beat에도 주가 미반응 = B 조기 신호 감시.
+   🟡 [제한적 합리성 (QLS)]
+      시장은 만족화(모멘텀 추종)로 최적화(레짐 판단) 대체 → 고점 추격 위험.
+      → Oracle 레짐 판단이 만족화 편향 교정 도구. 모멘텀 맹종 회피.
+
+   ── 6 시스템 사고 (1건) ──
+   🟡 [연쇄 전파 + 레버리지]
+      연쇄 1단계: WAR→OIL. 레버리지=WAR.
+      → WAR축 해소 시 하류 반전.
+
+⚡ B9. 전환 감지 + 백테스트 + 자동화 한계
+   EWMA 전환 신호: ?
+   ⚠️ smoke replay (0.24년, 3회 — 진단 전용, §40 v3 아님):
+     Autopilot: CAGR +4.7% | Sharpe 0.31 | MDD -13.9%
+     SPY 벤치:  CAGR -11.6% | Sharpe -0.84 | MDD -9.0%
+     탐색적 알파 proxy (vs SPY): +16.3% — 배포 근거 사용 금지
+   ⚠️ 낮은 신뢰도 축: WAR, TARIFF, FISCAL — 뉴스 교차 검증 필요
+   WAR/TARIFF/FISCAL = 프록시. 정치/정책 이벤트 직접 반영 불가.
+
+🚨 B10. 센서 평가 + AEGIS 비상 프로토콜
+   AEGIS 단계: 🟢 STAGE 0 — 정상
+   대응: 레짐 프리셋 정상 운영.
+   킬스위치: 🟢 OFF
+   ✅ 경보 센서 없음 (YELLOW 2개)
+
+📅 B11. 매크로 이벤트 트리거
+   ✅ 발동 트리거 없음
+
+📊 B12. 블렌드 알파 (매크로 60% + 기술 40%) + 사이징
+   🟢 알파 TOP 6 (매크로+기술 블렌드):
+     ITA    α +0.53  ⚪ 중립
+     CIBR   α +0.45  ⚪ 중립
+     SMH    α +0.42  ⚪ 중립
+     XLE    α +0.40  ⚪ 중립
+     GLD    α +0.36  🟡 매크로 순풍 vs 기술 역풍 (괴리)
+     COPX   α +0.35  🟢🟢 매크로+기술 동반 순풍
+   🔴 알파 BOTTOM 3:
+     VNM    α -0.37  ⚪ 중립
+     INDA   α -0.52  🔴🔴 매크로+기술 동반 역풍
+     CQQQ   α -0.59  ⚪ 중립
+   ⚖️ 수익/리스크 효율 TOP 5:
+     ITA    효율 0.94 (σ 26%, Kelly 17%)
+     GLD    효율 0.88 (σ 28%, Kelly 17%)
+     XLU    효율 0.61 (σ 18%, Kelly 17%)
+     NLR    효율 0.54 (σ 46%, Kelly 10%)
+     XLE    효율 0.52 (σ 27%, Kelly 17%)
+   🔀 분산 효과: 가중변동성 33.5% → 포트변동성 25.5% (분산이득 24%)
+
+🎖️ B13. SSOT 갱신 제안 + 리밸런싱 (Commander 승인 대기)
+   고신뢰 축 갱신 제안 (5건):
+     OIL        → blocked        77% (신뢰도 80%)
+     MONETARY   → hold           60% (신뢰도 85%)
+     CREDIT     → tight          60% (신뢰도 88%)
+     GROWTH     → steady         87% (신뢰도 82%)
+     AI_POWER   → peak_demand    75% (신뢰도 75%)
+   ⚠️ ⚠️ 제안일 뿐. SSOT 수정은 Commander 승인 필수. 자동 적용 금지.
+   🔒 리밸런싱 차단: current_weights 미입력 — 거래 제안 차단 (오판 방지)
+
+🔴 B14. Red Team 자가 감사 + 교차축 상호작용
+   Red Team 도전 4건 제기. 결론 재검토 권장.
+   ⚠️ [프록시 과신] TARIFF status_quo 92% 확신이지만 신뢰도 45% (프록시)
+      ↳ 반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.
+   ⚠️ [프록시 과신] FISCAL expansive 85% 확신이지만 신뢰도 30% (프록시)
+      ↳ 반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.
+   ⚠️ [일방향 서사] 지정학 확전 + 유가 봉쇄 동반 가정 — 강한 일방향 베팅
+      ↳ 반증: 휴전/협상 타결 시 급반전(S9). 베팅 비대칭성 점검. 헤지 유지.
+   ⚠️ [AI 과열 (시스코 교훈)] AI_POWER peak_demand — 슈퍼사이클 서사 지배적
+      ↳ 반증: 시스코 2000: 정점에서 -89%. NVDA beat에도 주가 미반응 시 saturation 조기 신호.
+   활성 역풍 축쌍: WAR×OIL
+   최대 부스트 종목: NLR (+25.0%)
+🛡️ 자가 검증: ✅ PASS
+
+====================================================================
+
+====================================================================
+🧪 B15. 스트레스 테스트 (14 시나리오) + 무결성
+====================================================================
+   포트폴리오 시나리오별 손익 (손실 순):
+   🟡 2020 팬데믹 충격형             +2.58%
+   🟢 본격 스태그플레이션               +5.84%
+   🟢 2022 인플레 긴축형             +6.56%
+   🟢 복합 충격 (S5)               +6.60%
+   🟢 오일 쇼크형 (1973)            +6.63%
+   🟢 중국 경착륙                   +6.78%
+   🟢 그랜드 바겐 (상방)              +10.46%
+   ⚠️ 최악: 2020 팬데믹 충격형 (+2.6%)
+   ✅ 최선: 달러 신뢰 위기 (+19.0%)
+   손실 시나리오: 0/14건, 평균 손실 +0.00%
+
+🛡️ 무결성 하니스: 25/25 (100%) ✅ ALL PASS
+
+📡 B16. 시장 미시구조 (센서 추세 + 변동성/상관 레짐)
+   변동성 레짐: 🟡 정상 변동성 (VIX 18.9, MA20 17.3)
+     → 정상 범위. 추세 추종 유효.
+   🔺 위험 센서 상승: VIX ↗ 상승, MOVE ↗ 상승
+
+====================================================================
+🔭 Oracle Autopilot v1.0.5 (적정자) — 브리핑 종료
+====================================================================
+
+====================================================================
+🏦 B17. LOGOS-ARGUS 검증 게이트 (출력 심판)
+====================================================================
+   ⚠️ LOGOS 엔진 미발견 — 검증 생략</pre></div></details><div class="footer">
+Oracle Autopilot v1.0.5 · 2026-06-08 · 2026-06-09 09:10 KST<br>
+<span style="color:#334155">연구/브리핑 전용 · 투자 조언 아님 · Commander 승인 필수</span>
+</div></body></html>
