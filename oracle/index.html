@@ -1,0 +1,671 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🔭 ARGUS Oracle Briefing — 2026-06-09</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #0f172a; color: #e2e8f0;
+       font-size: 11px; line-height: 1.6; padding: 20px; max-width: 960px; margin: 0 auto; }
+code, .mono { font-family: 'JetBrains Mono', monospace; }
+.hdr { display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+       background:linear-gradient(135deg,#1e293b,#0f172a); border-radius:12px;
+       margin-bottom:14px; border-left:5px solid #3b82f6; flex-wrap:wrap; gap:8px; }
+.hdr h1 { font-size:20px; font-weight:900; letter-spacing:-0.5px; }
+.badge { display:inline-block; padding:3px 10px; border-radius:5px; font-weight:700; font-size:10px; }
+.bb { background:#3b82f6; color:#fff; } .bv { background:#1e293b; color:#64748b; border:1px solid #334155; }
+.bg { background:#065f46; color:#34d399; } .br { background:#7f1d1d; color:#fca5a5; }
+.card { background:#1e293b; border-radius:12px; padding:14px 18px; margin-bottom:12px; }
+.card-t { font-size:14px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.card-accent { border-left:4px solid; padding-left:16px; }
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.g4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; }
+.stat { text-align:center; padding:10px 6px; background:#0f172a; border-radius:8px; }
+.stat-val { font-size:28px; font-weight:900; line-height:1.1; }
+.stat-lbl { font-size:9px; color:#64748b; margin-top:4px; text-transform:uppercase; letter-spacing:0.5px; }
+table { width:100%; border-collapse:collapse; font-size:10px; }
+th { text-align:left; color:#64748b; font-weight:500; padding:6px 8px; border-bottom:1px solid #334155; font-size:9px; }
+td { padding:5px 8px; border-bottom:1px solid rgba(30,41,59,0.5); }
+.bar-h { height:6px; border-radius:3px; background:#334155; overflow:hidden; }
+.bar-fill { height:100%; border-radius:3px; }
+.pill { display:inline-block; padding:2px 8px; border-radius:4px; font-weight:700; font-size:9px; }
+.warn { font-size:10px; color:#fbbf24; padding:6px 10px; background:rgba(251,191,36,0.06);
+        border:1px solid rgba(251,191,36,0.15); border-radius:6px; margin-bottom:6px; }
+details { margin-bottom:8px; }
+details summary { cursor:pointer; font-weight:700; font-size:12px; padding:8px 0; color:#94a3b8; }
+details summary:hover { color:#e2e8f0; }
+details[open] summary { color:#e2e8f0; }
+.footer { text-align:right; font-size:8px; color:#475569; margin-top:14px; padding-top:10px;
+          border-top:1px solid #1e293b; }
+@media (max-width: 640px) {
+    .g2, .g3, .g4 { grid-template-columns: 1fr; }
+    .stat-val { font-size:22px; }
+    body { padding:10px; font-size:10px; }
+}
+</style></head><body>
+<div class="hdr">
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<span style="font-size:24px">🔭</span>
+<h1>ARGUS Oracle Briefing</h1>
+<span class="badge bb">v1.0.5</span>
+<span class="badge" style="background:#4ade80;color:#0f172a">EXPANSION</span>
+</div>
+<div style="color:#64748b;font-size:10px" class="mono">2026-06-09 · 2026-06-10 04:16 KST</div>
+</div>
+<div class="card card-accent" style="border-color:#3b82f6">
+<div class="card-t">🎯 Executive Summary</div>
+<div class="g4">
+<div class="stat"><div class="stat-val" style="color:#4ade80">🟢 확장기 (EXPANSION)</div>
+<div class="stat-lbl">레짐 · G24</div></div>
+<div class="stat"><div class="stat-val" style="color:#f87171">40</div>
+<div class="stat-lbl">확신도 / 100</div></div>
+<div class="stat"><div class="stat-val" style="color:#4ade80">+8.7%</div>
+<div class="stat-lbl">E[R] 기대수익</div></div>
+<div class="stat"><div class="stat-val" style="font-size:16px">1.26</div>
+<div class="stat-lbl">Sharpe</div></div>
+</div>
+<div style="margin-top:10px;font-size:11px;color:#94a3b8">
+<b style="color:#e2e8f0">ARGUS 최선호:</b> ☢️ NLR +25.0% · 🥇 GLD +24.2% · 🟤 COPX +16.0%
+</div>
+<div style="margin-top:6px;font-size:11px;color:#fbbf24">
+<b>행동:</b> 🔒 리밸런싱 차단 (current_weights 미입력) · Red Team 4건 검토
+</div>
+</div>
+
+<div class="card"><div class="card-t">🛡️ 검증 현황</div>
+<div class="g4">
+<div class="stat"><div class="stat-val" style="font-size:16px;color:#4ade80">PASS</div>
+<div class="stat-lbl">Data Validation</div></div>
+<div class="stat"><div class="stat-val" style="font-size:16px;color:#4ade80">26/26</div>
+<div class="stat-lbl">무결성</div></div>
+<div class="stat"><div class="stat-val" style="font-size:16px;color:#4ade80">PASS</div>
+<div class="stat-lbl">LOGOS UNCERTAIN</div></div>
+<div class="stat"><div class="stat-val" style="font-size:16px;color:#f87171">FAIL</div>
+<div class="stat-lbl">Smoke Test</div></div>
+</div></div>
+<div class="card"><div class="card-t">📊 8축 매크로 현황</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🔴</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#f87171">WAR</span>
+<span class="mono" style="min-width:100px">limited</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:79%;background:#f87171"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">79%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 55%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🔴</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#f97316">OIL</span>
+<span class="mono" style="min-width:100px">blocked</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:70%;background:#f97316"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">70%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 80%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟡</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#fbbf24">MONETARY</span>
+<span class="mono" style="min-width:100px">hold</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:60%;background:#fbbf24"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">60%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 85%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟡</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#fb923c">CREDIT</span>
+<span class="mono" style="min-width:100px">tight</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:45%;background:#fb923c"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">45%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 88%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟡</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#a78bfa">TARIFF</span>
+<span class="mono" style="min-width:100px">status_quo</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:92%;background:#a78bfa"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">92%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 45%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟢</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#4ade80">GROWTH</span>
+<span class="mono" style="min-width:100px">steady</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:87%;background:#4ade80"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">87%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 82%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟡</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#60a5fa">FISCAL</span>
+<span class="mono" style="min-width:100px">expansive</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:85%;background:#60a5fa"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">85%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 30%</span>
+</div><div style="display:flex;align-items:center;gap:10px;padding:6px 0;
+border-bottom:1px solid rgba(51,65,85,0.5)">
+<span style="min-width:24px">🟢🟢</span>
+<span class="mono" style="min-width:90px;font-weight:700;color:#22d3ee">AI_POWER</span>
+<span class="mono" style="min-width:100px">peak_demand</span>
+<div style="flex:1">
+<div class="bar-h"><div class="bar-fill" style="width:75%;background:#22d3ee"></div></div>
+</div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">75%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#64748b">신뢰 75%</span>
+</div></div><div class="card card-accent" style="border-color:#4ade80">
+<div class="card-t">🌊 레짐 판정</div>
+<div class="g3">
+<div class="stat"><div class="stat-val" style="color:#4ade80;font-size:18px">🟢 확장기 (EXPANSION)</div>
+<div class="stat-lbl">매크로 레짐</div></div>
+<div class="stat"><div class="stat-val" style="font-size:18px">23.6</div>
+<div class="stat-lbl">그래디언트 / 100</div></div>
+<div class="stat"><div class="stat-val" style="font-size:14px">{"SGOV": 10, "GLD": 20, "attack_core": 70}</div>
+<div class="stat-lbl">프리셋 배분</div></div>
+</div></div>
+<div class="card"><div class="card-t">🔭 Oracle 임팩트 — 종목별 기대수익률</div><div class="g2"><div><div style="font-weight:700;color:#4ade80;margin-bottom:6px">🟢 순풍 TOP</div><table><tr><th>종목</th><th>수익률</th><th>주요 축</th></tr><tr><td>☢️ <b>NLR</b></td><td style="color:#4ade80;font-weight:700">+25.0%</td><td class="mono" style="font-size:9px">AI_POWER +14.9% + WAR +3.9%</td></tr><tr><td>🥇 <b>GLD</b></td><td style="color:#4ade80;font-weight:700">+24.2%</td><td class="mono" style="font-size:9px">WAR +5.5% + FISCAL +4.5%</td></tr><tr><td>🛢️ <b>PDBC</b></td><td style="color:#4ade80;font-weight:700">+18.1%</td><td class="mono" style="font-size:9px">OIL +10.2% + WAR +4.6%</td></tr><tr><td>🟤 <b>COPX</b></td><td style="color:#4ade80;font-weight:700">+16.0%</td><td class="mono" style="font-size:9px">AI_POWER +13.3% + FISCAL +2.6%</td></tr><tr><td>⛽ <b>XLE</b></td><td style="color:#4ade80;font-weight:700">+14.3%</td><td class="mono" style="font-size:9px">OIL +9.9% + AI_POWER +2.7%</td></tr><tr><td>💡 <b>XLU</b></td><td style="color:#4ade80;font-weight:700">+12.8%</td><td class="mono" style="font-size:9px">AI_POWER +11.0% + OIL -2.2%</td></tr><tr><td>🏗️ <b>PAVE</b></td><td style="color:#4ade80;font-weight:700">+11.6%</td><td class="mono" style="font-size:9px">FISCAL +8.7% + AI_POWER +6.4%</td></tr><tr><td>🥈 <b>SLV</b></td><td style="color:#4ade80;font-weight:700">+9.8%</td><td class="mono" style="font-size:9px">OIL +3.3% + AI_POWER +2.6%</td></tr></table></div><div><div style="font-weight:700;color:#f87171;margin-bottom:6px">🔴 역풍 BOTTOM</div><table><tr><th>종목</th><th>수익률</th><th>주요 축</th></tr><tr><td> <b>SPY</b></td><td style="color:#f87171;font-weight:700">-7.4%</td><td class="mono" style="font-size:9px">OIL -3.6% + CREDIT -2.5%</td></tr><tr><td>🇻🇳 <b>VNM</b></td><td style="color:#f87171;font-weight:700">-8.5%</td><td class="mono" style="font-size:9px">OIL -4.3% + CREDIT -2.5%</td></tr><tr><td>🇮🇳 <b>INDA</b></td><td style="color:#f87171;font-weight:700">-9.8%</td><td class="mono" style="font-size:9px">OIL -5.8% + CREDIT -2.2%</td></tr><tr><td> <b>EWJ</b></td><td style="color:#f87171;font-weight:700">-10.0%</td><td class="mono" style="font-size:9px">OIL -4.5% + WAR -3.0%</td></tr><tr><td> <b>VWO</b></td><td style="color:#f87171;font-weight:700">-10.1%</td><td class="mono" style="font-size:9px">OIL -3.5% + CREDIT -2.2%</td></tr><tr><td>🇨🇳 <b>CQQQ</b></td><td style="color:#f87171;font-weight:700">-14.5%</td><td class="mono" style="font-size:9px">OIL -4.3% + WAR -3.1%</td></tr></table></div></div></div><div class="card"><div class="card-t">📈 시나리오 확률</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S9</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:29%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">28.9%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S2</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:24%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">24.4%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S1</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:19%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">18.9%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S7</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:13%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">13.3%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S5</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:11%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">10.7%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S10</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:2%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">1.9%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S6</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:1%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">1.0%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+<span class="mono" style="min-width:160px;font-size:10px">S11</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:1%;background:#f87171"></div></div></div>
+<span class="mono" style="min-width:40px;text-align:right;font-weight:700">0.9%</span>
+<span class="mono" style="min-width:50px;text-align:right;color:#f87171">+0.0%</span>
+</div></div><div class="card card-accent" style="border-color:#3b82f6"><div class="card-t">💼 포트폴리오 비중</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">🥇</span>
+<span class="mono" style="min-width:50px;font-weight:700">GLD</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:100%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">20.0%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +24.2%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">☢️</span>
+<span class="mono" style="min-width:50px;font-weight:700">NLR</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:98%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">19.6%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +25.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">🟤</span>
+<span class="mono" style="min-width:50px;font-weight:700">COPX</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:62%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">12.5%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +16.0%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">⛽</span>
+<span class="mono" style="min-width:50px;font-weight:700">XLE</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:56%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">11.2%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +14.3%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">💵</span>
+<span class="mono" style="min-width:50px;font-weight:700">SGOV</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:50%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">10.0%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +1.8%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">💡</span>
+<span class="mono" style="min-width:50px;font-weight:700">XLU</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:50%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">10.0%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +12.8%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">🏗️</span>
+<span class="mono" style="min-width:50px;font-weight:700">PAVE</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:45%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">9.1%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +11.6%</span>
+</div><div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+<span style="min-width:24px">🥈</span>
+<span class="mono" style="min-width:50px;font-weight:700">SLV</span>
+<div style="flex:1"><div class="bar-h"><div class="bar-fill" style="width:38%;background:#3b82f6"></div></div></div>
+<span class="mono" style="min-width:50px;text-align:right;font-weight:700">7.7%</span>
+<span class="mono" style="min-width:60px;text-align:right;color:#4ade80;font-size:9px">E[R] +9.8%</span>
+</div><div style="margin-top:8px;font-size:9px;color:#64748b">가드레일: GLD캡 35.0% · 합계 ✅ 100%</div></div><div class="card"><div class="card-t">🛡️ 리스크 메트릭</div><div class="g3"><div class="stat"><div class="stat-val" style="font-size:20px;color:#4ade80">+8.69%</div><div class="stat-lbl">E[R]</div></div><div class="stat"><div class="stat-val" style="font-size:20px;color:#4ade80">6.91%</div><div class="stat-lbl">Sigma</div></div><div class="stat"><div class="stat-val" style="font-size:20px;color:#4ade80">1.26</div><div class="stat-lbl">Sharpe</div></div></div></div><div class="card"><div class="card-t">🚨 비상 프로토콜</div>
+<div class="g2">
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#4ade80">STAGE 0</div>
+<div class="stat-lbl">AEGIS</div></div>
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#4ade80">
+🟢 OFF</div>
+<div class="stat-lbl">킬스위치</div></div>
+</div></div>
+<div class="card card-accent" style="border-color:#f87171"><div class="card-t" style="color:#f87171">🔴 Red Team 도전 (4건)</div><div class="warn"><br><span style="color:#94a3b8;font-size:9px">반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.</span></div><div class="warn"><br><span style="color:#94a3b8;font-size:9px">반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.</span></div><div class="warn"><br><span style="color:#94a3b8;font-size:9px">반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.</span></div><div class="warn"><br><span style="color:#94a3b8;font-size:9px">반증: 시스코 2000: 정점에서 -89%. NVDA beat에도 주가 미반응 시 saturation 조기 신호.</span></div></div><div class="card"><div class="card-t">🎓 전략이론 6계통 (20건)</div><div style="margin-top:10px;margin-bottom:4px;font-weight:700;color:#60a5fa;font-size:12px">── 1. 게임이론 (9건) ──</div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[Nash 균형 (QNS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 교착 시 실물 자산 순풍. 타협 균형 시 S9 상향.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[반복게임 토너먼트 (QNS,5전략x100R)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 조건부 협력이 장기 최적.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[연준-시장 코디네이션 (QNS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 매파 연준 + 위험선호 시장 = 긴축발작 위험. 채권 듀레이션 축소.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[OPEC+ 공급 게임 (QNS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 고유가 시 증산 유인 증가 → XLE/PDBC 변동성. 협조 붕괴 시 유가 하락.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[AI capex 투자 게임 (QNS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 군비경쟁 지속 = SMH/NLR/COPX 순풍. 균형 붕괴 = saturation 위험.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[이란-미국 순차 게임 (QNS 후방귀납)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 미국 압박 신뢰성 = 이란 양보 유인. SPR 고갈이 압박 신뢰성 약화.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟢</span>
+<b style="font-size:11px">[글로벌 게임 — 신용 임계 (QNS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 위기꼬리 확률 상승 시 OAS_HY 임계 돌파 감시. 달러RP 선제 확대.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[포컬포인트 + 신뢰성 (QLS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 신뢰성 약화 시 이란 양보 유인 감소 → 교착 장기화 → OIL blocked 지속.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟢</span>
+<b style="font-size:11px">[신용 죄수의 딜레마 (QNS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 신용 스트레스 상승 시 자기실현적 회수 → OAS 급등. 달러RP 선제.</div></div><div style="margin-top:10px;margin-bottom:4px;font-weight:700;color:#60a5fa;font-size:12px">── 2. 행동경제학 (3건) ──</div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[편향 체크리스트 (QLS,1종)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 편향 대응책 적용 필요.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[서사 분석 (QLS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 지배 서사 강할수록 SMH 모멘텀 지속. 대항 서사 부상 시 변곡점.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[정체성 보수 (QLS Akerlof-Kranton)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 양측 정체성 보수가 합리적 타협 지연 → 교착/끈적임 장기화 베팅.</div></div><div style="margin-top:10px;margin-bottom:4px;font-weight:700;color:#60a5fa;font-size:12px">── 3. 권력 동학 (4건) ──</div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[권력 지도 (QLS,2행위자)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 이란 SHARP(호르무즈)가 미국 견제. 교착.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[마키아벨리+그린법칙+제도게임 (QLS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 이란 비대칭 전략 = 장기 불확실성. ITA(방산)/XLE(에너지) 헤지 유효.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[제도 게임 심화 (QLS, 3제도)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 제도 규칙 변경 가능성이 레짐 전환 선행 신호. 메타게임 주시.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[그린의 법칙 다중 적용 (QLS, 3법칙)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 다중 권력 법칙 충돌 = 고불확실성. 비대칭 전략이 지배적 → 헤지 유지.</div></div><div style="margin-top:10px;margin-bottom:4px;font-weight:700;color:#60a5fa;font-size:12px">── 4. 위기 의사결정 (1건) ──</div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🔴</span>
+<b style="font-size:11px">[OODA + Allison 3모델 (QLS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 미국 의사결정 지연 = 이란 시간 유리. SPR 고갈이 협상 강제 시계.</div></div><div style="margin-top:10px;margin-bottom:4px;font-weight:700;color:#60a5fa;font-size:12px">── 5. 전략 기획 (2건) ──</div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[AI capex 분기 (Schwartz)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ NVDA beat에도 주가 미반응 = B 조기 신호 감시.</div></div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟡</span>
+<b style="font-size:11px">[제한적 합리성 (QLS)]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ Oracle 레짐 판단이 만족화 편향 교정 도구. 모멘텀 맹종 회피.</div></div><div style="margin-top:10px;margin-bottom:4px;font-weight:700;color:#60a5fa;font-size:12px">── 6. 시스템 사고 (1건) ──</div><div style="padding:6px 0;border-bottom:1px solid rgba(51,65,85,0.3)">
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span>🟢</span>
+<b style="font-size:11px">[연쇄 전파 + 레버리지]</b>
+</div>
+<div style="color:#94a3b8;font-size:10px;margin-top:3px"></div>
+<div style="color:#e2e8f0;font-size:10px;margin-top:2px">→ 축 독립 = S5 확률 낮음.</div></div></div><div class="card card-accent" style="border-color:#fbbf24">
+<div class="card-t">🔒 리밸런싱 차단</div>
+<div style="color:#fbbf24;font-size:11px">current_weights 미입력 — 거래 제안 차단 (오판 방지)</div></div>
+<div class="card"><div class="card-t">🛡️ 무결성 · 검증</div>
+<div class="g3">
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#4ade80">26/26</div>
+<div class="stat-lbl">무결성 (100%)</div></div>
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#f87171">FAIL</div>
+<div class="stat-lbl">스모크 테스트</div></div>
+<div class="stat"><div class="stat-val" style="font-size:18px;color:#4ade80">PASS</div>
+<div class="stat-lbl">자가 검증</div></div>
+</div></div>
+<details><summary>📡 매크로 센서 현재값</summary><div class="card"><div class="g3"><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">19.87</div><div style="font-size:8px;color:#64748b">VIX</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">4.56</div><div style="font-size:8px;color:#64748b">DGS10</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">2.75</div><div style="font-size:8px;color:#64748b">OAS_HY</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">89.09</div><div style="font-size:8px;color:#64748b">WTI</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">100.00</div><div style="font-size:8px;color:#64748b">DXY</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">52.70</div><div style="font-size:8px;color:#64748b">PMI</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">0.10</div><div style="font-size:8px;color:#64748b">SAHMCURRENT</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">77.03</div><div style="font-size:8px;color:#64748b">MOVE</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">2.21</div><div style="font-size:8px;color:#64748b">DFII10</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">N/A</div><div style="font-size:8px;color:#64748b">GLD_CLOSE</div></div><div style="padding:4px;background:#0f172a;border-radius:6px;text-align:center"><div class="mono" style="font-size:14px;font-weight:700">N/A</div><div style="font-size:8px;color:#64748b">SMH_CLOSE</div></div></div></div></details><details><summary>📝 텍스트 브리핑 (원문)</summary><div class="card"><pre style="white-space:pre-wrap;word-break:break-word;font-size:9px;color:#94a3b8;max-height:600px;overflow-y:auto">┌──────────────────────────────────────────────────────────────────┐
+│ 🎯 EXECUTIVE SUMMARY (Commander 의사결정용)                      │
+└──────────────────────────────────────────────────────────────────┘
+  ① 레짐: 🟢 확장기 (EXPANSION) | 그래디언트 23.6/100
+  ② 확신도: 60.0/100 🟡 중간 (선별 실행)
+  ③ 최선호 (ARGUS): NLR(+25%), GLD(+24%), COPX(+16%)
+  ④ 기대수익 +8.7% | 하방위험 +0.1% | 스트레스 최악 -1.7%
+  ⑤ 우선 행동: Red Team 도전 4건 — 결론 재검토
+
+====================================================================
+🔭 Oracle Autopilot v1.0.5 (적정자) — 종합 브리핑 풀버전
+   Oracle 2.13.1 정식 통합 + QNS v1.1 + QLS v1.0 | ARGUS 20종목 유니버스
+📅 데이터: 2026-06-09 | 실행: 2026-06-10 04:16
+====================================================================
+
+🎯 B1. 결론 (Conclusion-First)
+   레짐: 🟢 확장기 (EXPANSION) | 그래디언트 23.6/100
+   방어/공격 타겟: 28.9% / 71.1%
+   DRP 자세: RISK_ON (방어조절 -5%)
+   포트폴리오 E[R]: +8.69% | σ 6.91% | Sharpe 1.26
+   🟢 최고 순풍 (ARGUS): NLR +25.0%, GLD +24.2%, COPX +16.0%
+
+📊 B2. 8축 현황 (auto_prior + LEAD-5/6b + 프록시)
+   축          상태                확률   신뢰도  근거
+   ────────────────────────────────────────────────────────────────
+   🟡 WAR      limited         79%   55%  ⚠️ 시장 프록시 (뉴스 확인 권장) | WTI $89 (제한분쟁)
+   🔴 OIL      blocked         70%   80%  WTI $89.1 | 30일 -10.8% (⚠️ 호르무즈 구조 정보는 뉴
+   🟡 MONETARY hold            60%   85%  LEAD-6b (IRX_13W 분위수+변화)
+   🟡 CREDIT   tight           45%   88%  LEAD-5 (OAS_HY 분위수 회귀)
+   🟡 TARIFF   status_quo      92%   45%  ⚠️ 환율 프록시 (정책 뉴스 확인) | USD/CNY 6.766 | D
+   🟡 GROWTH   steady          87%   82%  PMI 52.7 (확장) | SAHM 0.10 (안전) | 신규청구 22
+   🟡 FISCAL   expansive       85%   30%  ⚠️ 유동성 프록시 (재정 데이터 부족) | Fed B/S 6.7T | 
+   🟢🟢 AI_POWER peak_demand     75%   75%  SMH/SPY RS 1.38 | SMH&gt;MA200 +47% | SMH 6
+
+🌊 B3. 레짐 판정 (Oracle 정식 파이프라인)
+   🟢 확장기 (EXPANSION) | 달러RP 10% · GLD 20% · 공격 70% | 그래디언트 24/100
+     발동 근거: 🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.21%
+     그래디언트 조정: 프리셋 기준. SGOV 10% 유지.
+   그래디언트 구간: 0~25 🟢 순풍 (저위험) | 전략: 공격 자산 비중 극대화. 방어 10~25%. SUPERBULL/BULL 
+
+🔭 B4. Oracle 임팩트 — 29종목 기대 수익률 (🅰=ARGUS 유니버스)
+   INTERACTION_PAIRS 4쌍 | CAP ±25% | 포트폴리오=ARGUS 20+SGOV
+   🟢 순풍 TOP 8
+   🅰 NLR    +25.00%  AI_POWER +14.9% + WAR +3.9% ⚡
+   🅰 GLD    +24.23%  WAR +5.5% + FISCAL +4.5% ⚡
+   · PDBC   +18.10%  OIL +10.2% + WAR +4.6% ⚡
+   🅰 COPX   +15.98%  AI_POWER +13.3% + FISCAL +2.6% 
+   🅰 XLE    +14.30%  OIL +9.9% + AI_POWER +2.7% 
+   🅰 XLU    +12.78%  AI_POWER +11.0% + FISCAL +1.8% ⚡
+   🅰 PAVE   +11.63%  FISCAL +8.7% + AI_POWER +6.4% 
+   🅰 SLV     +9.84%  OIL +3.3% + AI_POWER +2.6% ⚡
+   🔴 역풍 TOP 6
+   🅰 CQQQ   -14.49%  OIL -4.3% + WAR -3.1%
+   · VWO    -10.05%  OIL -3.5% + CREDIT -2.2%
+   · EWJ    -10.01%  OIL -4.5% + WAR -3.0%
+   🅰 INDA    -9.78%  OIL -5.8% + CREDIT -2.2%
+   🅰 VNM     -8.53%  OIL -4.3% + CREDIT -2.5%
+   · SPY     -7.40%  OIL -3.6% + CREDIT -2.5%
+
+📈 B5. 시나리오 확률 + 조건부 P&amp;L
+   S9   그랜드 바겐           28.9% ████████ P&amp;L +10.5%
+   S2   이란 확전            24.4% ███████ P&amp;L +0.1%
+   S1   연준 비둘기 전환        18.9% █████ P&amp;L +19.2%
+   S7   연준 매파 지속         13.3% ███ P&amp;L +11.3%
+   S5   복합 충격            10.7% ███ P&amp;L +0.6%
+   S10  희토류 금수            1.9%  P&amp;L +9.7%
+   S6   AI 위기 (citrini)   1.0%  P&amp;L +10.3%
+   S11  AI capex 포화       0.9%  P&amp;L +12.4%
+   최악: S2 (+0.1%) | 최선: S1 (+19.2%)
+
+💼 B6. 포트폴리오 구성 + DRP + 가드레일
+   레짐 프리셋: {'SGOV': 10, 'GLD': 20, 'attack_core': 70}
+   최종 비중 (가드레일 적용):
+     GLD       20.0%
+     NLR       19.6%
+     COPX      12.5%
+     XLE       11.2%
+     SGOV      10.0%
+     XLU       10.0%
+     PAVE       9.1%
+     SLV        7.7%
+   DRP 근거: 그래디언트 24 순풍 (-5%p)
+   ✅ 가드레일 위반 없음 (GLD캡 35.0%)
+
+🛡️ B7. 리스크 메트릭 + 축 민감도
+   E[R] +8.69% | σ 6.91% | Sharpe 1.26
+   하방위험(최악): +0.15%
+   축 민감도 (최악 상태 전환 시 충격):
+     MONETARY   -6.59%
+     GROWTH     -6.25%
+     FISCAL     -5.18%
+     CREDIT     -4.31%
+     WAR        -1.61%
+
+🎓 B8. 전략이론 6계통 (QNS + QLS 실엔진)
+
+   ── 1 게임이론 (9건) ──
+   🟡 [Nash 균형 (QNS)]
+      순수 Nash 2개. Iran 혼합: {'De-escalate': 0.62, 'Escalate': 0.38} US 혼합: {'De-escalate': 0.45, 
+      → 교착 시 실물 자산 순풍. 타협 균형 시 S9 상향.
+   🟡 [반복게임 토너먼트 (QNS,5전략x100R)]
+      미중 토너먼트 우승: Tit-for-Tat.
+      → 조건부 협력이 장기 최적.
+   🟡 [연준-시장 코디네이션 (QNS)]
+      연준-시장 코디네이션. hawkish 강도 25%. 순수 Nash 2개.
+      → 매파 연준 + 위험선호 시장 = 긴축발작 위험. 채권 듀레이션 축소.
+   🟡 [OPEC+ 공급 게임 (QNS)]
+      OPEC+ 감산/증산 게임. WTI $89. 순수 Nash 1개.
+      → 고유가 시 증산 유인 증가 → XLE/PDBC 변동성. 협조 붕괴 시 유가 하락.
+   🟡 [AI capex 투자 게임 (QNS)]
+      빅테크 capex 군비경쟁. AI=peak_demand. (Invest,Invest) 균형. 순수 Nash 1개.
+      → 군비경쟁 지속 = SMH/NLR/COPX 순풍. 균형 붕괴 = saturation 위험.
+   🟡 [이란-미국 순차 게임 (QNS 후방귀납)]
+      미국 선제(압박/협상) → 이란 대응(저항/양보). WAR=limited. 부분게임 완전균형 분석.
+      → 미국 압박 신뢰성 = 이란 양보 유인. SPR 고갈이 압박 신뢰성 약화.
+   🟢 [글로벌 게임 — 신용 임계 (QNS)]
+      신용 경색 다중균형. CREDIT=tight, 위기꼬리확률 21%. 공통지식 부족 시 자기실현적 위기 가능.
+      → 위기꼬리 확률 상승 시 OAS_HY 임계 돌파 감시. 달러RP 선제 확대.
+   🟡 [포컬포인트 + 신뢰성 (QLS)]
+      협상 포컬포인트 = '조건부 통항'. 미국 봉쇄 위협 신뢰성 = 중간(SPR 고갈로 약화).
+      → 신뢰성 약화 시 이란 양보 유인 감소 → 교착 장기화 → OIL blocked 지속.
+   🟢 [신용 죄수의 딜레마 (QNS)]
+      은행 신용 회수 게임. CREDIT=tight. 순수 Nash 1개. 스트레스 시 (Withdraw,Withdraw) 우월 → 신용 경색.
+      → 신용 스트레스 상승 시 자기실현적 회수 → OAS 급등. 달러RP 선제.
+
+   ── 2 행동경제학 (3건) ──
+   🟡 [편향 체크리스트 (QLS,1종)]
+      편향 1건 감지.
+      → 편향 대응책 적용 필요.
+   🟡 [서사 분석 (QLS)]
+      지배 서사 = AI 슈퍼사이클(자기실현적). 대항 서사 = 버블/효율혁신.
+      → 지배 서사 강할수록 SMH 모멘텀 지속. 대항 서사 부상 시 변곡점.
+   🟡 [정체성 보수 (QLS Akerlof-Kranton)]
+      연준=인플레파이터 정체성이 조기인하 제약. 이란=저항 정체성이 협상 양보 제약.
+      → 양측 정체성 보수가 합리적 타협 지연 → 교착/끈적임 장기화 베팅.
+
+   ── 3 권력 동학 (4건) ──
+   🟡 [권력 지도 (QLS,2행위자)]
+      미국=HARD+SMART, 이란=HARD+SHARP(비대칭).
+      → 이란 SHARP(호르무즈)가 미국 견제. 교착.
+   🟡 [마키아벨리+그린법칙+제도게임 (QLS)]
+      이란: 두려움 기반 권력(호르무즈) but 실제 취약. 예측불가 전략(Law17)으로 교란.
+      → 이란 비대칭 전략 = 장기 불확실성. ITA(방산)/XLE(에너지) 헤지 유효.
+   🟡 [제도 게임 심화 (QLS, 3제도)]
+      연준 2% 목표(AIT 재해석 여지), 미중 무역(관세 무기화), OPEC(쿼터 이탈 유인).
+      → 제도 규칙 변경 가능성이 레짐 전환 선행 신호. 메타게임 주시.
+   🟡 [그린의 법칙 다중 적용 (QLS, 3법칙)]
+      적용 법칙 3개: 미국 최대압박(L15), 이란 타이밍(L35)+비대칭(L48), 중국 약점공략(L33).
+      → 다중 권력 법칙 충돌 = 고불확실성. 비대칭 전략이 지배적 → 헤지 유지.
+
+   ── 4 위기 의사결정 (1건) ──
+   🔴 [OODA + Allison 3모델 (QLS)]
+      미국 OODA=DECIDE 정체, 이란 OODA=ACT 실행. Allison 최적=관료정치(III).
+      → 미국 의사결정 지연 = 이란 시간 유리. SPR 고갈이 협상 강제 시계.
+
+   ── 5 전략 기획 (2건) ──
+   🟡 [AI capex 분기 (Schwartz)]
+      AI=peak_demand. 분기 A(순풍) vs B(saturation). 변수: capex 가이던스.
+      → NVDA beat에도 주가 미반응 = B 조기 신호 감시.
+   🟡 [제한적 합리성 (QLS)]
+      시장은 만족화(모멘텀 추종)로 최적화(레짐 판단) 대체 → 고점 추격 위험.
+      → Oracle 레짐 판단이 만족화 편향 교정 도구. 모멘텀 맹종 회피.
+
+   ── 6 시스템 사고 (1건) ──
+   🟢 [연쇄 전파 + 레버리지]
+      연쇄 0단계: 미감지. 레버리지=없음.
+      → 축 독립 = S5 확률 낮음.
+
+⚡ B9. 전환 감지 + 백테스트 + 자동화 한계
+   EWMA 전환 신호: ?
+   ⚠️ smoke replay (0.24년, 3회 — 진단 전용, §40 v3 아님):
+     Autopilot: CAGR +5.9% | Sharpe 0.38 | MDD -11.6%
+     SPY 벤치:  CAGR -11.6% | Sharpe -0.84 | MDD -9.0%
+     탐색적 알파 proxy (vs SPY): +17.5% — 배포 근거 사용 금지
+   ⚠️ 낮은 신뢰도 축: WAR, TARIFF, FISCAL — 뉴스 교차 검증 필요
+   WAR/TARIFF/FISCAL = 프록시. 정치/정책 이벤트 직접 반영 불가.
+
+🚨 B10. 센서 평가 + AEGIS 비상 프로토콜
+   AEGIS 단계: 🟢 STAGE 0 — 정상
+   대응: 레짐 프리셋 정상 운영.
+   킬스위치: 🟢 OFF
+   ✅ 경보 센서 없음 (YELLOW 2개)
+
+📅 B11. 매크로 이벤트 트리거
+   ✅ 발동 트리거 없음
+
+📊 B12. 블렌드 알파 (매크로 60% + 기술 40%) + 사이징
+   🟢 알파 TOP 6 (매크로+기술 블렌드):
+     SMH    α +0.61  🟢🟢 매크로+기술 동반 순풍
+     PAVE   α +0.47  🟢🟢 매크로+기술 동반 순풍
+     CIBR   α +0.42  ⚪ 중립
+     COPX   α +0.42  ⚪ 중립
+     QQQM   α +0.40  🟢🟢 매크로+기술 동반 순풍
+     XLE    α +0.38  ⚪ 중립
+   🔴 알파 BOTTOM 3:
+     TLT    α -0.23  🔴🔴 매크로+기술 동반 역풍
+     INDA   α -0.37  🔴🔴 매크로+기술 동반 역풍
+     CQQQ   α -0.38  ⚪ 중립
+   ⚖️ 수익/리스크 효율 TOP 5:
+     GLD    효율 0.85 (σ 29%, Kelly 16%)
+     XLU    효율 0.70 (σ 18%, Kelly 16%)
+     XLE    효율 0.54 (σ 27%, Kelly 16%)
+     NLR    효율 0.54 (σ 47%, Kelly 9%)
+     PAVE   효율 0.47 (σ 25%, Kelly 15%)
+   🔀 분산 효과: 가중변동성 33.8% → 포트변동성 25.1% (분산이득 26%)
+
+🎖️ B13. SSOT 갱신 제안 + 리밸런싱 (Commander 승인 대기)
+   고신뢰 축 갱신 제안 (5건):
+     OIL        → blocked        70% (신뢰도 80%)
+     MONETARY   → hold           60% (신뢰도 85%)
+     CREDIT     → tight          45% (신뢰도 88%)
+     GROWTH     → steady         87% (신뢰도 82%)
+     AI_POWER   → peak_demand    75% (신뢰도 75%)
+   ⚠️ ⚠️ 제안일 뿐. SSOT 수정은 Commander 승인 필수. 자동 적용 금지.
+   🔒 리밸런싱 차단: current_weights 미입력 — 거래 제안 차단 (오판 방지)
+
+🔴 B14. Red Team 자가 감사 + 교차축 상호작용
+   Red Team 도전 4건 제기. 결론 재검토 권장.
+   ⚠️ [프록시 과신] WAR limited 79% 확신이지만 신뢰도 55% (프록시)
+      ↳ 반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.
+   ⚠️ [프록시 과신] TARIFF status_quo 92% 확신이지만 신뢰도 45% (프록시)
+      ↳ 반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.
+   ⚠️ [프록시 과신] FISCAL expansive 85% 확신이지만 신뢰도 30% (프록시)
+      ↳ 반증: 정치/정책 이벤트는 시장 프록시로 포착 불가. 뉴스 교차 검증 필수.
+   ⚠️ [AI 과열 (시스코 교훈)] AI_POWER peak_demand — 슈퍼사이클 서사 지배적
+      ↳ 반증: 시스코 2000: 정점에서 -89%. NVDA beat에도 주가 미반응 시 saturation 조기 신호.
+   최대 부스트 종목: NLR (+25.0%)
+🛡️ 자가 검증: ✅ PASS
+
+====================================================================
+
+====================================================================
+🧪 B15. 스트레스 테스트 (14 시나리오) + 무결성
+====================================================================
+   포트폴리오 시나리오별 손익 (손실 순):
+   🔴 본격 스태그플레이션               -1.73%
+   🔴 복합 충격 (S5)               -0.85%
+   🔴 2022 인플레 긴축형             -0.52%
+   🔴 오일 쇼크형 (1973)            -0.39%
+   🟡 2020 팬데믹 충격형             +1.37%
+   🟡 중국 경착륙                   +1.83%
+   🟢 호르무즈 완전 폐쇄               +3.36%
+   ⚠️ 최악: 본격 스태그플레이션 (-1.7%)
+   ✅ 최선: AI 슈퍼사이클 가속 (+18.2%)
+   손실 시나리오: 4/14건, 평균 손실 -0.87%
+
+🛡️ 무결성 하니스: 26/26 (100%) ✅ ALL PASS
+
+📡 B16. 시장 미시구조 (센서 추세 + 변동성/상관 레짐)
+   변동성 레짐: 🟡 정상 변동성 (VIX 19.9, MA20 17.4)
+     → 정상 범위. 추세 추종 유효.
+   🔺 위험 센서 상승: VIX ↑↑ 급등, MOVE ↑↑ 급등
+
+====================================================================
+🔭 Oracle Autopilot v1.0.5 (적정자) — 브리핑 종료
+====================================================================
+
+====================================================================
+🏦 B17. LOGOS-ARGUS 검증 게이트 (출력 심판)
+====================================================================
+   LOGOS 검증 ✅ PASS | 신뢰도 등급 UNCERTAIN | 과신표현 0 / 비중위반 0 / 무근거 0
+   신뢰도: Autopilot 40.0/100 → LOGOS 등급 [UNCERTAIN]
+   포트폴리오 영향: direction=increase, strength=0.5, timing=wait_for_trigger
+   ✅ 출력 게이트 통과 — 과신/무근거/비중 위반 없음</pre></div></details><div class="footer">
+Oracle Autopilot v1.0.5 · 2026-06-09 · 2026-06-10 04:16 KST<br>
+<span style="color:#334155">투자 조언 아님 · Commander 승인 필수</span>
+</div></body></html>
