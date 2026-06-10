@@ -1,30 +1,27 @@
 name: ARGUS Macro Zone Chart
-
 on:
   schedule:
     - cron: '30 21 * * *'
   workflow_dispatch:
-
 permissions:
   contents: write
   pages: write
   id-token: write
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - name: Install dependencies
         run: pip install pandas numpy scipy
-
       - name: Generate overlay.json + index.html
         run: |
           python3 gen_macro_zone_chart.py
@@ -32,7 +29,6 @@ jobs:
           ls -la site/
           echo "=== overlay.json 앞부분 ==="
           head -c 200 site/overlay.json || echo "overlay.json 없음"
-
       - name: Commit updated zone_data_v4.json (traj 누적)
         run: |
           git config user.name "ARGUS-Bot"
@@ -40,7 +36,6 @@ jobs:
           git add zone_data_v4.json
           git diff --staged --quiet || git commit -m "🔧 traj: $(date -u +%Y-%m-%d) 궤적 누적"
           git push || echo "push 실패 (변경 없음)"
-
       - name: Verify site contents
         run: |
           if [ ! -f site/index.html ]; then
@@ -53,16 +48,13 @@ jobs:
           fi
           echo "site/index.html: $(wc -c < site/index.html) bytes"
           echo "site/overlay.json: $(wc -c < site/overlay.json) bytes"
-
       - name: Enable Pages
         uses: actions/configure-pages@v4
         continue-on-error: true
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
