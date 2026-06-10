@@ -200,11 +200,11 @@ function draw(){
  {var trL=P.traj;var nL=trL.x.length;var ssL=10;var nsL=Math.ceil(nL/ssL);var lh='<span style="color:#7c869a;font-weight:600;">궤적 날짜(오래된→최근):</span>';for(var k=0;k<nsL;k++){var k0=k*ssL,k1=Math.min((k+1)*ssL,nL);var dd=trL.dates.slice(k0,k1);var ccL=trajColor(nsL<=1?1:k/(nsL-1));var dA=dd[0].slice(5),dB=dd[dd.length-1].slice(5);var lab=(dA===dB)?dA:dA+"~"+dB;var isCur=(k===nsL-1);lh+='<span style="display:inline-flex;align-items:center;gap:4px;color:#9aa6bd;"><span style="width:18px;height:'+(isCur?4:3)+'px;background:'+ccL+';display:inline-block;border-radius:2px;"></span>'+lab+(isCur?' <span style="color:#f0f921;">(현재)</span>':'')+'</span>';}var le=document.getElementById("trajLegend");if(le)le.innerHTML=lh;}
 }
 
-// ── overlay.json fetch (cur_x/cur_y/traj 동적 주입) ──────────────
+// ── argusmap_overlay.json fetch (cur_x/cur_y/traj 동적 주입) ──────────────
 let OV = null;
 async function loadOverlay() {
   try {
-    const r = await fetch('overlay.json?t=' + Date.now());
+    const r = await fetch('argusmap_overlay.json?t=' + Date.now());
     OV = await r.json();
     // DATA.per에 cur_x/cur_y/traj 주입
     if (OV && OV.per) {
@@ -228,7 +228,7 @@ async function loadOverlay() {
             document.querySelector('.sub').innerHTML.replace(/~[\d-]+/, '~' + OV.as_of));
       }
     }
-  } catch(e) { console.warn('overlay.json fetch 실패:', e); }
+  } catch(e) { console.warn('argusmap_overlay.json fetch 실패:', e); }
 }
 
 // 초기화 (overlay fetch 후 렌더)
