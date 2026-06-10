@@ -50,6 +50,12 @@ details summary:hover { color: #e2e8f0; }
 details[open] summary { color: #e2e8f0; }
 @media (max-width: 600px) {
     .g2, .g3 { grid-template-columns: 1fr; }
+    /* 📱 시그널 2행 카드 (S185 모바일 최적화) */
+    .sr { flex-wrap:wrap; row-gap:1px; }
+    .sc { width:100%; order:10; padding-left:21px; font-size:10px; margin-top:0; }
+    .sn { min-width:80px; font-size:10px; }
+    .sv { min-width:70px; font-size:9px; }
+    .su { min-width:28px; }
     .stat-val { font-size: 22px; }
     body { padding: 8px; font-size: 9px; }
 }
