@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# gen_macro_zone_chart.py v5.4
+# gen_macro_zone_chart.py v5.5
+# v5.5: comp yc chosen guard 제거 + ys 스케일 오염 차단 + None 보간 (ffill/bfill)
 # 궤적·cur_y 모두 LIVE data + zparams 고정 z-score로 통일 (궤적 마지막=현재 보장)
 # zone_data_v4.json → template.html DATA 주입 (축 변경 자동 반영)
 # 신규 파생 지표 (GSR/MOVE_VIX/VIX_MA60_RATIO) 일간 궤적 대응
@@ -92,7 +93,7 @@ def calc_comp_resid(get_macro, comp_params):
     return round(sum(zvals) / len(zvals), 3)
 
 def main():
-    print("[gen_macro_zone_chart v5.4] 시작")
+    print("[gen_macro_zone_chart v5.5] 시작")
     SITE_DIR.mkdir(parents=True, exist_ok=True)
 
     if not TEMPLATE.exists():
@@ -160,26 +161,38 @@ def main():
             yv = row_macro(row, ymc_s)
             if xv is None: continue
             if yv is None: yv = traj["ys"][-1] if traj["ys"] else 0.0
-            # comp yc: comp_params 잔차회귀 (x값은 __x__ 키로 전달)
+            # comp yc: chosen 무관 항상 계산 (v5.5 fix — ys 스케일 오염 차단)
             yc = None
-            if chosen == "comp" and comp_params:
+            if comp_params:
                 def gm(mc, _row=row, _xv=xv):
                     if mc == "__x__": return _xv
                     return row_macro(_row, mc)
                 yc = calc_comp_resid(gm, comp_params)
-            if yc is None:
-                yc = traj["yc"][-1] if traj["yc"] else round(yv,3)
+            # yc 실패 시 None 유지 — 절대 ys 값으로 대체 금지 (스케일 오염 근본 차단)
             traj["dates"].append(dt)
             traj["x"].append(round(xv,3))
             traj["ys"].append(round(yv,3))
-            traj["yc"].append(round(yc,3))
+            traj["yc"].append(round(yc,3) if yc is not None else None)
         for k in ["dates","x","ys","yc"]:
             traj[k] = traj[k][-60:]
+        # yc None 보간: forward-fill → back-fill → 전량 None이면 0.0
+        _yc = traj["yc"]
+        _last = None
+        for _i in range(len(_yc)):
+            if _yc[_i] is not None: _last = _yc[_i]
+            elif _last is not None: _yc[_i] = _last
+        _last = None
+        for _i in range(len(_yc)-1, -1, -1):
+            if _yc[_i] is not None: _last = _yc[_i]
+            elif _last is not None: _yc[_i] = _last
+        for _i in range(len(_yc)):
+            if _yc[_i] is None: _yc[_i] = 0.0
 
         # ── cur = 궤적 마지막 (동일 데이터 → 항상 연결) ──
         cur_x = traj["x"][-1] if traj["x"] else None
         cur_ys = traj["ys"][-1] if traj["ys"] else None
-        comp_yv = traj["yc"][-1] if (chosen=="comp" and traj["yc"]) else None
+        # comp_cur_y: 마지막 유효 yc (comp_params 있으면 chosen 무관 출력)
+        comp_yv = traj["yc"][-1] if (comp_params and traj["yc"]) else None
         if comp_yv is not None: comp_cnt += 1
 
         overlay_per[tk] = {
@@ -212,7 +225,7 @@ def main():
     print(f"  zone_data_v4.json 갱신 ({len(zd_json)//1024}KB / sha={zd_sha})")
 
     print(f"  site/ 파일: {[f.name for f in SITE_DIR.iterdir()]}")
-    print("[gen_macro_zone_chart v5.4] 완료")
+    print("[gen_macro_zone_chart v5.5] 완료")
 
 if __name__ == "__main__":
     main()
