@@ -25,10 +25,10 @@ jobs:
       - name: Generate overlay.json + index.html
         run: |
           python3 gen_macro_zone_chart.py
-          echo "=== site/ 내용 ==="
-          ls -la site/
+          echo "=== site/ 구조 ==="
+          find site/ -type f
           echo "=== overlay.json 앞부분 ==="
-          head -c 200 site/overlay.json || echo "overlay.json 없음"
+          head -c 200 site/argusmap/overlay.json || echo "overlay.json 없음"
       - name: Commit updated zone_data_v4.json (traj 누적)
         run: |
           git config user.name "ARGUS-Bot"
@@ -38,16 +38,21 @@ jobs:
           git push || echo "push 실패 (변경 없음)"
       - name: Verify site contents
         run: |
+          if [ ! -f site/argusmap/index.html ]; then
+            echo "ERROR: site/argusmap/index.html 없음"
+            exit 1
+          fi
+          if [ ! -f site/argusmap/overlay.json ]; then
+            echo "ERROR: site/argusmap/overlay.json 없음"
+            exit 1
+          fi
           if [ ! -f site/index.html ]; then
-            echo "ERROR: site/index.html 없음"
+            echo "ERROR: site/index.html (redirect) 없음"
             exit 1
           fi
-          if [ ! -f site/overlay.json ]; then
-            echo "ERROR: site/overlay.json 없음"
-            exit 1
-          fi
-          echo "site/index.html: $(wc -c < site/index.html) bytes"
-          echo "site/overlay.json: $(wc -c < site/overlay.json) bytes"
+          echo "site/index.html: $(wc -c < site/index.html) bytes (redirect)"
+          echo "site/argusmap/index.html: $(wc -c < site/argusmap/index.html) bytes"
+          echo "site/argusmap/overlay.json: $(wc -c < site/argusmap/overlay.json) bytes"
       - name: Enable Pages
         uses: actions/configure-pages@v4
         continue-on-error: true
