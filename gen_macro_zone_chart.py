@@ -12,11 +12,8 @@ ZONE_JSON = BASE_DIR / "zone_data_v4.json"
 TEMPLATE  = BASE_DIR / "template.html"
 LIVE_CSV  = BASE_DIR / "argus_data.csv"
 LONG_CSV  = BASE_DIR / "zone_long_trimmed.csv"
-SITE_DIR  = BASE_DIR / "site"
-MAP_DIR   = SITE_DIR / "argusmap"
-OVERLAY   = MAP_DIR / "overlay.json"
-INDEX     = MAP_DIR / "index.html"
-ROOT_IDX  = SITE_DIR / "index.html"
+OVERLAY   = BASE_DIR / "argusmap_overlay.json"
+INDEX     = BASE_DIR / "argusmap.html"
 
 def load_tail(path, n=65):
     """최근 n행 로드 (파생 지표 rolling 계산용 65행 기본)"""
@@ -96,15 +93,7 @@ def calc_comp_resid(get_macro, comp_params):
 
 def main():
     print("[gen_macro_zone_chart v5.5] 시작")
-    MAP_DIR.mkdir(parents=True, exist_ok=True)
 
-    # root → /argusmap/ 리다이렉트
-    ROOT_IDX.write_text(
-        '<!DOCTYPE html><html><head>'
-        '<meta http-equiv="refresh" content="0;url=argusmap/">'
-        '</head><body><a href="argusmap/">ARGUS Map</a></body></html>\n',
-        encoding="utf-8"
-    )
 
     if not TEMPLATE.exists():
         print("ERROR: template.html 없음"); sys.exit(1)
@@ -234,7 +223,7 @@ def main():
     zd_sha = hashlib.sha256(ZONE_JSON.read_bytes()).hexdigest()[:8]
     print(f"  zone_data_v4.json 갱신 ({len(zd_json)//1024}KB / sha={zd_sha})")
 
-    print(f"  site/argusmap/ 파일: {[f.name for f in MAP_DIR.iterdir()]}")
+    print(f"  출력: argusmap.html + argusmap_overlay.json")
     print("[gen_macro_zone_chart v5.5] 완료")
 
 if __name__ == "__main__":
