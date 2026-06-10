@@ -1,61 +1,36 @@
 name: ARGUS Macro Zone Chart
+
 on:
-  schedule:
-    - cron: '30 21 * * *'
   workflow_dispatch:
+  schedule:
+    - cron: '30 21 * * 1-5'  # 월~금 UTC 21:30 (KST 06:30)
+
 permissions:
   contents: write
-  pages: write
-  id-token: write
+
 jobs:
-  build-and-deploy:
+  generate:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Python
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install dependencies
-        run: pip install pandas numpy scipy
-      - name: Generate zone chart (site/argusmap/)
+        run: pip install pandas numpy
+
+      - name: Generate zone chart
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python gen_macro_zone_chart.py
+
+      - name: Commit overlay + chart
         run: |
-          python3 gen_macro_zone_chart.py
-      - name: Copy static files to site/
-        run: |
-          # repo root의 정적 HTML/JSON → site/ 복사 (Pages 서빙용)
-          for f in briefing.html oracle_briefing.html oracle_briefing.json latest.json; do
-            [ -f "$f" ] && cp "$f" site/ && echo "  복사: $f"
-          done
-          echo "=== site/ 최종 구조 ==="
-          find site/ -type f -exec ls -lh {} \;
-      - name: Commit updated zone_data_v4.json (traj 누적)
-        run: |
-          git config user.name "ARGUS-Bot"
-          git config user.email "argus-bot@users.noreply.github.com"
-          git add zone_data_v4.json
-          git diff --staged --quiet || git commit -m "🔧 traj: $(date -u +%Y-%m-%d) 궤적 누적"
-          git push || echo "push 실패 (변경 없음)"
-      - name: Verify site contents
-        run: |
-          for f in site/index.html site/argusmap/index.html site/argusmap/overlay.json; do
-            if [ ! -f "$f" ]; then
-              echo "ERROR: $f 없음"; exit 1
-            fi
-          done
-          echo "=== 파일 크기 ==="
-          find site/ -type f -exec ls -lh {} \;
-      - name: Enable Pages
-        uses: actions/configure-pages@v4
-        continue-on-error: true
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add argusmap.html argusmap_overlay.json zone_data_v4.json
+          git diff --staged --quiet || git commit -m "🔧 zone chart: $(date -u +%Y-%m-%d) overlay 갱신"
+          git push
