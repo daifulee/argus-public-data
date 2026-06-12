@@ -4,7 +4,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; background: #0f172a; color: #e2e8f0; font-size: 10px; line-height: 1.5; padding: 16px; max-width: 900px; margin: 0 auto; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #0f172a; color: #e2e8f0; font-size: 10px; line-height: 1.5; padding: 16px; max-width: 900px; margin: 0 auto; word-break: keep-all; }
 .hdr { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:linear-gradient(135deg,#1e293b,#0f172a); border-radius:10px; margin-bottom:12px; border-left:4px solid #3b82f6; flex-wrap:wrap; }
 .hdr h1 { font-size:18px; font-weight:900; }
 .badge { display:inline-block; padding:3px 10px; border-radius:5px; font-weight:700; font-size:10px; }
@@ -21,7 +21,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #0f172a; color: #e2e
 table { width:100%; border-collapse:collapse; font-size:10px; }
 th { text-align:left; color:#64748b; font-weight:500; padding:5px 8px; border-bottom:1px solid #334155; font-size:9px; }
 td { padding:5px 8px; border-bottom:1px solid rgba(30,41,59,0.5); }
-.td { background:#0f172a; border-radius:8px; overflow:hidden; }
+.td { background:#0f172a; border-radius:8px; overflow:auto; -webkit-overflow-scrolling:touch; }
 .gb { display:inline-block; padding:2px 8px; border-radius:4px; font-weight:700; font-size:10px; }
 .gb-S { border:1.5px solid #facc15; color:#facc15; }
 .gb-A { border:1.5px solid #22d3ee; color:#22d3ee; }
@@ -52,6 +52,11 @@ details[open] summary { color: #e2e8f0; }
     .g2, .g3 { grid-template-columns: 1fr; }
     .stat-val { font-size: 22px; }
     body { padding: 8px; font-size: 9px; }
+    th, td { white-space: nowrap; }
+    .sr { flex-wrap: wrap; row-gap: 2px; }
+    .sn { min-width: 0; flex: 1 1 auto; }
+    .sv { min-width: 0; white-space: nowrap; }
+    .sc { flex: 1 1 100%; order: 9; padding-left: 21px; }
 }
 </style></head><body>
 <div class="hdr">
@@ -59,7 +64,7 @@ details[open] summary { color: #e2e8f0; }
 <h1>ARGUS Daily Brief</h1>
 <span class="badge bb">Crown #77</span>
 <span class="badge bv">v9.1.0</span></div>
-<div style="color:#64748b;font-size:10px">4892 · 2026-06-12 21:47 KST</div></div>
+<div style="color:#64748b;font-size:10px">4892 · 2026-06-12 23:10 KST</div></div>
 <div class="card al">
 <div class="ct">🎯 Action Board</div>
 <div class="g3" style="margin-bottom:10px">
@@ -561,7 +566,7 @@ DXY≥100 TLT 50%청산(현 99.95)</div>
 
 </div>
 <div class="footer">
-v9.1.0 / Crown #77 / PRIMA2_v0_5_4_COPX_TNX_LT2_BOOST_LIVE / 2026-06-12 21:47 KST<br>
+v9.1.0 / Crown #77 / PRIMA2_v0_5_4_COPX_TNX_LT2_BOOST_LIVE / 2026-06-12 23:10 KST<br>
 <span style="color:#475569">격언 #80: Phase A fwd60 ≠ portfolio BT alpha</span>
 </div>
 </body></html>
