@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# 🔧 S195 (2026-06-12, v3.2): ① v4→v5 데이터 경로 갱신 (BT_LONG_v5_complete.csv, 정본 sha 6048e3f8672f, S188 재기준선)
+#    ② Net_Liquidity 공식 정정 — RRP raw 차감 → ×1e3 (BT v5 S188 NL 정정 규약 정합, 자본 경로 0 감사 완료)
+#    ③ main 합류점 전열 재계산 신설 (이력 자기치유). 베이스 = 레포 실행본 v3.1 (sha b1107f86d9ba, Commander 첨부 2026-06-12).
 """
 🦅 ARGUS DATA FETCHER v3.1 — ECY/CAPE 자동 fetch 추가 (S141 Crown #73 정합)
 PRIMA (최신 Crown #73 = v0.4.0-EXSN_INDIVIDUAL) 전용 데이터 수집기
@@ -210,7 +213,7 @@ PRIMA (최신 Crown #73 = v0.4.0-EXSN_INDIVIDUAL) 전용 데이터 수집기
        - argus_data.csv 5월 4~7일 PMI=10.3 회귀 → 매크로 결정 왜곡
        - 결정: source 자체 삭제, BT_LONG carry-forward + ffill 단독 사용
   🌟 2. PMI 신규 절차 (v2.8):
-       - cumulative 모드: BT_LONG_v4_complete.csv 단독 통합 (_integrate_bt_long_pmi)
+       - cumulative 모드: BT_LONG_v5_complete.csv 단독 통합 (_integrate_bt_long_pmi)
        - today 모드: ffill carry-forward (어제 값 자동 유지)
   🌟 3. DBnomics 함수 보존 (미호출 + DEPRECATED 명시)
        - _fetch_ism_pmi_dbnomics_series / _fetch_ism_pmi_dbnomics_latest
@@ -256,7 +259,7 @@ PRIMA (최신 Crown #73 = v0.4.0-EXSN_INDIVIDUAL) 전용 데이터 수집기
 
 v2.3 패치 사항 (보존):
   ✅ DBnomics ISM/pmi/pm 자동 fetch (Option 5)
-  ✅ BT_LONG_v4_complete.csv fallback
+  ✅ BT_LONG_v5_complete.csv fallback
 
 v2.2 패치 사항 (보존):
   ✅ FRED_API_KEY 검증 + ffill + 휴장 skip + NAPM 차단
@@ -314,7 +317,7 @@ LIVE_SRC_VALUES = {
     'yahoo_live', 'fred_live', 'fred_graph',
     'tradingeconomics', 'cnn_api', 'cnn_html', 'argus_proxy'
 }
-BT_LONG_PATH = os.path.join(SCRIPT_DIR, "BT_LONG_v4_complete.csv")
+BT_LONG_PATH = os.path.join(SCRIPT_DIR, "BT_LONG_v5_complete.csv")
 SEED_DAYS    = 450
 KST          = timezone(timedelta(hours=9))
 
@@ -414,7 +417,7 @@ def _fetch_ism_pmi_dbnomics_series(start: str = None) -> pd.Series:
     ─────────────────────────────────────────────────────────────────
     본 함수는 v2.8 시점에 모든 호출처에서 제거됨.
     원인: DBnomics ISM/pmi/pm 2025-09 이후 source 오염 (10.3 ~ 11.1 비정상).
-    대체: BT_LONG_v4_complete.csv carry-forward + ffill 단독 사용.
+    대체: BT_LONG_v5_complete.csv carry-forward + ffill 단독 사용.
     함수 자체는 보존 (향후 source 정합 회복 시 재활용 가능성).
     
     [기존 docstring]
@@ -522,7 +525,7 @@ def _fetch_ism_pmi_dbnomics_latest():
 # 4중 방어 채택 (옵션 1):
 #   1차: Tradingeconomics scrape (LIVE 정합 입증)
 #   2차: FRED USSLIND proxy (FRED_API_KEY 사용 + Leading Index ≈ PMI proxy)
-#   3차: BT_LONG_v4_complete.csv carry-forward (v2.8 logic 보존)
+#   3차: BT_LONG_v5_complete.csv carry-forward (v2.8 logic 보존)
 #   4차: ffill (어제 csv 값, 안전망)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -627,7 +630,7 @@ def _fetch_pmi_4layer_defense() -> tuple:
     
     1차: Tradingeconomics scrape (LIVE 정합 입증)
     2차: FRED USSLIND proxy (proxy 본질 명시 + 현재 skip 처리)
-    3차: BT_LONG_v4_complete.csv carry-forward (v2.8 logic 보존)
+    3차: BT_LONG_v5_complete.csv carry-forward (v2.8 logic 보존)
     4차: ffill (어제 csv 값, 안전망)
     
     Returns:
@@ -1142,7 +1145,7 @@ def _fred_latest_with_date(sid: str) -> tuple:
 
 
 def _integrate_bt_long_pmi(df: pd.DataFrame) -> pd.DataFrame:
-    """v2.2: BT_LONG_v4_complete.csv에서 PMI 시리즈 통합 (DBnomics 실패 시 fallback).
+    """v2.2: BT_LONG_v5_complete.csv에서 PMI 시리즈 통합 (DBnomics 실패 시 fallback).
 
     🌟 v2.3에서 fallback 역할로 격하 — DBnomics 우선.
     """
@@ -1245,7 +1248,7 @@ def build_seed() -> pd.DataFrame:
 
     # Net_Liquidity
     if all(c in df.columns for c in ["WALCL","WTREGEN","RRPONTSYD"]):
-        df["Net_Liquidity"] = df["WALCL"] - df["WTREGEN"] - df["RRPONTSYD"]
+        df["Net_Liquidity"] = df["WALCL"] - df["WTREGEN"] - df["RRPONTSYD"] * 1e3  # 🌟 v3.2 (S195): RRP 십억$→백만$ — BT v5 정본 규약
 
     # 🌟 v2.5 (S67 #6): VIX_VIX3M_ratio 파생 컬럼 (term structure 차원, S67 #4 결정적 발견)
     # 정상 contango ~0.89 / backwardation > 1.0 (강 위기 + 단기 공포 정점)
@@ -1410,7 +1413,7 @@ def fetch_today_row() -> dict:
     # Net_Liquidity
     wl = row.get("WALCL"); wt = row.get("WTREGEN"); rr = row.get("RRPONTSYD")
     if wl is not None and wt is not None and rr is not None:
-        row["Net_Liquidity"] = wl - wt - rr
+        row["Net_Liquidity"] = wl - wt - rr * 1e3  # 🌟 v3.2 (S195): RRP ×1e3 — BT v5 정본 규약
 
     # 🌟 v2.5 (S67 #6): VIX_VIX3M_ratio 파생 (term structure 차원)
     vix_v = row.get("VIX"); vix3m_v = row.get("VIX3M")
@@ -1866,6 +1869,15 @@ def main():
         df = apply_ffill_safety(df)
 
         print(f"  ✅ {len(df)}행")
+
+    # 🌟 v3.2 (S195): Net_Liquidity 전열 재계산 — append 혼합 차단 + 과거 raw식 이력 자기치유
+    #   매 실행 일괄 (VIX_VIX3M_ratio 패턴) · 구성요소별 ffill 인라인 (fds_builder NL_fixed 규약 동일)
+    #   양 분기(누적/append) 합류점 배치 — 어느 경로든 정본 규약 보장
+    if all(c in df.columns for c in ["WALCL", "WTREGEN", "RRPONTSYD"]):
+        df["Net_Liquidity"] = (df["WALCL"].ffill() - df["WTREGEN"].ffill()
+                               - df["RRPONTSYD"].ffill() * 1e3)
+        _nl_valid = df["Net_Liquidity"].notna().sum()
+        print(f"  🌟 Net_Liquidity 전열 재계산 (RRP ×1e3 정본 규약, v3.2): {_nl_valid}/{len(df)}일")
 
     print_quality(df)
     
