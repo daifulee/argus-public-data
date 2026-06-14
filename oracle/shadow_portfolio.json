@@ -1,0 +1,19 @@
+[
+  {
+    "date": "2026-06-12",
+    "weights": {
+      "GLD": 0.2,
+      "NLR": 0.1774,
+      "COPX": 0.1535,
+      "SMH": 0.105,
+      "PAVE": 0.1005,
+      "SGOV": 0.1,
+      "XLU": 0.0958,
+      "QQQM": 0.0678
+    },
+    "source": "oracle_autopilot_v1.0.5",
+    "n_pos": 8,
+    "logged_utc": "2026-06-14T08:12:35Z",
+    "valid": true
+  }
+]
