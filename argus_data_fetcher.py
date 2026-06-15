@@ -11,7 +11,7 @@
 #    ② Net_Liquidity 공식 정정 — RRP raw 차감 → ×1e3 (BT v5 S188 NL 정정 규약 정합, 자본 경로 0 감사 완료)
 #    ③ main 합류점 전열 재계산 신설 (이력 자기치유). 베이스 = 레포 실행본 v3.1 (sha b1107f86d9ba, Commander 첨부 2026-06-12).
 """
-🦅 ARGUS DATA FETCHER v3.3 — ECY/CAPE 자동 fetch 추가 (S141 Crown #73 정합)
+🦅 ARGUS DATA FETCHER v3.4 — ECY/CAPE 자동 fetch 추가 (S141 Crown #73 정합)
 PRIMA (최신 Crown #73 = v0.4.0-EXSN_INDIVIDUAL) 전용 데이터 수집기
 
 🌟 v3.1 변경 사항 (S141, 2026-05-26, Commander 명령):
@@ -1397,7 +1397,7 @@ def fetch_today_row(target_date=None) -> dict:
         # row['PMI'] 미설정 → ffill carry-forward (v2.8 logic 보존)
         # 🌟 v2.12 (S69 #5): 3~4차 fallback = ffill source 명시
         row['PMI_source'] = "ffill"
-        print(f"  🟡 PMI: 4중 방어 1~2차 실패 → ffill carry-forward (source={pmi_source})")
+        print(f"  🟡 PMI: 4중 방어 1~2차 실패 → ffill carry-forward (source={row['PMI_source']})")
         # 격언 #67 v3 dead source 정정 + 5조 ③ 데이터 위조 금지
 
     # 🌟 v2.10 (S69 #2, Commander 명령 "옵션 D 채택"): F&G Index 4중 방어 fetch
@@ -1756,7 +1756,7 @@ def _resolve_target_dates():
 
 def main():
     t0 = time.time()
-    print(f"🦅 ARGUS DATA FETCHER v3.3 — {datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')}")
+    print(f"🦅 ARGUS DATA FETCHER v3.4 — {datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')}")
     print(f"   FRED_API_KEY: {'✅ 설정됨' if FRED_API_KEY else '🚨 부재'}")
     print(f"   BT_LONG_PATH: {'✅ 가용' if os.path.exists(BT_LONG_PATH) else '⚠️ 부재 (DBnomics 실패 시 fallback 불가)'}")
     print(f"   PMI source:   🌟 4중 방어 (Tradingeconomics 1차 + USSLIND proxy 2차 + BT_LONG 3차 + ffill 4차, v2.9)")
