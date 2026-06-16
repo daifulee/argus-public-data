@@ -1,10 +1,10 @@
 {
-  "date": "2026-06-12",
+  "date": "2026-06-15",
   "changed": false,
   "entered": [],
   "exited": [],
   "reweighted": [],
-  "change_reason": "초기 기록 (전일 데이터 없음)",
+  "change_reason": "전일과 동일 (포지션·비중 무변화)",
   "positions": {
     "GLD": 0.577,
     "EWZ": 0.2115,
@@ -12,7 +12,7 @@
     "TLT": 0.0705
   },
   "exposure": 1.0,
-  "actions": "SELL SLV (WTI>80)",
+  "actions": "",
   "engine": "PRIMA2_v0_5_4_COPX_TNX_LT2_BOOST_LIVE.py",
-  "generated_utc": "2026-06-15T10:48:17Z"
+  "generated_utc": "2026-06-16T07:22:04Z"
 }
