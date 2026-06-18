@@ -1,18 +1,41 @@
 {
-  "date": "2026-06-16",
-  "changed": false,
+  "date": "2026-06-17",
+  "changed": true,
   "entered": [],
-  "exited": [],
-  "reweighted": [],
-  "change_reason": "전일과 동일 (포지션·비중 무변화)",
+  "exited": [
+    {
+      "ticker": "TLT",
+      "reason": "TLT_DXY_2nd"
+    }
+  ],
+  "reweighted": [
+    {
+      "ticker": "EWZ",
+      "from": 0.2115,
+      "to": 0.2346,
+      "delta": 0.0231
+    },
+    {
+      "ticker": "GLD",
+      "from": 0.577,
+      "to": 0.6089,
+      "delta": 0.0319
+    },
+    {
+      "ticker": "XLE",
+      "from": 0.141,
+      "to": 0.1564,
+      "delta": 0.0154
+    }
+  ],
+  "change_reason": "청산 TLT(TLT_DXY_2nd) | 리밸 EWZ 0.211→0.235, GLD 0.577→0.609, XLE 0.141→0.156",
   "positions": {
-    "GLD": 0.577,
-    "EWZ": 0.2115,
-    "XLE": 0.141,
-    "TLT": 0.0705
+    "GLD": 0.6089,
+    "EWZ": 0.2346,
+    "XLE": 0.1564
   },
   "exposure": 1.0,
-  "actions": "",
+  "actions": "SELL TLT (TLT_DXY_2nd)",
   "engine": "PRIMA2_v0_5_4_COPX_TNX_LT2_BOOST_LIVE.py",
-  "generated_utc": "2026-06-17T09:24:54Z"
+  "generated_utc": "2026-06-18T02:34:22Z"
 }
