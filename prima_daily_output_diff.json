@@ -1,41 +1,49 @@
 {
-  "date": "2026-06-17",
+  "date": "2026-06-18",
   "changed": true,
-  "entered": [],
-  "exited": [
+  "entered": [
     {
-      "ticker": "TLT",
-      "reason": "TLT_DXY_2nd"
+      "ticker": "ITA",
+      "weight": 0.2286,
+      "reason": "SC4.1|A"
+    },
+    {
+      "ticker": "SLV",
+      "weight": 0.231,
+      "reason": "SC12.4|S"
     }
   ],
+  "exited": [],
   "reweighted": [
     {
       "ticker": "EWZ",
-      "from": 0.2115,
-      "to": 0.2346,
-      "delta": 0.0231
+      "from": 0.2346,
+      "to": 0.0836,
+      "delta": -0.151
     },
     {
       "ticker": "GLD",
-      "from": 0.577,
-      "to": 0.6089,
-      "delta": 0.0319
+      "from": 0.6089,
+      "to": 0.4009,
+      "delta": -0.208
     },
     {
       "ticker": "XLE",
-      "from": 0.141,
-      "to": 0.1564,
-      "delta": 0.0154
+      "from": 0.1564,
+      "to": 0.0558,
+      "delta": -0.1006
     }
   ],
-  "change_reason": "청산 TLT(TLT_DXY_2nd) | 리밸 EWZ 0.211→0.235, GLD 0.577→0.609, XLE 0.141→0.156",
+  "change_reason": "진입 ITA(SC4.1|A), SLV(SC12.4|S) | 리밸 EWZ 0.235→0.084, GLD 0.609→0.401, XLE 0.156→0.056",
   "positions": {
-    "GLD": 0.6089,
-    "EWZ": 0.2346,
-    "XLE": 0.1564
+    "GLD": 0.4009,
+    "SLV": 0.231,
+    "ITA": 0.2286,
+    "EWZ": 0.0836,
+    "XLE": 0.0558
   },
   "exposure": 1.0,
-  "actions": "SELL TLT (TLT_DXY_2nd)",
+  "actions": "BUY SLV (SC12.4|S) ; BUY ITA (SC4.1|A)",
   "engine": "PRIMA2_v0_5_5_NFCI_PD_CQQQ_LIVE.py",
-  "generated_utc": "2026-06-18T15:38:44Z"
+  "generated_utc": "2026-06-19T02:34:51Z"
 }
