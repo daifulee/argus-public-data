@@ -1,10 +1,10 @@
 {
   "date": "2026-06-19",
-  "run_at": "2026-06-19T13:33:57.779059",
+  "run_at": "2026-06-19T13:47:09.130963",
   "version": "1.0.6",
   "regime": "?",
   "gradient": 50.0,
-  "conviction": 35.4,
+  "conviction": 38.4,
   "integrity": "21/26",
   "smoke": false,
   "allocation": {
