@@ -11,7 +11,7 @@
 #    ② Net_Liquidity 공식 정정 — RRP raw 차감 → ×1e3 (BT v5 S188 NL 정정 규약 정합, 자본 경로 0 감사 완료)
 #    ③ main 합류점 전열 재계산 신설 (이력 자기치유). 베이스 = 레포 실행본 v3.1 (sha b1107f86d9ba, Commander 첨부 2026-06-12).
 """
-🦅 ARGUS DATA FETCHER v3.4 — ECY/CAPE 자동 fetch 추가 (S141 Crown #73 정합)
+🦅 ARGUS DATA FETCHER v3.3 — ECY/CAPE 자동 fetch 추가 (S141 Crown #73 정합)
 PRIMA (최신 Crown #73 = v0.4.0-EXSN_INDIVIDUAL) 전용 데이터 수집기
 
 🌟 v3.1 변경 사항 (S141, 2026-05-26, Commander 명령):
@@ -312,7 +312,7 @@ OUTPUT_MONTHLY_PATH = os.path.join(SCRIPT_DIR, "argus_data_monthly.csv")
 WEEKLY_COLS = ['NFCI', 'ICSA', 'CCSA',
                'WALCL', 'WTREGEN', 'RRPONTSYD', 'Net_Liquidity',
                'T10Y2Y']
-MONTHLY_COLS = ['PMI', 'UMCSENT', 'SAHMCURRENT', 'F_G_Score', 'F_G_Rating', 'ECY', 'CAPE']
+MONTHLY_COLS = ['PMI', 'UMCSENT', 'SAHMCURRENT', 'F_G_Score', 'F_G_Rating', 'ECY', 'CAPE', 'SEMI_REACCEL', 'CONSUMER_ELEC']  # 🆕 [S214] 반도체 선행신호 월간군
 
 # 🌟 v3.1 (S141): Shiller ECY/CAPE fetch 설정
 SHILLER_XLS_URL = "https://www.econ.yale.edu/~shiller/data/ie_data.xls"
@@ -323,7 +323,8 @@ CAPE_VALID_RANGE = (5.0, 60.0)
 # v3.0 source 값 매트릭스 (LIVE 식별)
 LIVE_SRC_VALUES = {
     'yahoo_live', 'fred_live', 'fred_graph',
-    'tradingeconomics', 'cnn_api', 'cnn_html', 'argus_proxy'
+    'tradingeconomics', 'cnn_api', 'cnn_html', 'argus_proxy',
+    'fred_semi_live',  # 🆕 [S214] 반도체 선행신호 (Oracle LEAD-7)
 }
 BT_LONG_PATH = os.path.join(SCRIPT_DIR, "BT_LONG_v5_complete.csv")
 SEED_DAYS    = 450
@@ -411,6 +412,15 @@ LIVE_SOURCE_COLS = [
 FFILL_COLS = FFILL_COLS + LIVE_SOURCE_COLS
 
 DEPRECATED_FRED = {"NAPM"}
+
+# 🆕 [S214] FRED 반도체 선행신호 (Oracle LEAD-7) — SEMI_REACCEL/CONSUMER_ELEC
+#   SEMI_REACCEL  = A34SNO_roc3m>0 ∩ U34SIS_roc3m<0          (주문↑ ∩ 재고↓)
+#   CONSUMER_ELEC = RSEAS_roc3m>0 ∩ R42343M163SCEN_roc3m<0   (소매↑ ∩ 채널재고↓)
+SEMI_SERIES_LAG = {"A34SNO": 35, "U34SIS": 35, "RSEAS": 16, "R42343M163SCEN": 45}
+SEMI_SIGNAL_DEF = {
+    "SEMI_REACCEL":  (("A34SNO", "U34SIS"), 35),
+    "CONSUMER_ELEC": (("RSEAS", "R42343M163SCEN"), 45),
+}
 
 US_HOLIDAYS_FIXED = [
     (1, 1),    # New Year's Day
@@ -1096,6 +1106,71 @@ def _fred_series(sid: str, start: str) -> pd.Series:
         return pd.Series(dtype=float)
 
 
+def _fetch_semi_signals(start: str, today) -> "pd.DataFrame":
+    """🆕 [S214] FRED 반도체 수요 선행신호 — Oracle AI_POWER LEAD-7.
+
+    기존 _fred_series() 재사용(중복 fetch 없음): 4개 월간 시리즈 fetch
+    → 월초 정렬 → roc3m → SEMI_REACCEL/CONSUMER_ELEC → pub_lag PIT → 일간 ffill.
+
+    발표일(pub_lag) PIT: 월간 시리즈 month M(월초)은 월말+pub_lag일에 발행.
+      신호 month M = 구성 시리즈 max(pub_lag) 경과 후 사용 가능(look-ahead 차단).
+      일간 date D = 발행일 ≤ D 인 최신 month 신호값(ffill).
+
+    자본 중립: Oracle 보고 전용, PRIMA 미반영(frontier 닫힘). 데이터 부재 시 NaN
+    → Oracle LEAD-7가 DEFAULT 폴백(하위호환).
+
+    Args:
+        start: 이력 시작(예: "2006-01-01"). today_row는 ~400일 윈도면 충분.
+        today: 기준일(str/date/Timestamp). 이 날짜까지 일간 신호 반환.
+    Returns:
+        DataFrame(index=일간 Date, cols=[SEMI_REACCEL, CONSUMER_ELEC]).
+    """
+    today_ts = pd.Timestamp(today)
+    didx = pd.date_range(start, today_ts, freq="D")
+    # ① 4개 월간 시리즈 fetch (_fred_series 재사용 — API key + graph CSV fallback)
+    raw = {}
+    for sid in SEMI_SERIES_LAG:
+        s = _fred_series(sid, start)
+        if not s.empty:
+            raw[sid] = s.sort_index()
+        time.sleep(0.1)
+    if not raw:
+        return pd.DataFrame(
+            {"SEMI_REACCEL": float("nan"), "CONSUMER_ELEC": float("nan")}, index=didx)
+    # ② 월초 정렬 + roc3m (3개월 전 대비 변화율)
+    monthly = pd.DataFrame(raw).resample("MS").last()
+    roc = {f"{sid}_roc3m": monthly[sid] / monthly[sid].shift(3) - 1.0
+           for sid in monthly.columns}
+
+    def _g(k):
+        return roc[k] if k in roc else pd.Series(float("nan"), index=monthly.index)
+
+    # ③ 신호 계산 (월간)
+    sig_m = pd.DataFrame(index=monthly.index)
+    sig_m["SEMI_REACCEL"]  = ((_g("A34SNO_roc3m") > 0) & (_g("U34SIS_roc3m") < 0)).astype(float)
+    sig_m["CONSUMER_ELEC"] = ((_g("RSEAS_roc3m") > 0) & (_g("R42343M163SCEN_roc3m") < 0)).astype(float)
+    # 구성 시리즈 roc 미산출 month는 NaN
+    for col, (comps, _lag) in SEMI_SIGNAL_DEF.items():
+        miss = pd.Series(False, index=monthly.index)
+        for c in comps:
+            miss = miss | (roc[f"{c}_roc3m"].isna() if f"{c}_roc3m" in roc else True)
+        sig_m.loc[miss, col] = float("nan")
+    # ④ pub_lag PIT + 일간 ffill (발행일 ≤ D 인 최신 month 신호)
+    out = pd.DataFrame(index=didx)
+    for col, (comps, lag) in SEMI_SIGNAL_DEF.items():
+        avail = pd.to_datetime(
+            [(m + pd.offsets.MonthEnd(0)) + pd.Timedelta(days=lag) for m in sig_m.index])
+        order = avail.argsort()
+        ad = avail[order]
+        vv = sig_m[col].values[order]
+        pos = ad.searchsorted(didx, side="right") - 1
+        daily = pd.Series(float("nan"), index=didx)
+        mask = pos >= 0
+        daily.iloc[mask] = vv[pos[mask]]
+        out[col] = daily.ffill()
+    return out
+
+
 def _fred_latest(sid: str) -> float | None:
     """FRED 시리즈 최신 가용 값 1개 반환.
     
@@ -1249,6 +1324,20 @@ def build_seed() -> pd.DataFrame:
             print(f"    ❌ {col} ({sid}): NaN")
         time.sleep(0.1)
 
+    # 🆕 [S214] FRED 반도체 선행신호 (SEMI_REACCEL/CONSUMER_ELEC) — Oracle LEAD-7
+    print("  📡 반도체 선행신호 (A34SNO/U34SIS/RSEAS/R42343)...")
+    try:
+        _semi = _fetch_semi_signals(s, df.index[-1])
+        for _c in ["SEMI_REACCEL", "CONSUMER_ELEC"]:
+            df[_c] = _semi[_c].reindex(df.index, method="ffill")
+            df[f"{_c}_source"] = "fred_semi_live"
+            print(f"    ✅ {_c}: {df[_c].notna().sum()}/{len(df)}일")
+    except Exception as _e:
+        print(f"    ⚠️ 반도체 선행신호 skip: {_e}")
+        for _c in ["SEMI_REACCEL", "CONSUMER_ELEC"]:
+            if _c not in df.columns:
+                df[_c] = float("nan")
+
     # TNX 보완
     if "TNX" not in df.columns and "DGS10" in df.columns:
         df["TNX"] = df["DGS10"]
@@ -1382,6 +1471,17 @@ def fetch_today_row(target_date=None) -> dict:
         for sid, col in FRED_SERIES.items():
             row[f"{col}_source"] = "ffill"
 
+    # 🆕 [S214] FRED 반도체 선행신호 (today_row) — Oracle LEAD-7
+    try:
+        _start_semi = (pd.Timestamp(today) - pd.Timedelta(days=400)).strftime("%Y-%m-%d")
+        _semi = _fetch_semi_signals(_start_semi, today)
+        for _c in ["SEMI_REACCEL", "CONSUMER_ELEC"]:
+            _v = _semi[_c].iloc[-1] if len(_semi) else float("nan")
+            row[_c] = float(_v) if _v == _v else float("nan")
+            row[f"{_c}_source"] = "fred_semi_live" if _v == _v else "ffill"
+    except Exception as _e:
+        print(f"    ⚠️ 반도체 선행신호(today) skip: {_e}")
+
     # 🌟 v2.9 (S69 #1, Commander 명령 "옵션 1 채택"): PMI 4중 방어 fetch
     #   1차: Tradingeconomics scrape (LIVE 정합 입증)
     #   2차: FRED USSLIND proxy (현재 skip — proxy 정확 매핑 부재)
@@ -1397,7 +1497,7 @@ def fetch_today_row(target_date=None) -> dict:
         # row['PMI'] 미설정 → ffill carry-forward (v2.8 logic 보존)
         # 🌟 v2.12 (S69 #5): 3~4차 fallback = ffill source 명시
         row['PMI_source'] = "ffill"
-        print(f"  🟡 PMI: 4중 방어 1~2차 실패 → ffill carry-forward (source={row['PMI_source']})")
+        print(f"  🟡 PMI: 4중 방어 1~2차 실패 → ffill carry-forward (source={pmi_source})")
         # 격언 #67 v3 dead source 정정 + 5조 ③ 데이터 위조 금지
 
     # 🌟 v2.10 (S69 #2, Commander 명령 "옵션 D 채택"): F&G Index 4중 방어 fetch
@@ -1756,7 +1856,7 @@ def _resolve_target_dates():
 
 def main():
     t0 = time.time()
-    print(f"🦅 ARGUS DATA FETCHER v3.4 — {datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')}")
+    print(f"🦅 ARGUS DATA FETCHER v3.3 — {datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')}")
     print(f"   FRED_API_KEY: {'✅ 설정됨' if FRED_API_KEY else '🚨 부재'}")
     print(f"   BT_LONG_PATH: {'✅ 가용' if os.path.exists(BT_LONG_PATH) else '⚠️ 부재 (DBnomics 실패 시 fallback 불가)'}")
     print(f"   PMI source:   🌟 4중 방어 (Tradingeconomics 1차 + USSLIND proxy 2차 + BT_LONG 3차 + ffill 4차, v2.9)")
