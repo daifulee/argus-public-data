@@ -1497,7 +1497,7 @@ def fetch_today_row(target_date=None) -> dict:
         # row['PMI'] 미설정 → ffill carry-forward (v2.8 logic 보존)
         # 🌟 v2.12 (S69 #5): 3~4차 fallback = ffill source 명시
         row['PMI_source'] = "ffill"
-        print(f"  🟡 PMI: 4중 방어 1~2차 실패 → ffill carry-forward (source={pmi_source})")
+        print(f"  🟡 PMI: 4중 방어 1~2차 실패 → ffill carry-forward (source={row['PMI_source']})")
         # 격언 #67 v3 dead source 정정 + 5조 ③ 데이터 위조 금지
 
     # 🌟 v2.10 (S69 #2, Commander 명령 "옵션 D 채택"): F&G Index 4중 방어 fetch
