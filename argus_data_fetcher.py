@@ -1,3 +1,4 @@
+# 🔧 v3.5 (2026-06-20, S218): ETF 가격 *_Close ffill 통합 — Yahoo batch 단일일 누락(ITA/VNM/CQQQ NaN→브리핑 $0.00) 근본 처방. apply_ffill_safety에 close_cols 1줄.
 # 🔧 v3.4 (2026-06-15, S200): Brent 원유 가산 — 운영 OIL축 열화 복원 (근본 처방, 분기 최소).
 #    추가: YAHOO_MACRO "BZ=F":"Brent" (WTI "CL=F" 미러, map-driven → build_seed/fetch_today_row/source 자동 흐름).
 #    LIVE_SOURCE_COLS += 'Brent_source'(ffill 보호) · print_quality += "Brent" · WEEKLY/MONTHLY 미등재(일간 정합, WTI 동일).
@@ -1563,7 +1564,12 @@ def apply_ffill_safety(df: pd.DataFrame) -> pd.DataFrame:
     🌟 v2.4 (S67 #5): CCSA 추가 (주간 시리즈, ICSA와 동일 패턴).
     """
     filled_count = {}
-    for col in FFILL_COLS:
+    # 🌟 v3.5 (S218): ETF 가격(*_Close) ffill 통합 — today-row Yahoo batch 부분 실패
+    #   (저유동 ETF ITA/VNM/CQQQ 단일일 NaN) 시 직전 유효 종가 carry-forward.
+    #   브리핑 $0.00 표시 차단 + 다음 실행 시 기존 NaN row도 소급 정정.
+    #   격언 #75 v4 source 정합 (매크로 4단 방어 ffill 철학을 ETF 가격으로 확장).
+    close_cols = [c for c in df.columns if c.endswith('_Close')]
+    for col in list(FFILL_COLS) + close_cols:
         if col not in df.columns:
             continue
         before = df[col].isna().sum()
