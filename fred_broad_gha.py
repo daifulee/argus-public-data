@@ -75,7 +75,7 @@ def fetch_series(fred, sid):
 
 def main():
     # --- FRED 키 확인 (없으면 즉시 실패 — 빈 산출/커밋 방지) ---
-    api_key = os.environ.get("FRED_API_KEY", "").strip()
+    api_key = os.environ.get("31055ea377d72466bdafa77e77f75860", "").strip()
     if not api_key:
         print("❌ FRED_API_KEY 환경변수 부재 — GHA Secret 등록 필요. 중단.", file=sys.stderr)
         sys.exit(1)
