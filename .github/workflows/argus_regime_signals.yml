@@ -1,0 +1,69 @@
+# =====================================================================
+# ARGUS — 비자본 선행·레짐 신호 일일 누적 워크플로 (S230 신설)
+# 배치: argus-public-data/.github/workflows/argus_regime_signals.yml
+# 동작: 동일 레포의 fred_broad.csv + argus_data.csv 에서 Regime Tag 신호 파생
+#       -> argus_regime_signals.csv 에 1행 멱등 누적 -> commit.
+# 자본 배분 금지 — 레짐 모니터링·audit·브리핑 컨텍스트 용도 (SIGNAL SSOT v1.0).
+# 순서: fred_broad.yml(fred_broad.csv 갱신) 완료 이후 실행할 것.
+#       신선도 가드(exit 3)가 소스 미갱신 시 누적을 안전 생략한다.
+# 인증: permissions.contents=write -> GITHUB_TOKEN 자기레포 커밋(폐기 PAT 우회).
+# =====================================================================
+name: ARGUS Regime Signals Daily
+
+on:
+  schedule:
+    # 평일 06:00 UTC (15:00 KST) — fred_broad 갱신(05:00 UTC 부근) 이후.
+    - cron: '0 6 * * 1-5'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: argus-regime-signals
+  cancel-in-progress: false
+
+jobs:
+  log-regime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout (argus-public-data, self)
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install --quiet pandas numpy
+
+      # 동일 레포 로컬 CSV 재사용 (FRED 중복 호출 없음)
+      - name: Append today's regime signals
+        env:
+          LOCAL_FRED_CSV: fred_broad.csv
+          LOCAL_DATA_CSV: argus_data.csv
+          REGIME_CSV: argus_regime_signals.csv
+          FRESHNESS_DAYS: '7'
+        run: |
+          python argus_regime_signals_fetcher.py
+          status=$?
+          if [ "$status" -eq 3 ]; then
+            echo "::warning::소스 데이터 stale — 누적 생략(정상 가드)."
+            exit 0
+          fi
+          exit "$status"
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "argus-regime-bot"
+          git config user.email "argus-regime-bot@users.noreply.github.com"
+          if [ -n "$(git status --porcelain argus_regime_signals.csv)" ]; then
+            git add argus_regime_signals.csv
+            git commit -m "regime: daily signals $(date -u +%Y-%m-%d)"
+            git push
+            echo "regime push 완료"
+          else
+            echo "변경 없음 — 커밋 생략"
+          fi
