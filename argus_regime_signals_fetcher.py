@@ -1,50 +1,101 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ARGUS 비자본 선행·레짐 신호 일일 누적 페처 (S230 신설)
+ARGUS 비자본 선행·레짐 신호 일일 누적 페처 v2 (S230, FRED API 직접)
 ===================================================================
 목적: §40v3 자본 NO-GO이나 '선행지표로 의미 있는' Regime Tag 신호(ARGUS SIGNAL
       SSOT v1.0)를 매 영업일 1행 누적 저장 -> argus-public-data/argus_regime_signals.csv.
-      자본 배분 금지 (전 항목 자본 무효) — 레짐 모니터링·audit 트리거·브리핑 컨텍스트 용도.
+      자본 배분 금지 — 레짐 모니터링·audit·브리핑 컨텍스트 용도.
 
-소스 (중복 FRED 호출 없음 — 기존 일일 산출물 재사용):
-  - fred_broad.csv  : DEXKOUS·WALCL·M2REAL·JTSJOL·RRSFS·PERMIT·IPG3344S
-  - argus_data.csv  : WTI·MOVE
+[v2 근본 수정] fred_broad.csv 위치 의존 제거 (v1은 404 — public 레포에 부재).
+   필요한 7개 FRED 시리즈를 FRED API에서 직접 페치 (자체완결). FRED_API_KEY 시크릿 사용.
+   로컬 fred_broad.csv가 있으면(LOCAL_FRED_CSV) 그것 우선 — API 호출 회피.
+
+소스:
+  - FRED API     : DEXKOUS·WALCL·M2REAL·JTSJOL·RRSFS·PERMIT·IPG3344S (또는 LOCAL_FRED_CSV)
+  - argus_data.csv : WTI·MOVE (argus-public-data 루트, LOCAL_DATA_CSV 우선)
 
 수록 신호 (Regime Tag SSOT v1.0):
-  SIG-A1 USD_KRW(DEXKOUS)        -> SMH/SLV 레짐  (z>0.5 = KRW_WEAK)
-  SIG-A2 US유동성(WALCL/M2REAL/JTSJOL/RRSFS) -> CQQQ 역풍 (composite z<-0.5 = LIQ_CONTRACTION)
-  SIG-A3 주택(PERMIT yoy)         -> PAVE 사이클 (yoy 하위30% = HOUSING_BUST)
-  SIG-B1 반도체생산(IPG3344S yoy) -> SMH 사이클  (yoy 하위30% = SEMI_TROUGH)
+  SIG-A1 USD_KRW(DEXKOUS)        -> SMH/SLV  (z>0.5 = KRW_WEAK)
+  SIG-A2 US유동성(WALCL/M2REAL/JTSJOL/RRSFS) -> CQQQ 역풍 (composite z<-0.5 or chg60<0 = LIQ_CONTRACTION)
+  SIG-A3 주택(PERMIT yoy)         -> PAVE     (yoy 하위30% = HOUSING_BUST)
+  SIG-B1 반도체생산(IPG3344S yoy) -> SMH      (yoy 하위30% = SEMI_TROUGH)
   SIG-B2 WTI∩MOVE                -> EWZ 회복환경 (WTI<70 ∩ MOVE 60d 하락 = EWZ_RECOVERY)
-  (TIER C IRON_ORE/COT = alt-data 확장 슬롯 — 별도 소싱 시 확장)
+  (TIER C IRON_ORE/COT = alt-data 확장 슬롯)
 
-특성: 멱등 upsert(같은 Date 교체) · 컬럼 합집합 · raw 값 + 파생(z/yoy/pct) + 상태 플래그 동시 저장
-      -> 후속 분석에서 임계·정의 변경에도 재현 가능. 자본 게이트(§40v3) 불변.
+특성: 멱등 upsert · 컬럼 합집합 · raw+파생(z/yoy/pct)+상태 플래그 동시 저장 · 신선도 가드(exit 3).
 
-env: REGIME_CSV / LOCAL_FRED_CSV / LOCAL_DATA_CSV / FRESHNESS_DAYS
+env: FRED_API_KEY(필수, 단 LOCAL_FRED_CSV 제공 시 불요) / REGIME_CSV / LOCAL_FRED_CSV /
+     LOCAL_DATA_CSV / FRESHNESS_DAYS / FRED_START
 """
 import os
 import io
 import sys
+import json
 import urllib.request
+import urllib.parse
 import numpy as np
 import pandas as pd
 
 PUBLIC_BASE = "https://raw.githubusercontent.com/daifulee/argus-public-data/main"
-UA = {"User-Agent": "ARGUS-RegimeSignals/1.0 (+https://github.com/daifulee/argus-public-data)"}
+FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
+UA = {"User-Agent": "ARGUS-RegimeSignals/2.0 (+https://github.com/daifulee/argus-public-data)"}
 OUT_CSV = os.environ.get("REGIME_CSV", "argus_regime_signals.csv")
 FRESHNESS_DAYS = int(os.environ.get("FRESHNESS_DAYS", "7"))
+FRED_START = os.environ.get("FRED_START", "2005-01-01")
+FRED_SERIES = ["DEXKOUS", "WALCL", "M2REAL", "JTSJOL", "RRSFS", "PERMIT", "IPG3344S"]
 
 
-def _read(name_or_url, local_env):
-    """로컬(env 지정) 우선 -> PUBLIC fetch. Date 인덱스 일별 정렬 반환."""
-    local = os.environ.get(local_env, "")
+def fetch_fred(series_ids, api_key, start=FRED_START):
+    """FRED API에서 시리즈들을 페치 -> 영업일 인덱스 ffill DataFrame (컬럼=series_id)."""
+    frames = {}
+    for sid in series_ids:
+        q = urllib.parse.urlencode({
+            "series_id": sid, "api_key": api_key,
+            "file_type": "json", "observation_start": start,
+        })
+        req = urllib.request.Request(f"{FRED_BASE}?{q}", headers=UA)
+        with urllib.request.urlopen(req, timeout=40) as r:
+            obs = json.loads(r.read().decode()).get("observations", [])
+        data = {}
+        for o in obs:
+            v = o.get("value", ".")
+            try:
+                data[pd.Timestamp(o["date"])] = float(v) if v not in (".", "") else np.nan
+            except (ValueError, KeyError):
+                continue
+        frames[sid] = pd.Series(data)
+    df = pd.DataFrame(frames).sort_index()
+    if df.empty:
+        raise RuntimeError("FRED 페치 결과 공백 — API 키/시리즈 확인")
+    bidx = pd.bdate_range(df.index.min(), df.index.max())
+    return df.reindex(bidx).ffill()
+
+
+def read_fred():
+    """LOCAL_FRED_CSV 있으면 우선, 없으면 FRED API 직접 페치."""
+    local = os.environ.get("LOCAL_FRED_CSV", "")
+    if local and os.path.exists(local):
+        df = pd.read_csv(local)
+        dc = "Date" if "Date" in df.columns else df.columns[0]
+        df[dc] = pd.to_datetime(df[dc])
+        return df.set_index(dc).sort_index()
+    key = os.environ.get("FRED_API_KEY", "")
+    if not key:
+        raise RuntimeError(
+            "FRED_API_KEY 미설정 + LOCAL_FRED_CSV 부재. "
+            "워크플로 env 에 FRED_API_KEY 시크릿을 전달하거나 LOCAL_FRED_CSV 경로 지정."
+        )
+    return fetch_fred(FRED_SERIES, key)
+
+
+def read_data():
+    """argus_data.csv — LOCAL_DATA_CSV 우선, 없으면 PUBLIC fetch."""
+    local = os.environ.get("LOCAL_DATA_CSV", "")
     if local and os.path.exists(local):
         df = pd.read_csv(local)
     else:
-        url = f"{PUBLIC_BASE}/{name_or_url}"
-        req = urllib.request.Request(url, headers=UA)
+        req = urllib.request.Request(f"{PUBLIC_BASE}/argus_data.csv", headers=UA)
         with urllib.request.urlopen(req, timeout=40) as r:
             df = pd.read_csv(io.StringIO(r.read().decode()))
     dc = "Date" if "Date" in df.columns else df.columns[0]
@@ -62,26 +113,23 @@ def _pct_rank(s, win=1260, mp=252):
 
 
 def compute_signals(fred, data):
-    """fred_broad + argus_data -> Regime 신호 시계열(일별)."""
+    """fred + argus_data -> Regime 신호 시계열(일별)."""
     out = pd.DataFrame(index=fred.index)
 
-    # SIG-A1 USD_KRW (DEXKOUS)
-    krw = fred["DEXKOUS"].ffill()
-    out["USD_KRW"] = krw
-    out["USD_KRW_z"] = _z(krw)
-    out["KRW_WEAK"] = (out["USD_KRW_z"] > 0.5).astype("Int64")
+    if "DEXKOUS" in fred.columns:
+        krw = fred["DEXKOUS"].ffill()
+        out["USD_KRW"] = krw
+        out["USD_KRW_z"] = _z(krw)
+        out["KRW_WEAK"] = (out["USD_KRW_z"] > 0.5).astype("Int64")
 
-    # SIG-A2 US유동성 클러스터 (WALCL/M2REAL/JTSJOL/RRSFS)
-    liq_cols = ["WALCL", "M2REAL", "JTSJOL", "RRSFS"]
-    have = [c for c in liq_cols if c in fred.columns]
-    if have:
-        zmat = pd.concat([_z(fred[c].ffill()) for c in have], axis=1)
+    liq_cols = [c for c in ["WALCL", "M2REAL", "JTSJOL", "RRSFS"] if c in fred.columns]
+    if liq_cols:
+        zmat = pd.concat([_z(fred[c].ffill()) for c in liq_cols], axis=1)
         comp = zmat.mean(axis=1)
         out["US_LIQ_z"] = comp
         out["US_LIQ_chg60"] = comp.diff(60)
         out["LIQ_CONTRACTION"] = ((comp < -0.5) | (out["US_LIQ_chg60"] < 0)).astype("Int64")
 
-    # SIG-A3 주택 (PERMIT yoy)
     if "PERMIT" in fred.columns:
         permit = fred["PERMIT"].ffill()
         out["PERMIT"] = permit
@@ -89,7 +137,6 @@ def compute_signals(fred, data):
         out["PERMIT_yoy_pct"] = _pct_rank(out["PERMIT_yoy"])
         out["HOUSING_BUST"] = (out["PERMIT_yoy_pct"] < 0.30).astype("Int64")
 
-    # SIG-B1 반도체생산 (IPG3344S yoy)
     if "IPG3344S" in fred.columns:
         ipg = fred["IPG3344S"].ffill()
         out["IPG3344S"] = ipg
@@ -97,7 +144,6 @@ def compute_signals(fred, data):
         out["IPG3344S_yoy_pct"] = _pct_rank(out["IPG3344S_yoy"])
         out["SEMI_TROUGH"] = (out["IPG3344S_yoy_pct"] < 0.30).astype("Int64")
 
-    # SIG-B2 WTI∩MOVE -> EWZ 회복환경
     if "WTI" in data.columns and "MOVE" in data.columns:
         wti = data["WTI"].reindex(out.index).ffill()
         move = data["MOVE"].reindex(out.index).ffill()
@@ -141,8 +187,8 @@ def upsert(path, row):
 
 
 def main():
-    fred = _read("fred_broad.csv", "LOCAL_FRED_CSV")
-    data = _read("argus_data.csv", "LOCAL_DATA_CSV")
+    fred = read_fred()
+    data = read_data()
     sig = compute_signals(fred, data)
     row, last = latest_row(sig)
 
