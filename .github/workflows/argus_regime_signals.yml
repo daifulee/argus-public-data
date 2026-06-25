@@ -1,18 +1,30 @@
 # =====================================================================
-# ARGUS — 비자본 선행·레짐 신호 일일 누적 워크플로 (S230 신설)
+# ARGUS — 비자본 선행·레짐 신호 일일 누적 워크플로 (S230, 최종본)
 # 배치: argus-public-data/.github/workflows/argus_regime_signals.yml
-# 동작: 동일 레포의 fred_broad.csv + argus_data.csv 에서 Regime Tag 신호 파생
-#       -> argus_regime_signals.csv 에 1행 멱등 누적 -> commit.
-# 자본 배분 금지 — 레짐 모니터링·audit·브리핑 컨텍스트 용도 (SIGNAL SSOT v1.0).
-# 순서: fred_broad.yml(fred_broad.csv 갱신) 완료 이후 실행할 것.
-#       신선도 가드(exit 3)가 소스 미갱신 시 누적을 안전 생략한다.
-# 인증: permissions.contents=write -> GITHUB_TOKEN 자기레포 커밋(폐기 PAT 우회).
+#   (이 파일이 이전 v1/v2 업로드를 대체하는 최종본.)
+#
+# 진단 반영 (업로드 yml 2파일 대조):
+#   - 기존 배포본 v1 = FRED_API_KEY env 누락 -> 시크릿 입력해도 페처에 전달 안 됨.
+#   - fred_broad.yml 은 산출물을 'argus_fred_broad.csv' 로 커밋(파일명 'fred_broad.csv' 아님),
+#     동일 레포(argus-public-data) 루트에 존재.
+#
+# 최종 전략 (가장 견고):
+#   - LOCAL_FRED_CSV=argus_fred_broad.csv (fred_broad가 같은 레포에 둠) -> 우선 사용(무호출·빠름).
+#   - 만약 그 파일이 아직 없으면(첫 배포/순서 edge) 페처가 FRED_API_KEY 로 FRED API 폴백.
+#   => 두 경로 모두 흡수. fred_broad(23:30 UTC) -> regime(06:00 UTC) 순서 정합.
+#
+# 자본 배분 금지 — 레짐 모니터링·audit·브리핑 용도 (SIGNAL SSOT v1.0).
+# 신선도 가드(exit 3)가 소스 미갱신 시 누적 안전 생략.
+# 인증: permissions.contents=write -> GITHUB_TOKEN 자기레포 커밋.
+#
+# [페처 측 요건] 배포 페처 = argus_regime_signals_fetcher_FINAL.py 내용
+#   (read_fred 가 LOCAL_FRED_CSV 우선 -> 없으면 FRED_API_KEY API 폴백).
 # =====================================================================
 name: ARGUS Regime Signals Daily
 
 on:
   schedule:
-    # 평일 06:00 UTC (15:00 KST) — fred_broad 갱신(05:00 UTC 부근) 이후.
+    # 평일 06:00 UTC (15:00 KST) — fred_broad(23:30 UTC 전일) 갱신 이후.
     - cron: '0 6 * * 1-5'
   workflow_dispatch: {}
 
@@ -39,10 +51,11 @@ jobs:
       - name: Install dependencies
         run: pip install --quiet pandas numpy
 
-      # 동일 레포 로컬 CSV 재사용 (FRED 중복 호출 없음)
+      # 핵심: FRED_API_KEY env 주입(폴백) + argus_fred_broad.csv 로컬 우선
       - name: Append today's regime signals
         env:
-          LOCAL_FRED_CSV: fred_broad.csv
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          LOCAL_FRED_CSV: argus_fred_broad.csv
           LOCAL_DATA_CSV: argus_data.csv
           REGIME_CSV: argus_regime_signals.csv
           FRESHNESS_DAYS: '7'
