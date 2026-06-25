@@ -1,18 +1,22 @@
 # =====================================================================
-# ARGUS — 비자본 선행·레짐 신호 일일 누적 워크플로 (S230 신설)
+# ARGUS — 비자본 선행·레짐 신호 일일 누적 워크플로 v2 (S230)
 # 배치: argus-public-data/.github/workflows/argus_regime_signals.yml
-# 동작: 동일 레포의 fred_broad.csv + argus_data.csv 에서 Regime Tag 신호 파생
+# [v2 수정] fred_broad.csv 의존 제거 -> FRED API 직접 페치(FRED_API_KEY 시크릿).
+#   기존 fred_broad_gha.py 와 동일 키 사용. argus_data.csv(WTI/MOVE)는 레포 로컬 사용.
+# 동작: FRED 7시리즈 + argus_data.csv -> Regime Tag 신호 파생
 #       -> argus_regime_signals.csv 에 1행 멱등 누적 -> commit.
 # 자본 배분 금지 — 레짐 모니터링·audit·브리핑 컨텍스트 용도 (SIGNAL SSOT v1.0).
-# 순서: fred_broad.yml(fred_broad.csv 갱신) 완료 이후 실행할 것.
-#       신선도 가드(exit 3)가 소스 미갱신 시 누적을 안전 생략한다.
-# 인증: permissions.contents=write -> GITHUB_TOKEN 자기레포 커밋(폐기 PAT 우회).
+# 신선도 가드(exit 3)가 소스 미갱신 시 누적을 안전 생략.
+# 인증: permissions.contents=write -> GITHUB_TOKEN 자기레포 커밋.
+#
+# [사전 확인] FRED_API_KEY 시크릿명이 기존 fred_broad.yml 과 동일한지 확인할 것.
+#   다르면 아래 secrets.FRED_API_KEY 를 실제 시크릿명으로 교체.
 # =====================================================================
 name: ARGUS Regime Signals Daily
 
 on:
   schedule:
-    # 평일 06:00 UTC (15:00 KST) — fred_broad 갱신(05:00 UTC 부근) 이후.
+    # 평일 06:00 UTC (15:00 KST) — argus_data.csv 갱신 이후.
     - cron: '0 6 * * 1-5'
   workflow_dispatch: {}
 
@@ -39,10 +43,10 @@ jobs:
       - name: Install dependencies
         run: pip install --quiet pandas numpy
 
-      # 동일 레포 로컬 CSV 재사용 (FRED 중복 호출 없음)
+      # FRED 7시리즈 직접 페치(FRED_API_KEY) + argus_data.csv 레포 로컬 사용
       - name: Append today's regime signals
         env:
-          LOCAL_FRED_CSV: fred_broad.csv
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           LOCAL_DATA_CSV: argus_data.csv
           REGIME_CSV: argus_regime_signals.csv
           FRESHNESS_DAYS: '7'
