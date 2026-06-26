@@ -1,35 +1,10 @@
 {
-  "date": "2026-06-24",
-  "changed": true,
+  "date": "2026-06-25",
+  "changed": false,
   "entered": [],
   "exited": [],
-  "reweighted": [
-    {
-      "ticker": "GLD",
-      "from": 0.3914,
-      "to": 0.5275,
-      "delta": 0.1361
-    },
-    {
-      "ticker": "ITA",
-      "from": 0.2219,
-      "to": 0.1542,
-      "delta": -0.0677
-    },
-    {
-      "ticker": "SLV",
-      "from": 0.2243,
-      "to": 0.1592,
-      "delta": -0.0651
-    },
-    {
-      "ticker": "XLE",
-      "from": 0.0812,
-      "to": 0.068,
-      "delta": -0.0132
-    }
-  ],
-  "change_reason": "리밸 GLD 0.391→0.527, ITA 0.222→0.154, SLV 0.224→0.159, XLE 0.081→0.068",
+  "reweighted": [],
+  "change_reason": "전일과 동일 (포지션·비중 무변화)",
   "positions": {
     "GLD": 0.5275,
     "SLV": 0.1592,
@@ -40,5 +15,5 @@
   "exposure": 1.0,
   "actions": "",
   "engine": "PRIMA2_v0_5_6_CROWNDS_K3_LIVE.py",
-  "generated_utc": "2026-06-25T13:50:19Z"
+  "generated_utc": "2026-06-26T00:07:19Z"
 }
