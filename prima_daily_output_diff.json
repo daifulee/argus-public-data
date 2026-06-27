@@ -1,5 +1,5 @@
 {
-  "date": "2026-06-25",
+  "date": "2026-06-26",
   "changed": false,
   "entered": [],
   "exited": [],
@@ -15,5 +15,5 @@
   "exposure": 1.0,
   "actions": "",
   "engine": "PRIMA2_v0_5_6_CROWNDS_K3_LIVE.py",
-  "generated_utc": "2026-06-26T08:24:22Z"
+  "generated_utc": "2026-06-27T02:57:23Z"
 }
