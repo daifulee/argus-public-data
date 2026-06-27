@@ -64,7 +64,7 @@ details[open] summary { color: #e2e8f0; }
 <h1>ARGUS Daily Brief</h1>
 <span class="badge bb">Crown #80</span>
 <span class="badge bv">v9.2.1</span></div>
-<div style="color:#64748b;font-size:10px">381 · 2026-06-27 17:16 KST</div></div>
+<div style="color:#64748b;font-size:10px">381 · 2026-06-27 17:32 KST</div></div>
 <div class="card al">
 <div class="ct">🎯 Action Board</div>
 <div class="g3" style="margin-bottom:10px">
@@ -513,22 +513,7 @@ DXY≥100 TLT 50%청산(현 101.37)</div>
 <tr><td><b>보류</b></td><td>Gate BLOCKED (점수 충족이나 진입 부재)</td></tr>
 </table></div></details>
 
-<details><summary>D-2. 등급 결정 우선순위 (AAQG 1순위 · ratio fallback)</summary>
-<div style="padding:4px 8px">
-<div style="font-size:10px;line-height:1.6;margin-bottom:6px">표시 등급 = <b>1순위 AAQG</b>(19년 백테스트 실적 종합 · 20종 전체 적용) → AAQG 미수록 종목만 <b>2순위 ratio</b> fallback. AAQG 산정식(Q=E 60%+R 20%+S 20%)은 하단 📐 AAQG 선정기준 각주 참조.</div>
-<table>
-<tr><th>등급</th><th>① AAQG 백분위 (주 기준)</th><th>② ratio fallback</th><th>의미</th></tr>
-<tr><td><span class="gb gb-S">SS급</span></td><td>≥ 85</td><td>—</td><td>최상위 (현재 부여 종목 없음)</td></tr>
-<tr><td><span class="gb gb-S">S급</span></td><td>≥ 75</td><td>ratio ≥ 3.0</td><td>최강 — 집중 비중</td></tr>
-<tr><td><span class="gb gb-A">A급</span></td><td>≥ 62</td><td>ratio ≥ 2.0</td><td>즉시 진입 — score-proportional</td></tr>
-<tr><td><span class="gb gb-B">B급</span></td><td>≥ 45</td><td>ratio ≥ 1.5</td><td>정기 후보 — 등급별 고정</td></tr>
-<tr><td><span class="gb gb-C">C급</span></td><td>&lt; 45</td><td>ratio ≥ 1.0</td><td>정기 후보 — 최소 비중</td></tr>
-<tr><td><span style="color:#475569">D급</span></td><td>—</td><td>ratio &lt; 1.0</td><td>fallback 임계 미달 (AAQG 체계엔 미존재)</td></tr>
-</table>
-<div style="font-size:9px;color:#94a3b8;margin-top:4px">※ ratio = score / threshold. 20종 전체가 AAQG 등재 → ratio fallback은 신규 종목 도입 시에만 발동. 표시 전용 — 비중 산정(D-3)·PRIMA 자본 가중과 분리.</div>
-</div></details>
-
-<details><summary>D-3. 비중 산정 규칙 (단일자산 soft cap 40%)</summary>
+<details><summary>D-2. 비중 산정 규칙 (단일자산 soft cap 40%)</summary>
 <div style="padding:4px 8px"><table>
 <tr><td><b>ratio 정의</b></td><td>score / threshold (자산별)</td></tr>
 <tr><td><b>강신호</b></td><td>ratio ≥ 2.0 → score-proportional (비중 ∝ ratio)</td></tr>
@@ -539,7 +524,7 @@ DXY≥100 TLT 50%청산(현 101.37)</div>
 <tr><td><b>자산 sizing</b></td><td>SLV: RS_20d>0 풀/0이하 절반 · COPX: CNY>7 1.2x / <6.5 0.8x</td></tr>
 </table></div></details>
 
-<details><summary>D-4. STORM v2 PSS 단계</summary>
+<details><summary>D-3. STORM v2 PSS 단계</summary>
 <div style="padding:4px 8px"><table>
 <tr><td style="color:#4ade80"><b>PSS 0</b></td><td>100%</td><td>정상</td></tr>
 <tr><td><b>PSS 1</b></td><td>100%</td><td>단일 경보</td></tr>
@@ -548,7 +533,7 @@ DXY≥100 TLT 50%청산(현 101.37)</div>
 <tr><td style="color:#ff8a8a"><b>PSS 4</b></td><td>50%</td><td>최대 팽팽 (-50%)</td></tr>
 </table></div></details>
 
-<details><summary>D-5. Gate 본질</summary>
+<details><summary>D-4. Gate 본질</summary>
 <div style="padding:4px 8px"><table>
 <tr><td><b>WTI/VIX (일반)</b></td><td>WTI>$90 ∩ VIX≥18.5 → BLOCKED · VIX<17.5 해제</td></tr>
 <tr><td><b>WTI-XLE</b></td><td>WTI>$110 차단 (XLE 전용)</td></tr>
@@ -556,8 +541,8 @@ DXY≥100 TLT 50%청산(현 101.37)</div>
 <tr><td><b>OAS-HY</b></td><td>OAS_HY>7 → XLU 포함 차단</td></tr>
 <tr><td><b>VIX-Hyst</b></td><td>18.5 차단 / 17.5 해제 (마진 1.0)</td></tr>
 </table></div></details>
-<details><summary>📐 종목 등급(AAQG v4.0) 선정기준 — 2026-06-12 평가 · 차기 갱신 2026-06-30(Q2)</summary>
-<div style="padding:4px 8px;font-size:10px;line-height:1.7">AAQG = 19년 백테스트 실적 종합 등급. <b>Q = 평균 예상 수익률(E) 60% + 표본 신뢰도(R) 20% + 안정성(S) 20%</b><br>· <b>E(핵심)</b> = <b>1회당 평균수익 50% + 63d 페이스(Σ수익÷Σ보유일×63일) 50%</b> — 장기 누적형과 단기 폭발형의 중간 잣대. 각각 shrinkage(w=n/(n+30), 소표본 수렴) + 최근 8분기 20% 블렌드<br>· <b>R</b> = 에피소드 수 50 + 참여일 30 + 활성 era 20 / <b>S</b> = era일관 35 + 승률 20 + payoff 20 + 손실꼬리 15 + 게이트궁합 10<br>· <b>등급 = Global</b>(20종 공통 백분위, SS≥85·S≥75·A≥62·B≥45·C) — <b>역할군 내 순위 병기</b>: 군내 표본(3~6종)이 작아 군내 등급 대신 순위가 정직<br>· <b>역할군 5종</b>(Core 누적 · Burst 폭발 · Hedge 방어 · Growth 성장 · External 외부민감) — 배정은 반기 검토, 등급은 분기 갱신(변동 1단계 제한)<br>· <b>Pace</b> = 수익 속도 보조등급 / 상한 캡: 에피소드&lt;10 → B · era≤2 → B · 둘 다 → C<br>· 라벨: <b>⚠️GC</b>=게이트 충돌(whipsaw — 자산 품질 아닌 게이트 마찰) · <b>⚠️↓</b>=최근 8분기 악화 · <b>표본</b>=표본 제한<br>· 헤지·방어 가치는 등급 숫자에 미반영 — Hedge군·태그로 해석 (예: TLT) · <b>표시 전용</b>, PRIMA 자본 가중과 분리</div><div style="padding:4px 8px"><table>
+<details><summary>📐 종목 등급(AAQG v4.0) — 결정 우선순위 + 선정기준 · 2026-06-12 평가 · 차기 갱신 2026-06-30(Q2)</summary>
+<div style="padding:4px 8px;font-size:10px;line-height:1.7"><b>① 표시 등급 결정</b> = 1순위 <b>AAQG</b>(19년 백테스트 실적 종합 · 20종 전체) → 미수록 종목만 2순위 <b>ratio</b> fallback(=score/threshold) · 신규 종목 도입 시에만 발동<br><b>② AAQG 산정</b> = 19년 백테스트 실적 종합. <b>Q = 평균 예상 수익률(E) 60% + 표본 신뢰도(R) 20% + 안정성(S) 20%</b><br>· <b>E(핵심)</b> = <b>1회당 평균수익 50% + 63d 페이스(Σ수익÷Σ보유일×63일) 50%</b> — 장기 누적형과 단기 폭발형의 중간 잣대. 각각 shrinkage(w=n/(n+30), 소표본 수렴) + 최근 8분기 20% 블렌드<br>· <b>R</b> = 에피소드 수 50 + 참여일 30 + 활성 era 20 / <b>S</b> = era일관 35 + 승률 20 + payoff 20 + 손실꼬리 15 + 게이트궁합 10<br>· <b>등급 밴드</b>: AAQG 백분위 SS≥85·S≥75·A≥62·B≥45·C / ratio fallback S≥3.0·A≥2.0·B≥1.5·C≥1.0·D&lt;1.0 — <b>역할군 내 순위 병기</b>: 군내 표본(3~6종)이 작아 군내 등급 대신 순위가 정직<br>· <b>역할군 5종</b>(Core 누적 · Burst 폭발 · Hedge 방어 · Growth 성장 · External 외부민감) — 배정은 반기 검토, 등급은 분기 갱신(변동 1단계 제한)<br>· <b>Pace</b> = 수익 속도 보조등급 / 상한 캡: 에피소드&lt;10 → B · era≤2 → B · 둘 다 → C<br>· 라벨: <b>⚠️GC</b>=게이트 충돌(whipsaw — 자산 품질 아닌 게이트 마찰) · <b>⚠️↓</b>=최근 8분기 악화 · <b>표본</b>=표본 제한<br>· 헤지·방어 가치는 등급 숫자에 미반영 — Hedge군·태그로 해석 (예: TLT) · <b>표시 전용</b> — 비중 산정(D-2)·PRIMA 자본 가중과 분리</div><div style="padding:4px 8px"><table>
 <tr><th>종목</th><th>등급</th><th>역할군</th><th>Pace</th><th>1회당·63d</th><th>승률</th><th>payoff</th><th>표본</th><th>태그 · 라벨</th></tr>
 <tr><td>🟤 <b>COPX</b></td><td style="color:#facc15;font-weight:900">S급</td><td style="font-size:9px">Burst 1/6</td><td>SS</td><td>+5.5 · +14.4%</td><td>63%</td><td>2.02</td><td>62ep·5era</td><td style="font-size:9px">Cyclical·Infra</td></tr>
 <tr><td>🇧🇷 <b>EWZ</b></td><td style="color:#22d3ee;font-weight:900">A급</td><td style="font-size:9px">External 1/3</td><td>SS</td><td>+4.8 · +12.4%</td><td>66%</td><td>1.69</td><td>83ep·5era</td><td style="font-size:9px">Cyclical·EM <span style="color:#fb923c">⚠️GC</span></td></tr>
@@ -583,7 +568,7 @@ DXY≥100 TLT 50%청산(현 101.37)</div>
 
 </div>
 <div class="footer">
-v9.2.1 / Crown #80 / PRIMA2_v0_5_6_CROWNDS_K3_LIVE / 2026-06-27 17:16 KST<br>
+v9.2.1 / Crown #80 / PRIMA2_v0_5_6_CROWNDS_K3_LIVE / 2026-06-27 17:32 KST<br>
 <span style="color:#475569">격언 #80: Phase A fwd60 ≠ portfolio BT alpha</span>
 </div>
 </body></html>
