@@ -143,5 +143,16 @@
     "n_pos": 2,
     "logged_utc": "2026-06-29T09:20:17Z",
     "valid": true
+  },
+  {
+    "date": "2026-06-29",
+    "weights": {
+      "SGOV": 0.8,
+      "GLD": 0.2
+    },
+    "source": "oracle_autopilot_v1.0.6",
+    "n_pos": 2,
+    "logged_utc": "2026-06-30T08:23:22Z",
+    "valid": true
   }
 ]
