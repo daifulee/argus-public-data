@@ -1,3 +1,6 @@
+# 🔧 v3.7 (2026-07-02, S244): WSTS YoY 자동 수집 신설 — wsts.org 랜딩 파싱 → 최신 Historical-Billings xlsx → Worldwide 3MMA YoY → wsts_yoy.json 조건부 갱신.
+#    가드: 0 플레이스홀더 제외(미발표월, S244 실측 확정) / source_url 동일 시 다운로드 생략 / 원자적 교체(os.replace) / 전 단계 fail-safe(기존 json 보존).
+#    의존: openpyxl(xlsx 엔진) — GHA pip 미설치 시 fail-safe 경고 후 기존 json 유지. base=v3.6(26924714d38e).
 # 🔧 v3.6 (2026-07-02, S242): SMH_TRIFLAG 전열 재계산 신설 — 삼중(C8∧S2∧WSTS<0) 선행 플래그, Crown #84 후보 소비용 (REG-S242_3).
 #    원천: MU/HYG/LQD yfinance 5년 자체확보(385행 롤링 독립, 워밍업 315거래일 해소) + wsts_yoy.json(PIT+45일·staleness 75일 가드).
 #    fail-safe: 산출 실패/데이터 부재 → 전열 0 (휴면=무해). base=v3.5(bee8086403d3).
@@ -1875,6 +1878,10 @@ SMH_TRI_DEDUP_DAYS = 176               # 이벤트 dedupe 간격 (126×1.4)
 SMH_TRI_C8_LEAD    = 189               # C8 선행 동반 허용 (달력일)
 WSTS_PIT_LAG_DAYS  = 45                # WSTS 공표지연 (PIT)
 WSTS_STALE_DAYS    = 75                # staleness 가드
+# 🕯️ v3.7 (S244): WSTS 자동 수집 설정
+WSTS_HIST_PAGE_URL = "https://www.wsts.org/67/Historical-Billings-Report"  # 최신 xlsx 링크 소재 페이지
+WSTS_HTTP_UA       = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"}  # 격언 #107
+WSTS_KEEP_MONTHS   = 180               # json 보존 개월 (15년 = triflag 5년 조회 + 여유)
 
 def _load_wsts_series():
     """wsts_yoy.json → PIT(+45일) 반영 일자 인덱스 시리즈. 부재/오류 → None (fail-safe)."""
@@ -1895,6 +1902,102 @@ def _load_wsts_series():
         return pd.Series([r[1] for r in rows], index=[r[0] for r in rows])
     except Exception:
         return None
+
+def _extract_worldwide_3mma(xlsx_path):
+    """WSTS Historical Billings xlsx '3MMA' 시트 → {(연도, 월): 3MMA 값(천달러)} 사전 (v3.7, S244).
+
+    구조: A열 정수=연도 행, 이어지는 지역 행들 중 'Worldwide' 행의 B~M열 = 1~12월.
+    행 위치 고정 가정 없음 (연도→Worldwide 매칭 방식, 구조 변화 내성).
+    가드: 0/음수 = 미발표월 플레이스홀더 → 제외 (S244 실 xlsx로 확정한 함정)."""
+    raw = pd.read_excel(xlsx_path, sheet_name="3MMA", header=None, engine="openpyxl")
+    out = {}
+    cur_year = None
+    for _, row in raw.iterrows():
+        a = row.iloc[0]
+        if isinstance(a, (int, float)) and not pd.isna(a) and 1980 < a < 2100:
+            cur_year = int(a)
+        elif isinstance(a, str) and a.strip() == "Worldwide" and cur_year:
+            for m in range(1, 13):
+                v = row.iloc[m] if m < len(row) else None
+                if isinstance(v, (int, float)) and not pd.isna(v) and v > 0:
+                    out[(cur_year, m)] = float(v)
+    return out
+
+
+def fetch_wsts_yoy_auto():
+    """wsts.org → 최신 xlsx → Worldwide 3MMA YoY → wsts_yoy.json 조건부 갱신 (v3.7, S244).
+
+    단계: ①랜딩 파싱(xlsx URL) ②기존 json source_url 동일 시 생략 ③xlsx 다운로드
+          ④3MMA 추출(0 가드) ⑤YoY 분수 시리즈(asof=데이터월 말일) ⑥원자적 json 교체.
+    PIT +45일 반영은 소비측 _load_wsts_series 담당 (책임 분리 유지).
+    fail-safe: 모든 예외 → 호출부 경고 후 기존 json 보존 (staleness 75일 가드 후방 방어)."""
+    import hashlib, tempfile
+    # ① 랜딩 파싱
+    resp = requests.get(WSTS_HIST_PAGE_URL, headers=WSTS_HTTP_UA, timeout=30)
+    resp.raise_for_status()
+    links = re.findall(r'href="([^"]+\.xlsx?)"', resp.text)
+    cands = [u for u in links if "Historical-Billings" in u]
+    if not cands:
+        print("  ⚠️ WSTS xlsx 링크 미발견 — 기존 wsts_yoy.json 유지")
+        return False
+    xlsx_url = cands[0] if cands[0].startswith("http") else ("https://www.wsts.org" + cands[0])
+
+    # ② 조건부 갱신: 동일 소스면 다운로드 생략 (일간 GHA 부담 최소화)
+    try:
+        with open(WSTS_YOY_JSON_PATH, "r", encoding="utf-8") as f:
+            _prev = json.load(f)
+        if _prev.get("source_url") == xlsx_url and _prev.get("series"):
+            print(f"  🕯️ WSTS 최신 유지 ({os.path.basename(xlsx_url)}) — 갱신 생략")
+            return True
+    except Exception:
+        pass
+
+    # ③ xlsx 다운로드 (임시 파일)
+    xr = requests.get(xlsx_url, headers=WSTS_HTTP_UA, timeout=60)
+    xr.raise_for_status()
+    with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tf:
+        tf.write(xr.content)
+        _tmp = tf.name
+    try:
+        # ④ Worldwide 3MMA 추출
+        d = _extract_worldwide_3mma(_tmp)
+    finally:
+        try:
+            os.remove(_tmp)
+        except OSError:
+            pass
+    if not d:
+        print("  ⚠️ WSTS 3MMA 추출 0건 — 기존 wsts_yoy.json 유지")
+        return False
+
+    # ⑤ YoY 분수 시리즈 (전년동월 대비, asof=데이터월 말일)
+    series = []
+    for (y, mo) in sorted(d):
+        pv = d.get((y - 1, mo))
+        if pv:
+            asof = (pd.Timestamp(year=y, month=mo, day=1) + pd.offsets.MonthEnd(0)).strftime("%Y-%m-%d")
+            series.append({"asof": asof, "yoy": round(d[(y, mo)] / pv - 1.0, 6)})
+    series = series[-WSTS_KEEP_MONTHS:]
+    if not series:
+        print("  ⚠️ WSTS YoY 산출 0건 — 기존 wsts_yoy.json 유지")
+        return False
+
+    # ⑥ 원자적 교체 (부분 쓰기 오염 차단)
+    payload = {
+        "series": series,
+        "source_url": xlsx_url,
+        "source_sha12": hashlib.sha256(xr.content).hexdigest()[:12],
+        "fetched_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    _tmpj = WSTS_YOY_JSON_PATH + ".tmp"
+    with open(_tmpj, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=1)
+    os.replace(_tmpj, WSTS_YOY_JSON_PATH)
+    _last = series[-1]
+    print(f"  🕯️ WSTS YoY 갱신: 최신 asof {_last['asof']} YoY {_last['yoy']*100:+.2f}% "
+          f"({len(series)}개월, {os.path.basename(xlsx_url)})")
+    return True
+
 
 def compute_smh_triflag(df, prices=None, wsts_series=None):
     """삼중(C8∧S2∧WSTS<0) 플래그 산출 → df.index 정렬 0/1 시리즈.
@@ -2159,6 +2262,12 @@ def main():
                                - df["RRPONTSYD"].ffill() * 1e3)
         _nl_valid = df["Net_Liquidity"].notna().sum()
         print(f"  🌟 Net_Liquidity 전열 재계산 (RRP ×1e3 정본 규약, v3.2): {_nl_valid}/{len(df)}일")
+
+    # 🕯️ v3.7 (S244): WSTS YoY 자동 수집 — wsts_yoy.json 조건부 갱신 (실패 시 기존 json 보존)
+    try:
+        fetch_wsts_yoy_auto()
+    except Exception as _we:
+        print(f"  ⛑️ WSTS 자동 수집 fail-safe (기존 wsts_yoy.json 보존): {_we}")
 
     # 🕯️ v3.6 (S242): SMH_TRIFLAG 전열 재계산 — Crown #84 후보 소비용 (자기치유 패턴, REG-S242_3)
     try:
