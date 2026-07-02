@@ -1,5 +1,5 @@
 {
-  "Date": "2026-07-01",
+  "Date": "2026-07-02",
   "CIBR_Close": 91.11000061035156,
   "COPX_Close": 75.29000091552734,
   "CQQQ_Close": 56.9900016784668,
@@ -20,10 +20,10 @@
   "XLF_Close": 54.77999877929688,
   "XLU_Close": 44.77000045776367,
   "XLV_Close": 159.5399932861328,
-  "WTI": 68.04000091552734,
-  "DXY": 101.41300201416016,
+  "WTI": 67.88999938964844,
+  "DXY": 101.3280029296875,
   "IEF_Close": 94.02999877929688,
-  "USD_KRW": 1548.6099853515625,
+  "USD_KRW": 1552.7900390625,
   "RSP_Close": 200.4100036621093,
   "SGOV_Close": 100.4000015258789,
   "SPY_Close": 745.760009765625,
@@ -67,7 +67,7 @@
   "VIX3M": 19.15999984741211,
   "CCSA": 1821000.0,
   "VIX_VIX3M_ratio": 0.8658664031685083,
-  "F_G_Score": 31.9142857142857,
+  "F_G_Score": 31.9714285714286,
   "F_G_Rating": "fear",
   "VIX_source": "yahoo_live",
   "MOVE_source": "yahoo_live",
@@ -105,10 +105,11 @@
   "LME_Cu_spread": null,
   "ECY": null,
   "CAPE": null,
-  "Brent": 71.18000030517578,
+  "Brent": 70.9000015258789,
   "Brent_source": "yahoo_live",
   "SEMI_REACCEL": 1.0,
   "SEMI_REACCEL_source": "fred_semi_live",
   "CONSUMER_ELEC": 0.0,
-  "CONSUMER_ELEC_source": "fred_semi_live"
+  "CONSUMER_ELEC_source": "fred_semi_live",
+  "SMH_TRIFLAG": 0.0
 }
