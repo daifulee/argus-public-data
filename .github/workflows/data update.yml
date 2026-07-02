@@ -11,6 +11,7 @@
 #        (여름 18:00 ET / 겨울 17:00 ET — 사계절 마감 후)
 # 비용 : Actions Free 한도 내 (실행당 약 3~5분)
 # 정합 : 데이터 갱신·브리핑 분리 / 격언 #105 형식 보존 / #107 User-Agent
+# v3.7 : wsts_yoy.json commit 대상 추가 (S244 — WSTS 자동 수집 갱신분 영속화)
 # ════════════════════════════════════════════════════════════════════
 
 name: 🦅 ARGUS Data Update
@@ -73,7 +74,8 @@ jobs:
           git config user.name  "argus-bot"
           git config user.email "argus-bot@users.noreply.github.com"
           git add argus_data.csv latest.json \
-                  argus_data_daily.csv argus_data_weekly.csv argus_data_monthly.csv
+                  argus_data_daily.csv argus_data_weekly.csv argus_data_monthly.csv \
+                  wsts_yoy.json
           if git diff --staged --quiet; then
             echo "ℹ️ 변경 없음 — commit skip (휴장 / 동일 데이터)"
           else
@@ -89,7 +91,7 @@ jobs:
           echo "## 🦅 ARGUS Data Update 결과" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- 실행 시각: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')" >> $GITHUB_STEP_SUMMARY
-          echo "- fetcher: v3.1 (ECY/CAPE)" >> $GITHUB_STEP_SUMMARY
+          echo "- fetcher: v3.7 (WSTS 자동 수집 + SMH_TRIFLAG)" >> $GITHUB_STEP_SUMMARY
           echo "- FRED_API_KEY: ${{ secrets.FRED_API_KEY != '' && '✅ 설정됨' || '⚠️ 미설정 (graph fallback 동작)' }}" >> $GITHUB_STEP_SUMMARY
           if [ -f latest.json ]; then
             echo "- latest.json Date: \`$(python -c "import json;print(json.load(open('latest.json'))['Date'])")\`" >> $GITHUB_STEP_SUMMARY
