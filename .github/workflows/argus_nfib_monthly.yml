@@ -1,0 +1,36 @@
+# VERSION: argus_nfib_monthly.yml v1.0 | DATE: 2026-07-02 (S247)
+# CHANGE: 신설 — nfib_opt.json 월간 자동 갱신 (공표창 매월 10·13·16일 KST아침 + 수동 dispatch)
+name: ARGUS NFIB Monthly
+on:
+  schedule:
+    - cron: '0 22 9,12,15 * *'   # UTC 22시 = KST 익일 07시 → 매월 10/13/16일 공표창 3회 시도
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  nfib:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pandas
+      - name: fetch
+        run: python argus_nfib_fetcher_v1_0.py
+      - name: commit
+        run: |
+          git config --global user.email "argus-bot@noreply.github.com"
+          git config --global user.name "ARGUS NFIB Bot"
+          if ! git diff --quiet nfib_opt.json; then
+            git add nfib_opt.json
+            git commit -m "NFIB monthly: $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "no change"
+          fi
