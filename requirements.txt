@@ -6,3 +6,5 @@ numpy>=1.24
 requests>=2.31
 yfinance>=0.2.40
 xlrd>=2.0.1          # Shiller ie_data.xls (.xls / BIFF) 파싱 — v3.1 ECY/CAPE
+openpyxl>=3.1        # WSTS Historical-Billings .xlsx 파싱 — v3.7 WSTS 자동 수집 (S244)
+
