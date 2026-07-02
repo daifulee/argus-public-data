@@ -1,3 +1,6 @@
+# 🔧 v3.6 (2026-07-02, S242): SMH_TRIFLAG 전열 재계산 신설 — 삼중(C8∧S2∧WSTS<0) 선행 플래그, Crown #84 후보 소비용 (REG-S242_3).
+#    원천: MU/HYG/LQD yfinance 5년 자체확보(385행 롤링 독립, 워밍업 315거래일 해소) + wsts_yoy.json(PIT+45일·staleness 75일 가드).
+#    fail-safe: 산출 실패/데이터 부재 → 전열 0 (휴면=무해). base=v3.5(bee8086403d3).
 # 🔧 v3.5 (2026-06-20, S218): ETF 가격 *_Close ffill 통합 — Yahoo batch 단일일 누락(ITA/VNM/CQQQ NaN→브리핑 $0.00) 근본 처방. apply_ffill_safety에 close_cols 1줄.
 # 🔧 v3.4 (2026-06-15, S200): Brent 원유 가산 — 운영 OIL축 열화 복원 (근본 처방, 분기 최소).
 #    추가: YAHOO_MACRO "BZ=F":"Brent" (WTI "CL=F" 미러, map-driven → build_seed/fetch_today_row/source 자동 흐름).
@@ -292,6 +295,7 @@ import re  # 🌟 v2.9 (S69 #1): Tradingeconomics PMI 패턴 정규식 의무
 import numpy as np
 import pandas as pd
 import requests
+import json
 import yfinance as yf
 
 warnings.filterwarnings("ignore")
@@ -1860,6 +1864,91 @@ def _resolve_target_dates():
     return [date.today()], False
 
 
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🕯️ v3.6 (S242): SMH 삼중 선행 플래그 — C8(신용회복 선행) ∧ S2(메모리 바닥) ∧ WSTS YoY<0
+#   정의 = REG-S242_3 canonical 자구. 산출 책임 = 데이터 층 (엔진은 컬럼 소비만, fail-safe 0)
+# ═══════════════════════════════════════════════════════════════════════════
+WSTS_YOY_JSON_PATH = "wsts_yoy.json"   # 레포 루트, 월 1회 갱신: {"series":[{"asof":"YYYY-MM-DD","yoy":-0.05}, ...]}
+SMH_TRI_WIN_DAYS   = 63                # 이벤트 후 발화 창 (거래일)
+SMH_TRI_DEDUP_DAYS = 176               # 이벤트 dedupe 간격 (126×1.4)
+SMH_TRI_C8_LEAD    = 189               # C8 선행 동반 허용 (달력일)
+WSTS_PIT_LAG_DAYS  = 45                # WSTS 공표지연 (PIT)
+WSTS_STALE_DAYS    = 75                # staleness 가드
+
+def _load_wsts_series():
+    """wsts_yoy.json → PIT(+45일) 반영 일자 인덱스 시리즈. 부재/오류 → None (fail-safe)."""
+    try:
+        with open(WSTS_YOY_JSON_PATH, "r", encoding="utf-8") as f:
+            j = json.load(f)
+        entries = j.get("series", [j] if "asof" in j else [])
+        rows = []
+        for e in entries:
+            asof = pd.Timestamp(e["asof"])
+            rows.append((asof + pd.Timedelta(days=WSTS_PIT_LAG_DAYS), float(e["yoy"]), asof))
+        if not rows:
+            return None
+        rows.sort()
+        newest_asof = max(r[2] for r in rows)
+        if (pd.Timestamp.now().normalize() - newest_asof).days > WSTS_STALE_DAYS:
+            print(f"  ⚠️ wsts_yoy.json stale (최신 asof {newest_asof.date()}) — 커버 범위 밖 이벤트 불발 처리")
+        return pd.Series([r[1] for r in rows], index=[r[0] for r in rows])
+    except Exception:
+        return None
+
+def compute_smh_triflag(df, prices=None, wsts_series=None):
+    """삼중(C8∧S2∧WSTS<0) 플래그 산출 → df.index 정렬 0/1 시리즈.
+
+    Args:
+        df: argus 통합 DataFrame (Date index)
+        prices: 테스트 주입용 — MU/HYG/LQD 컬럼 DataFrame (None=yfinance 5년 자체 다운로드)
+        wsts_series: 테스트 주입용 — PIT 반영 일자 인덱스 YoY 시리즈 (None=wsts_yoy.json)
+    """
+    if prices is None:
+        _start = (pd.Timestamp.now() - pd.Timedelta(days=int(365.25 * 5))).strftime("%Y-%m-%d")
+        _raw = yf.download(["MU", "HYG", "LQD"], start=_start, progress=False, auto_adjust=True)
+        prices = _raw["Close"] if "Close" in getattr(_raw, "columns", []) or (hasattr(_raw.columns, "levels")) else _raw
+        if hasattr(prices.columns, "levels"):
+            prices = _raw["Close"]
+    if wsts_series is None:
+        wsts_series = _load_wsts_series()
+
+    mu = prices["MU"].astype(float).dropna()
+    hlr = (prices["HYG"].astype(float) / prices["LQD"].astype(float)).dropna()
+
+    # S2: MU mom126 심저(<−20%, 직전 189거래일) → 음→양 교차
+    m126 = mu.pct_change(126)
+    deep = m126.rolling(189).min() < -0.20
+    recv = ((m126 > 0) & (m126.shift(1) <= 0) & deep).fillna(False)
+    s2ev = []
+    for d in m126.index[recv]:
+        if not s2ev or (d - s2ev[-1]).days > SMH_TRI_DEDUP_DAYS:
+            s2ev.append(d)
+
+    # C8: HYG/LQD 드로다운(63일 전 시점 <−5%) 상태에서 mom63 양전 교차
+    hdd = hlr / hlr.rolling(252).max() - 1
+    c8c = ((hlr.pct_change(63) > 0) & (hdd.shift(63) < -0.05)).fillna(False)
+    c8ev = []
+    for d in hlr.index[c8c & ~c8c.shift(1).fillna(False)]:
+        if not c8ev or (d - c8ev[-1]).days > SMH_TRI_DEDUP_DAYS:
+            c8ev.append(d)
+
+    # 삼중 판정 + 발화 창 (가격 축) → +1일 shift → df.index 매핑
+    flag_px = pd.Series(0, index=mu.index)
+    for d in s2ev:
+        lead_ok = any(0 <= (d - e).days <= SMH_TRI_C8_LEAD for e in c8ev)
+        wv = float("nan")
+        if wsts_series is not None and len(wsts_series):
+            _cut = wsts_series[wsts_series.index <= d]
+            if len(_cut):
+                wv = float(_cut.iloc[-1])
+        if lead_ok and pd.notna(wv) and wv < 0:
+            i0 = mu.index.searchsorted(d)
+            flag_px.iloc[i0:i0 + SMH_TRI_WIN_DAYS] = 1
+    flag_px = flag_px.shift(1).fillna(0).astype(int)
+    return flag_px.reindex(df.index, method="ffill").fillna(0).astype(int)
+
+
 def main():
     t0 = time.time()
     print(f"🦅 ARGUS DATA FETCHER v3.3 — {datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')}")
@@ -2070,6 +2159,15 @@ def main():
                                - df["RRPONTSYD"].ffill() * 1e3)
         _nl_valid = df["Net_Liquidity"].notna().sum()
         print(f"  🌟 Net_Liquidity 전열 재계산 (RRP ×1e3 정본 규약, v3.2): {_nl_valid}/{len(df)}일")
+
+    # 🕯️ v3.6 (S242): SMH_TRIFLAG 전열 재계산 — Crown #84 후보 소비용 (자기치유 패턴, REG-S242_3)
+    try:
+        df["SMH_TRIFLAG"] = compute_smh_triflag(df)
+        _tf_on = int(df["SMH_TRIFLAG"].fillna(0).sum())
+        print(f"  🕯️ SMH_TRIFLAG (삼중 C8∧S2∧WSTS<0): 발화 {_tf_on}/{len(df)}일" + (" — 휴면" if _tf_on == 0 else ""))
+    except Exception as _e:
+        df["SMH_TRIFLAG"] = 0
+        print(f"  ⛑️ SMH_TRIFLAG fail-safe 0 (산출 실패: {_e})")
 
     print_quality(df)
     
