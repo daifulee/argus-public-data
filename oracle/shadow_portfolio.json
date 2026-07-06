@@ -180,12 +180,18 @@
   {
     "date": "2026-07-03",
     "weights": {
-      "SGOV": 0.8,
-      "GLD": 0.2
+      "GLD": 0.2,
+      "QQQM": 0.1297,
+      "SMH": 0.1297,
+      "COPX": 0.1297,
+      "PAVE": 0.1292,
+      "SGOV": 0.1,
+      "IWM": 0.0937,
+      "NLR": 0.0881
     },
     "source": "oracle_autopilot_v1.0.6",
-    "n_pos": 2,
-    "logged_utc": "2026-07-05T14:01:46Z",
+    "n_pos": 8,
+    "logged_utc": "2026-07-06T08:53:44Z",
     "valid": true
   }
 ]
