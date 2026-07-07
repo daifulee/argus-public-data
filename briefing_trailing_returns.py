@@ -102,6 +102,38 @@ def format_trailing_block(equity, style="markdown", star=True):
     return "\n".join(L)
 
 
+def format_trailing_html(equity, **kwargs):
+    """HTML 트레일링 성과 표 — 다크 배경 밝은 팔레트(초록 #4ade80 / 빨강 #ff8a8a).
+    브리핑 카드(card al / ct / td) 패턴 정합. equity = run_prima4 equity(정규화 100, DatetimeIndex).
+    가드: None / 비-DatetimeIndex → 빈 문자열 반환(브리핑 무손상). **kwargs 흡수(호출부 호환)."""
+    if equity is None:
+        return ""
+    eq = equity.sort_index()
+    if not isinstance(eq.index, pd.DatetimeIndex):
+        # df['Date'] 재인덱싱 누락 시(정수 인덱스) 표기 생략 — 잘못된 표 대신 무표시
+        return ""
+    res = compute_trailing_returns(eq)
+    asof = res["_asof"].date()
+
+    def _cell(v):
+        if v is None:
+            return '<td style="color:#64748b">N/A</td>'
+        col = "#4ade80" if v >= 0 else "#ff8a8a"
+        return f'<td style="color:{col};font-weight:700">{v:+.2f}%</td>'
+
+    h = ('<div class="card al"><div class="ct">📈 트레일링 성과 '
+         f'<span style="color:#64748b;font-size:10px">(run_prima4 equity · 기준 {asof})</span></div>'
+         '<div class="td"><table>\n'
+         '<tr><th>기간</th><th>수익률</th></tr>\n')
+    for k, lab in PERIODS:
+        h += f'<tr><td>{lab}</td>{_cell(res[k][0])}</tr>\n'
+    h += (f'<tr style="color:#475569"><td>(참고) 누적 전체</td>'
+          f'{_cell(res["_inception_total"])}</tr>\n')
+    h += '</table></div></div>\n'
+    return h
+
+
+
 if __name__ == "__main__":
     # 단독 실행 데모: 엔진 LIVE equity로 산출
     import os, sys, importlib.util
@@ -123,3 +155,5 @@ if __name__ == "__main__":
     print(format_trailing_block(result["equity"], style="plain", star=False))
     print()
     print(format_trailing_block(result["equity"], style="markdown"))
+    print()
+    print(format_trailing_html(result["equity"])[:200], "...")
