@@ -1,41 +1,10 @@
 {
-  "date": "2026-07-03",
-  "changed": true,
+  "date": "2026-07-06",
+  "changed": false,
   "entered": [],
   "exited": [],
-  "reweighted": [
-    {
-      "ticker": "EWZ",
-      "from": 0.0911,
-      "to": 0.0628,
-      "delta": -0.0283
-    },
-    {
-      "ticker": "GLD",
-      "from": 0.5275,
-      "to": 0.636,
-      "delta": 0.1085
-    },
-    {
-      "ticker": "ITA",
-      "from": 0.1542,
-      "to": 0.1267,
-      "delta": -0.0275
-    },
-    {
-      "ticker": "SLV",
-      "from": 0.1592,
-      "to": 0.1321,
-      "delta": -0.0271
-    },
-    {
-      "ticker": "XLE",
-      "from": 0.068,
-      "to": 0.0425,
-      "delta": -0.0255
-    }
-  ],
-  "change_reason": "리밸 EWZ 0.091→0.063, GLD 0.527→0.636, ITA 0.154→0.127, SLV 0.159→0.132, XLE 0.068→0.043",
+  "reweighted": [],
+  "change_reason": "전일과 동일 (포지션·비중 무변화)",
   "positions": {
     "GLD": 0.636,
     "SLV": 0.1321,
@@ -45,6 +14,6 @@
   },
   "exposure": 1.0,
   "actions": "",
-  "engine": "PRIMA2_v0_5_11_CROWNDS_K4_LIVE.py",
-  "generated_utc": "2026-07-06T09:28:11Z"
+  "engine": "PRIMA2_v0_5_13_CROWN87_XLE2RD_LIVE.py",
+  "generated_utc": "2026-07-07T03:53:42Z"
 }
