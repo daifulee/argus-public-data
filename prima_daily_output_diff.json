@@ -1,19 +1,37 @@
 {
-  "date": "2026-07-06",
-  "changed": false,
-  "entered": [],
-  "exited": [],
-  "reweighted": [],
-  "change_reason": "전일과 동일 (포지션·비중 무변화)",
+  "date": "2026-07-07",
+  "changed": true,
+  "entered": [
+    {
+      "ticker": "NLR",
+      "weight": 0.0082,
+      "reason": "SC4.6|C"
+    }
+  ],
+  "exited": [
+    {
+      "ticker": "XLE",
+      "reason": "TARGET_63D"
+    }
+  ],
+  "reweighted": [
+    {
+      "ticker": "GLD",
+      "from": 0.636,
+      "to": 0.6539,
+      "delta": 0.0179
+    }
+  ],
+  "change_reason": "진입 NLR(SC4.6|C) | 청산 XLE(TARGET_63D) | 리밸 GLD 0.636→0.654",
   "positions": {
-    "GLD": 0.636,
-    "SLV": 0.1321,
-    "ITA": 0.1267,
-    "EWZ": 0.0628,
-    "XLE": 0.0425
+    "GLD": 0.6539,
+    "SLV": 0.1388,
+    "ITA": 0.1331,
+    "EWZ": 0.066,
+    "NLR": 0.0082
   },
   "exposure": 1.0,
-  "actions": "",
-  "engine": "PRIMA2_v0_5_14_CROWN88_RDFLAGS_LIVE.py",
-  "generated_utc": "2026-07-07T09:12:35Z"
+  "actions": "SELL XLE (TARGET_63D) ; BUY NLR (SC4.6|C)",
+  "engine": "PRIMA2_v0_5_15_CROWN89_GSR_LIVE.py",
+  "generated_utc": "2026-07-08T01:38:57Z"
 }
