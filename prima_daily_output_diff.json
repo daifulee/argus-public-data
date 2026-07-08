@@ -4,7 +4,7 @@
   "entered": [
     {
       "ticker": "NLR",
-      "weight": 0.0082,
+      "weight": 0.0086,
       "reason": "SC4.6|C"
     }
   ],
@@ -16,22 +16,40 @@
   ],
   "reweighted": [
     {
+      "ticker": "EWZ",
+      "from": 0.0628,
+      "to": 0.0334,
+      "delta": -0.0294
+    },
+    {
       "ticker": "GLD",
       "from": 0.636,
-      "to": 0.6539,
-      "delta": 0.0179
+      "to": 0.6724,
+      "delta": 0.0364
+    },
+    {
+      "ticker": "ITA",
+      "from": 0.1267,
+      "to": 0.1398,
+      "delta": 0.0131
+    },
+    {
+      "ticker": "SLV",
+      "from": 0.1321,
+      "to": 0.1458,
+      "delta": 0.0137
     }
   ],
-  "change_reason": "진입 NLR(SC4.6|C) | 청산 XLE(TARGET_63D) | 리밸 GLD 0.636→0.654",
+  "change_reason": "진입 NLR(SC4.6|C) | 청산 XLE(TARGET_63D) | 리밸 EWZ 0.063→0.033, GLD 0.636→0.672, ITA 0.127→0.140, SLV 0.132→0.146",
   "positions": {
-    "GLD": 0.6539,
-    "SLV": 0.1388,
-    "ITA": 0.1331,
-    "EWZ": 0.066,
-    "NLR": 0.0082
+    "GLD": 0.6724,
+    "SLV": 0.1458,
+    "ITA": 0.1398,
+    "EWZ": 0.0334,
+    "NLR": 0.0086
   },
   "exposure": 1.0,
   "actions": "SELL XLE (TARGET_63D) ; BUY NLR (SC4.6|C)",
-  "engine": "PRIMA2_v0_5_15_CROWN89_GSR_LIVE.py",
-  "generated_utc": "2026-07-08T07:20:11Z"
+  "engine": "PRIMA2_v0_5_16_THRQ3v2_LIVE.py",
+  "generated_utc": "2026-07-08T12:31:05Z"
 }
