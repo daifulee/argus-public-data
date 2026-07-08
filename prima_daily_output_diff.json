@@ -50,6 +50,6 @@
   },
   "exposure": 1.0,
   "actions": "SELL XLE (TARGET_63D) ; BUY NLR (SC4.6|C)",
-  "engine": "PRIMA2_v0_5_16_THRQ3v2_LIVE.py",
-  "generated_utc": "2026-07-08T12:31:05Z"
+  "engine": "PRIMA2_v0_5_17_TLTQ_LIVE.py",
+  "generated_utc": "2026-07-08T13:26:38Z"
 }
