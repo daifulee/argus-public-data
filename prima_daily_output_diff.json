@@ -1,19 +1,49 @@
 {
   "date": "2026-07-09",
-  "changed": false,
-  "entered": [],
-  "exited": [],
-  "reweighted": [],
-  "change_reason": "전일과 동일 (포지션·비중 무변화)",
+  "changed": true,
+  "entered": [
+    {
+      "ticker": "PAVE",
+      "weight": 0.1245,
+      "reason": "진입"
+    }
+  ],
+  "exited": [
+    {
+      "ticker": "ITA",
+      "reason": "청산"
+    }
+  ],
+  "reweighted": [
+    {
+      "ticker": "EWZ",
+      "from": 0.0334,
+      "to": 0.0594,
+      "delta": 0.026
+    },
+    {
+      "ticker": "GLD",
+      "from": 0.6724,
+      "to": 0.5417,
+      "delta": -0.1307
+    },
+    {
+      "ticker": "SLV",
+      "from": 0.1458,
+      "to": 0.2591,
+      "delta": 0.1133
+    }
+  ],
+  "change_reason": "진입 PAVE(진입) | 청산 ITA(청산) | 리밸 EWZ 0.033→0.059, GLD 0.672→0.542, SLV 0.146→0.259",
   "positions": {
-    "GLD": 0.6724,
-    "SLV": 0.1458,
-    "ITA": 0.1398,
-    "EWZ": 0.0334,
-    "NLR": 0.0086
+    "GLD": 0.5417,
+    "SLV": 0.2591,
+    "PAVE": 0.1245,
+    "EWZ": 0.0594,
+    "NLR": 0.0154
   },
   "exposure": 1.0,
   "actions": "",
-  "engine": "PRIMA2_v0_5_19_THRQ4_LIVE.py",
-  "generated_utc": "2026-07-10T08:14:16Z"
+  "engine": "PRIMA2_v0_5_20_CROWN93_GLDRRD_LIVE.py",
+  "generated_utc": "2026-07-10T08:24:34Z"
 }
