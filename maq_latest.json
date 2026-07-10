@@ -1,0 +1,35 @@
+{
+ "date": "2026-07-09",
+ "queue": 2,
+ "grade": "2",
+ "base_f63": 3.41,
+ "strong": [
+  {
+   "ticker": "XLU",
+   "score": 2.7,
+   "ratio": 2.7
+  },
+  {
+   "ticker": "QQQM",
+   "score": 3.5,
+   "ratio": 1.75
+  }
+ ],
+ "super": [
+  "XLU"
+ ],
+ "held": [
+  "EWZ",
+  "GLD",
+  "ITA",
+  "NLR",
+  "SLV"
+ ],
+ "slots_full": true,
+ "eff_slots": 5.0,
+ "engine": "PRIMA2_v0.5.19-THRQ4",
+ "crown": "#92",
+ "mode": "live",
+ "capital_permission": false,
+ "generated_utc": "2026-07-10T07:21:07+00:00"
+}
