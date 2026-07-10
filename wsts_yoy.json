@@ -1,10 +1,6 @@
 {
  "series": [
   {
-   "asof": "2011-05-31",
-   "yoy": 0.021862
-  },
-  {
    "asof": "2011-06-30",
    "yoy": 0.003105
   },
@@ -719,9 +715,13 @@
   {
    "asof": "2026-04-30",
    "yoy": 0.938934
+  },
+  {
+   "asof": "2026-05-31",
+   "yoy": 1.041108
   }
  ],
- "source_url": "https://www.wsts.org/esraCMS/extension/media/f/WST/7644/WSTS-Historical-Billings-Report-Apr_2026.xlsx",
- "source_sha12": "e03f4871a10e",
- "fetched_utc": "2026-07-02T08:16:30Z"
+ "source_url": "https://www.wsts.org/esraCMS/extension/media/f/WST/7676/WSTS-Historical-Billings-Report-May_2026.xlsx",
+ "source_sha12": "790d94cdc6ed",
+ "fetched_utc": "2026-07-10T22:51:09Z"
 }
