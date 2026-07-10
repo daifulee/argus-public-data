@@ -1,13 +1,18 @@
 {
  "date": "2026-07-09",
- "queue": 2,
- "grade": "2",
- "base_f63": 3.41,
+ "queue": 3,
+ "grade": "3+",
+ "base_f63": 5.94,
  "strong": [
   {
    "ticker": "XLU",
    "score": 2.7,
    "ratio": 2.7
+  },
+  {
+   "ticker": "ITA",
+   "score": 4.1,
+   "ratio": 2.05
   },
   {
    "ticker": "QQQM",
@@ -16,20 +21,21 @@
   }
  ],
  "super": [
-  "XLU"
+  "XLU",
+  "ITA"
  ],
  "held": [
   "EWZ",
   "GLD",
-  "ITA",
   "NLR",
+  "PAVE",
   "SLV"
  ],
  "slots_full": true,
  "eff_slots": 5.0,
- "engine": "PRIMA2_v0.5.19-THRQ4",
- "crown": "#92",
+ "engine": "PRIMA2_v0.5.20-GLDRRD",
+ "crown": "#93",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-07-10T08:14:29+00:00"
+ "generated_utc": "2026-07-10T08:24:44+00:00"
 }
