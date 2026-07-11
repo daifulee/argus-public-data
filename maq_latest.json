@@ -7,7 +7,7 @@
   {
    "ticker": "XLU",
    "score": 2.7,
-   "ratio": 2.7
+   "ratio": 5.4
   },
   {
    "ticker": "ITA",
@@ -33,9 +33,9 @@
  ],
  "slots_full": true,
  "eff_slots": 5.0,
- "engine": "PRIMA2_v0.5.21-PMHOLD",
- "crown": "#94",
+ "engine": "PRIMA2_v0.5.23-XLUCIBR",
+ "crown": "#95",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-07-11T07:03:19+00:00"
+ "generated_utc": "2026-07-11T09:56:58+00:00"
 }
