@@ -7,10 +7,17 @@
 #   ③ 변경분만 자기 레포에 commit + push (GITHUB_TOKEN)
 #
 # 인증 : GITHUB_TOKEN (같은 레포 쓰기) — PAT / Deploy Key 불필요 (S157 403 회피)
-# 시점 : 미국 평일 장 마감 후 22:00 UTC = KST 익일 07:00
-#        (여름 18:00 ET / 겨울 17:00 ET — 사계절 마감 후)
+# 시점 : 미국 평일 장 마감 후
+#        primary 22:17 UTC = KST 익일 07:17 / retry 23:17 UTC = KST 익일 08:17
+#        (여름 18:00 ET / 겨울 17:00 ET — 두 시점 모두 마감 후 → 거래일 정합)
 # 비용 : Actions Free 한도 내 (실행당 약 3~5분)
 # 정합 : 데이터 갱신·브리핑 분리 / 격언 #105 형식 보존 / #107 User-Agent
+# ─── 정체(오늘) 근본처방 (실행 outage 대응) ─────────────────────────
+#   🔧 cron :00 → :17 이동 — GitHub 정시(:00) 고부하 스케줄 드롭 완화.
+#   🔧 retry 23:17 UTC 추가 — primary 드롭 시 같은 저녁 재시도(거래일 동일 → 정합).
+#            primary 성공 시 retry 는 git diff 무변화로 자동 no-op (무해).
+#   🔧 backfill_start/end dispatch 입력 — 누락 거래일 소급 append (BACKFILL_START/END).
+#   ※ 자동 비활성화(60일) 방지 = argus_keepalive.yml, 정체 감지·알림 = argus_stall_alert.yml (분리 파일).
 # v3.7 : wsts_yoy.json commit 대상 추가 (S244 — WSTS 자동 수집 갱신분 영속화)
 # ════════════════════════════════════════════════════════════════════
 
@@ -18,8 +25,9 @@ name: 🦅 ARGUS Data Update
 
 on:
   schedule:
-    - cron: '0 22 * * 1-5'          # 미국 평일 장 마감 후 (KST 익일 07:00)
-  workflow_dispatch:                 # 수동 즉시 실행 (정지 복구용)
+    - cron: '17 22 * * 1-5'         # primary — 미 평일 장 마감 후 (KST 익일 07:17), :17 = 정시 드롭 완화
+    - cron: '17 23 * * 1-5'         # retry   — primary 드롭 대비 같은 저녁 재시도 (KST 익일 08:17)
+  workflow_dispatch:                 # 수동 즉시 실행 (정지 복구 / 소급 백필)
     inputs:
       backfill_force:
         description: '백필 강제 (cover<50% 컬럼 전체 재백필)'
@@ -29,6 +37,16 @@ on:
         options:
           - 'false'
           - 'true'
+      backfill_start:
+        description: '소급 백필 시작일 YYYY-MM-DD (누락 거래일 소급 append. end 와 함께 지정)'
+        required: false
+        default: ''
+        type: string
+      backfill_end:
+        description: '소급 백필 종료일 YYYY-MM-DD (start 와 함께 지정)'
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: write                    # 자기 레포 commit / push
@@ -60,10 +78,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 📡 데이터 수집 (fetcher v3.1)
+      - name: 📡 데이터 수집 (fetcher v3.7)
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           BACKFILL_FORCE: ${{ github.event.inputs.backfill_force || 'false' }}
+          BACKFILL_START: ${{ github.event.inputs.backfill_start || '' }}
+          BACKFILL_END: ${{ github.event.inputs.backfill_end || '' }}
         run: python argus_data_fetcher.py
 
       - name: 🧩 latest.json 생성 (argus_data.csv 마지막 행)
@@ -77,7 +97,7 @@ jobs:
                   argus_data_daily.csv argus_data_weekly.csv argus_data_monthly.csv \
                   wsts_yoy.json
           if git diff --staged --quiet; then
-            echo "ℹ️ 변경 없음 — commit skip (휴장 / 동일 데이터)"
+            echo "ℹ️ 변경 없음 — commit skip (휴장 / 동일 데이터 / retry no-op)"
           else
             git commit -m "📡 data: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST') 자동 갱신 [skip ci]"
             git pull --rebase origin main
@@ -93,6 +113,9 @@ jobs:
           echo "- 실행 시각: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')" >> $GITHUB_STEP_SUMMARY
           echo "- fetcher: v3.7 (WSTS 자동 수집 + SMH_TRIFLAG)" >> $GITHUB_STEP_SUMMARY
           echo "- FRED_API_KEY: ${{ secrets.FRED_API_KEY != '' && '✅ 설정됨' || '⚠️ 미설정 (graph fallback 동작)' }}" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ github.event.inputs.backfill_start }}" ]; then
+            echo "- 🕳️ 소급 백필: ${{ github.event.inputs.backfill_start }} ~ ${{ github.event.inputs.backfill_end }}" >> $GITHUB_STEP_SUMMARY
+          fi
           if [ -f latest.json ]; then
             echo "- latest.json Date: \`$(python -c "import json;print(json.load(open('latest.json'))['Date'])")\`" >> $GITHUB_STEP_SUMMARY
           fi
