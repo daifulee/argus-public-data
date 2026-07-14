@@ -1,3 +1,5 @@
+# 🔧 v3.8 (2026-07-14): _yf_series yfinance 1.x MultiIndex 컬럼 평탄화 — DataFrame 반환→float(Series) 크래시 근본 처방.
+#    증상: BACKFILL_FORCE/저커버 VIX3M 백필에서 exit 1 (정상 일일 실행은 블록 미진입이라 무증상). base=v3.7.
 # 🔧 v3.7 (2026-07-02, S244): WSTS YoY 자동 수집 신설 — wsts.org 랜딩 파싱 → 최신 Historical-Billings xlsx → Worldwide 3MMA YoY → wsts_yoy.json 조건부 갱신.
 #    가드: 0 플레이스홀더 제외(미발표월, S244 실측 확정) / source_url 동일 시 다운로드 생략 / 원자적 교체(os.replace) / 전 단계 fail-safe(기존 json 보존).
 #    의존: openpyxl(xlsx 엔진) — GHA pip 미설치 시 fail-safe 경고 후 기존 json 유지. base=v3.6(26924714d38e).
@@ -1028,14 +1030,24 @@ def _yf_batch(symbols: list, start: str, end: str) -> dict:
 
 
 def _yf_series(symbol: str, start: str, end: str) -> pd.Series:
-    """단일 티커 히스토리 → Series."""
+    """단일 티커 히스토리 → Series.
+    🔧 v3.8 (S후속): yfinance 1.x 는 단일 티커도 MultiIndex 컬럼((Price,Ticker))으로 반환 →
+        raw["Close"] 가 DataFrame 이 되어 이후 float(series.iloc[-1]) 크래시 유발
+        (백필/저커버 VIX3M 경로 exit 1). MultiIndex 평탄화 + 1D 강제로 Series 보장(근본 처방).
+    """
     try:
         raw = yf.download(symbol, start=start, end=end,
                           auto_adjust=True, progress=False)
-        if raw.empty:
+        if raw is None or len(raw) == 0:
             return pd.Series(dtype=float)
+        # yfinance 1.x MultiIndex 컬럼 평탄화 (top level = Price 필드)
+        if isinstance(raw.columns, pd.MultiIndex):
+            raw.columns = raw.columns.get_level_values(0)
         col = "Close" if "Close" in raw.columns else raw.columns[0]
-        s = raw[col].dropna()
+        s = raw[col]
+        if isinstance(s, pd.DataFrame):   # 중복 라벨 방어 → 첫 열
+            s = s.iloc[:, 0]
+        s = s.dropna()
         s.index = pd.to_datetime(s.index).tz_localize(None)
         return s
     except Exception as e:
