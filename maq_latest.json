@@ -1,8 +1,8 @@
 {
- "date": "2026-07-10",
- "queue": 3,
- "grade": "3+",
- "base_f63": 5.94,
+ "date": "2026-07-14",
+ "queue": 2,
+ "grade": "2",
+ "base_f63": 3.41,
  "strong": [
   {
    "ticker": "XLU",
@@ -13,11 +13,6 @@
    "ticker": "ITA",
    "score": 4.1,
    "ratio": 2.05
-  },
-  {
-   "ticker": "QQQM",
-   "score": 3.5,
-   "ratio": 1.75
   }
  ],
  "super": [
@@ -37,5 +32,5 @@
  "crown": "#95",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-07-13T09:20:30+00:00"
+ "generated_utc": "2026-07-14T06:08:33+00:00"
 }
