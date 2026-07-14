@@ -1,0 +1,70 @@
+# ════════════════════════════════════════════════════════════════════
+# 🦅 ARGUS Keepalive — 스케줄 워크플로 60일 자동 비활성화 방지
+# ════════════════════════════════════════════════════════════════════
+# 근본원인: GitHub 은 "user 커밋 없이 60일" 경과 시 schedule 워크플로를 자동 비활성화.
+#   argus-bot(GITHUB_TOKEN) + [skip ci] 커밋은 60일 타이머를 리셋하지 못함
+#   → 데이터가 매일 커밋돼도 타이머는 계속 흘러 ~60일째 전 스케줄 워크플로 동시 정지.
+#   (이번 정체의 유력 근본원인. 5개 워크플로 동시 정지 = 레포 단위 원인과 정합.)
+#
+# 처방: 주 1회 PAT(사용자 귀속) 커밋으로 60일 타이머를 리셋 → 자동 비활성화 원천 차단.
+#   .keepalive 파일에 타임스탬프만 갱신 (데이터 무관, 최소 변경).
+#
+# 🔑 선행 1회: Settings > Secrets and variables > Actions > New repository secret
+#     이름  KEEPALIVE_PAT
+#     값    fine-grained PAT (Repository access = argus-public-data, Contents: Read and write)
+#   ※ PAT 미설정 시 이 워크플로는 안전하게 skip (경고만) — GITHUB_TOKEN fallback은 타이머를
+#      리셋하지 못하므로 사용하지 않음(무의미). PAT 설정이 근본 처방의 필수 조건.
+# ════════════════════════════════════════════════════════════════════
+
+name: 🫀 ARGUS Keepalive
+
+on:
+  schedule:
+    - cron: '23 3 * * 0'             # 매주 일요일 03:23 UTC (KST 12:23) — 정시 밖
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: argus-keepalive
+  cancel-in-progress: false
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 🔎 PAT 존재 확인
+        id: guard
+        run: |
+          if [ -z "${{ secrets.KEEPALIVE_PAT }}" ]; then
+            echo "::warning::KEEPALIVE_PAT 미설정 — keepalive skip. 60일 자동 비활성화 방지 불가."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 📥 Checkout (PAT)
+        if: steps.guard.outputs.ok == 'true'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.KEEPALIVE_PAT }}
+          fetch-depth: 1
+
+      - name: 🫀 타임스탬프 갱신 + 사용자 귀속 커밋
+        if: steps.guard.outputs.ok == 'true'
+        run: |
+          TS="$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          echo "keepalive: $TS" > .keepalive
+          git config user.name  "argus-keepalive"
+          git config user.email "daifulee@users.noreply.github.com"
+          git add .keepalive
+          if git diff --staged --quiet; then
+            echo "변경 없음 (동일 분 재실행) — skip"
+          else
+            git commit -m "🫀 keepalive: $TS (60일 스케줄 타이머 리셋)"
+            git pull --rebase origin main
+            git push
+            echo "✅ keepalive 커밋 완료 — 60일 타이머 리셋"
+          fi
