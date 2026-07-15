@@ -1,9 +1,10 @@
 {
  "meta": {
-  "convention": "asof=데이터월 말일; 유효일=asof+PIT_LAG(14d)≈익월 둘째화요일 공표 정합",
+  "convention": "asof=데이터월 말일; 유효일=asof+14d",
   "source": "api.nfib-sbet.org getIndicators2 OPT_INDEX",
   "version": "seed_v1_0",
-  "built": "2026-07-02 S247"
+  "built": "2026-07-02 S247",
+  "last_update": "2026-07-15"
  },
  "series": [
   {
@@ -937,6 +938,10 @@
   {
    "asof": "2026-05-31",
    "opt": 94.44
+  },
+  {
+   "asof": "2026-06-30",
+   "opt": 97.35
   }
  ]
 }
