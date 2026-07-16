@@ -36,3 +36,4 @@ Date,NFCI,ICSA,CCSA,WALCL,WTREGEN,RRPONTSYD,Net_Liquidity,T10Y2Y,NFCI_source,ICS
 2026-07-13,-0.515,215000.0,1814000.0,6735609.0,774062.0,0.795,5960752.0,0.36,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live
 2026-07-14,-0.515,215000.0,1814000.0,6735609.0,774062.0,0.278,5961269.0,0.4,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live
 2026-07-15,-0.538,215000.0,1814000.0,6735609.0,774062.0,0.278,5961269.0,0.42,fred_live,fred_live,fred_live,fred_live,ffill,ffill,fred_live
+2026-07-16,-0.538,208000.0,1805000.0,6743028.0,756218.0,0.125,5986685.0,0.41,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live
