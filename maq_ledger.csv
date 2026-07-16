@@ -3,3 +3,4 @@ date,queue,grade,slots_full,strong,super,spy_close,fwd21_pct,fwd63_pct
 2026-07-10,3,3+,True,XLU:2.7|ITA:4.1|QQQM:3.5,XLU|ITA,754.95,,
 2026-07-14,2,2,True,XLU:2.7|ITA:4.1,XLU|ITA,749.17,,
 2026-07-15,2,2,True,XLU:2.7|ITA:4.1,XLU|ITA,751.83,,
+2026-07-16,4,3+,False,XLU:2.7|SLV:11.0|ITA:4.1|QQQM:3.5,XLU|ITA|SLV,754.81,,
