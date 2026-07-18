@@ -1,44 +1,18 @@
 {
   "date": "2026-07-17",
-  "changed": true,
-  "entered": [
-    {
-      "ticker": "SLV",
-      "weight": 0.1848,
-      "reason": "진입"
-    }
-  ],
+  "changed": false,
+  "entered": [],
   "exited": [],
-  "reweighted": [
-    {
-      "ticker": "EWZ",
-      "from": 0.0932,
-      "to": 0.0691,
-      "delta": -0.0241
-    },
-    {
-      "ticker": "GLD",
-      "from": 0.6873,
-      "to": 0.5834,
-      "delta": -0.1039
-    },
-    {
-      "ticker": "PAVE",
-      "from": 0.1954,
-      "to": 0.1449,
-      "delta": -0.0505
-    }
-  ],
-  "change_reason": "진입 SLV(진입) | 리밸 EWZ 0.093→0.069, GLD 0.687→0.583, PAVE 0.195→0.145",
+  "reweighted": [],
+  "change_reason": "전일과 동일 (포지션·비중 무변화)",
   "positions": {
-    "GLD": 0.5834,
-    "SLV": 0.1848,
-    "PAVE": 0.1449,
-    "EWZ": 0.0691,
-    "NLR": 0.0179
+    "GLD": 0.6873,
+    "PAVE": 0.1954,
+    "EWZ": 0.0932,
+    "NLR": 0.0241
   },
   "exposure": 1.0,
-  "actions": "",
+  "actions": "SELL SLV (WTI>80)",
   "engine": "PRIMA2_v0_5_23_CROWN95_XLUCIBR_LIVE.py",
-  "generated_utc": "2026-07-17T07:07:27Z"
+  "generated_utc": "2026-07-18T06:50:56Z"
 }
