@@ -12,6 +12,15 @@
 # 판정: latest.json Date 와 오늘(KST) 사이 경과 영업일(Mon-Fri) 계산.
 #   정상 = 데이터가 직전 거래일(≈영업일 1일 지연). 경과 영업일 ≥ STALE_MAX_BDAYS(2) → stale.
 #
+# 🆕 v2 (S277, 2026-07-21): briefing.html 신선도 감시 추가 — 사각지대 제거
+#   원인(S277 실측): 본 워치독은 latest.json(=데이터)만 감시 → briefing.html 이 며칠 stale 이어도
+#     알림이 없었음(07-17 기준 며칠 고정 무통보). deploy-brief-html cron 순서 역전이 원인이었으나,
+#     원인 불문 briefing 재빌드 정지를 잡는 독립 감시가 부재했던 것이 근본 사각지대.
+#   처방: checkout 로컬 briefing.html 의 '🕐 생성 YYYY-MM-DD HH:MM KST' 스탬프(빌드 시각) 파싱
+#     → 경과 영업일 ≥ STALE_MAX_BDAYS(2) 시 alert. deploy-brief-html 은 타 레포(argus-briefing)
+#     워크플로라 GITHUB_TOKEN 으로 자동 재실행 불가 → briefing 정체는 '알림만'(수동 재실행 권장 문구).
+#   격언 #107(UA) 정합.
+#
 # 🔑 선행 1회: Settings > Secrets and variables > Actions > New repository secret
 #     이름  DISCORD_WEBHOOK   값  Discord 채널 웹훅 URL (https://discord.com/api/webhooks/...)
 #   ※ 미설정 시 알림 skip(경고만). 자동 재실행은 GITHUB_TOKEN 으로 동작.
@@ -55,7 +64,7 @@ jobs:
       - name: 🔎 신선도·실패 판정 + 알림 + 자동 재실행
         run: |
           python - <<'PY'
-          import json, os, subprocess, urllib.request
+          import json, os, re, subprocess, urllib.request
           from datetime import date, datetime, timezone, timedelta
 
           KST = timezone(timedelta(hours=9))
@@ -64,23 +73,45 @@ jobs:
           trigger = os.getenv("TRIGGER", "")
           run_conclusion = os.getenv("RUN_CONCLUSION", "")
           run_url = os.getenv("RUN_URL", "")
+          today = datetime.now(KST).date()
 
-          # ── latest.json Date 읽기 ──
+          def bdays_since(d):
+              """d(익일)부터 오늘까지 경과 영업일(Mon-Fri) 수."""
+              g, cur = 0, d + timedelta(days=1)
+              while cur <= today:
+                  if cur.weekday() < 5:
+                      g += 1
+                  cur += timedelta(days=1)
+              return g
+
+          # ── ① latest.json Date (데이터 신선도) ──
           data_date_str, gap_bdays, err = None, None, None
           try:
               with open("latest.json", encoding="utf-8") as f:
                   data_date_str = json.load(f)["Date"]
               y, m, d = map(int, data_date_str.split("-"))
-              data_date = date(y, m, d)
-              today = datetime.now(KST).date()
-              gap_bdays = 0
-              cur = data_date + timedelta(days=1)
-              while cur <= today:
-                  if cur.weekday() < 5:      # Mon(0)~Fri(4)
-                      gap_bdays += 1
-                  cur += timedelta(days=1)
+              gap_bdays = bdays_since(date(y, m, d))
           except Exception as e:
               err = f"latest.json 판독 실패: {e}"
+
+          # ── ② briefing.html 생성 스탬프 (재빌드 신선도) 🆕 v2 ──
+          #     '🕐 생성 YYYY-MM-DD HH:MM KST' = deploy-brief-html 빌드 시각.
+          #     경과 영업일 ≥ 임계 → briefing 재빌드 정지(원인 불문) 감지.
+          brief_date_str, brief_gap, brief_err = None, None, None
+          try:
+              with open("briefing.html", encoding="utf-8") as f:
+                  bh = f.read()
+              bm = re.search(r"생성\s+(20\d{2}-\d{2}-\d{2})\s+\d{1,2}:\d{2}\s*KST", bh)
+              if bm:
+                  brief_date_str = bm.group(1)
+                  by, bmo, bd = map(int, brief_date_str.split("-"))
+                  brief_gap = bdays_since(date(by, bmo, bd))
+              else:
+                  brief_err = "briefing.html 생성 스탬프 미발견(형식 변경 의심)"
+          except FileNotFoundError:
+              brief_err = "briefing.html 부재(배포 미생성 의심)"
+          except Exception as e:
+              brief_err = f"briefing.html 판독 실패: {e}"
 
           # ── 알림 사유 결정 ──
           reasons = []
@@ -91,8 +122,17 @@ jobs:
           elif gap_bdays is not None and gap_bdays >= max_bdays:
               reasons.append(f"🕳️ 데이터 **정체** — latest.json Date `{data_date_str}` · 경과 영업일 **{gap_bdays}일** (임계 {max_bdays})")
 
+          # 🆕 v2: briefing 재빌드 정지 감시 (독립 사유)
+          brief_stale = False
+          if brief_err:
+              reasons.append(f"🖥️ briefing.html **이상** — {brief_err}")
+              brief_stale = True
+          elif brief_gap is not None and brief_gap >= max_bdays:
+              reasons.append(f"🖥️ briefing.html **정체** — 생성일 `{brief_date_str}` · 경과 영업일 **{brief_gap}일** (임계 {max_bdays}) → deploy-brief-html(argus-briefing) 수동 재실행 권장")
+              brief_stale = True
+
           if not reasons:
-              print(f"✅ 정상 — latest.json Date={data_date_str}, 경과 영업일={gap_bdays} (임계 {max_bdays})")
+              print(f"✅ 정상 — latest.json Date={data_date_str}(경과 {gap_bdays}) · briefing 생성일={brief_date_str}(경과 {brief_gap}) (임계 {max_bdays})")
               raise SystemExit(0)
 
           alert = " / ".join(reasons)
@@ -116,12 +156,20 @@ jobs:
           else:
               print("⚠️ DISCORD_WEBHOOK 미설정 — 알림 skip")
 
-          # ── 자동 재실행 (정체/실패 시 Data Update 재트리거) ──
-          try:
-              subprocess.run(
-                  ["gh", "workflow", "run", "🦅 ARGUS Data Update"],
-                  check=True)
-              print("🔁 Data Update 자동 재실행 트리거 완료")
-          except Exception as e:
-              print(f"⚠️ 자동 재실행 실패: {e}")
+          # ── 자동 재실행 (데이터 정체/실패 시 Data Update 재트리거) ──
+          #   🆕 v2: briefing 정체는 타 레포(argus-briefing) 워크플로라 GITHUB_TOKEN 트리거 불가
+          #          → briefing 단독 사유일 때는 재실행 생략(알림만). 데이터 사유가 있을 때만 재실행.
+          data_reason = (trigger == "workflow_run" and run_conclusion == "failure") \
+                        or bool(err) \
+                        or (gap_bdays is not None and gap_bdays >= max_bdays)
+          if data_reason:
+              try:
+                  subprocess.run(
+                      ["gh", "workflow", "run", "🦅 ARGUS Data Update"],
+                      check=True)
+                  print("🔁 Data Update 자동 재실행 트리거 완료")
+              except Exception as e:
+                  print(f"⚠️ 자동 재실행 실패: {e}")
+          else:
+              print("ℹ️ briefing 단독 정체 — 타 레포 워크플로라 자동 재실행 생략(수동 재실행 권장)")
           PY
