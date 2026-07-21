@@ -1,5 +1,5 @@
 {
- "date": "2026-07-17",
+ "date": "2026-07-21",
  "queue": 3,
  "grade": "3+",
  "base_f63": 5.94,
@@ -16,8 +16,8 @@
   },
   {
    "ticker": "ITA",
-   "score": 6.4,
-   "ratio": 3.2
+   "score": 4.1,
+   "ratio": 2.05
   }
  ],
  "super": [
@@ -37,5 +37,5 @@
  "crown": "#95",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-07-20T07:49:48+00:00"
+ "generated_utc": "2026-07-21T01:55:10+00:00"
 }
