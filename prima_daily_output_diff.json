@@ -1,18 +1,44 @@
 {
-  "date": "2026-07-21",
-  "changed": false,
-  "entered": [],
+  "date": "2026-07-22",
+  "changed": true,
+  "entered": [
+    {
+      "ticker": "ITA",
+      "weight": 0.2522,
+      "reason": "SC4.1|A"
+    }
+  ],
   "exited": [],
-  "reweighted": [],
-  "change_reason": "전일과 동일 (포지션·비중 무변화)",
+  "reweighted": [
+    {
+      "ticker": "EWZ",
+      "from": 0.0932,
+      "to": 0.0603,
+      "delta": -0.0329
+    },
+    {
+      "ticker": "GLD",
+      "from": 0.6873,
+      "to": 0.5455,
+      "delta": -0.1418
+    },
+    {
+      "ticker": "PAVE",
+      "from": 0.1954,
+      "to": 0.1264,
+      "delta": -0.069
+    }
+  ],
+  "change_reason": "진입 ITA(SC4.1|A) | 리밸 EWZ 0.093→0.060, GLD 0.687→0.545, PAVE 0.195→0.126",
   "positions": {
-    "GLD": 0.6873,
-    "PAVE": 0.1954,
-    "EWZ": 0.0932,
-    "NLR": 0.0241
+    "GLD": 0.5455,
+    "ITA": 0.2522,
+    "PAVE": 0.1264,
+    "EWZ": 0.0603,
+    "NLR": 0.0156
   },
   "exposure": 1.0,
-  "actions": "",
+  "actions": "BUY ITA (SC4.1|A)",
   "engine": "PRIMA2_v0_5_23_CROWN95_XLUCIBR_LIVE.py",
-  "generated_utc": "2026-07-21T01:54:58Z"
+  "generated_utc": "2026-07-22T01:04:06Z"
 }
