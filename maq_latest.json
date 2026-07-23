@@ -1,13 +1,18 @@
 {
- "date": "2026-07-22",
- "queue": 1,
- "grade": "1",
- "base_f63": 2.79,
+ "date": "2026-07-23",
+ "queue": 2,
+ "grade": "2",
+ "base_f63": 3.41,
  "strong": [
   {
    "ticker": "XLU",
-   "score": 3.2,
-   "ratio": 6.4
+   "score": 2.7,
+   "ratio": 5.4
+  },
+  {
+   "ticker": "XLE",
+   "score": 3.9,
+   "ratio": 1.56
   }
  ],
  "super": [
@@ -16,7 +21,7 @@
  "held": [
   "EWZ",
   "GLD",
-  "ITA",
+  "INDA",
   "NLR",
   "PAVE"
  ],
@@ -26,5 +31,5 @@
  "crown": "#95",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-07-22T04:52:27+00:00"
+ "generated_utc": "2026-07-23T01:09:25+00:00"
 }
