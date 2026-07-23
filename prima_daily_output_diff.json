@@ -1,40 +1,16 @@
 {
-  "date": "2026-07-23",
+  "date": "2026-07-22",
   "changed": true,
   "entered": [
     {
       "ticker": "INDA",
       "weight": 0.0042,
-      "reason": "진입"
+      "reason": "SC3.3|C"
     }
   ],
-  "exited": [
-    {
-      "ticker": "ITA",
-      "reason": "청산"
-    }
-  ],
-  "reweighted": [
-    {
-      "ticker": "EWZ",
-      "from": 0.0603,
-      "to": 0.0926,
-      "delta": 0.0323
-    },
-    {
-      "ticker": "GLD",
-      "from": 0.5455,
-      "to": 0.685,
-      "delta": 0.1395
-    },
-    {
-      "ticker": "PAVE",
-      "from": 0.1264,
-      "to": 0.1943,
-      "delta": 0.0679
-    }
-  ],
-  "change_reason": "진입 INDA(진입) | 청산 ITA(청산) | 리밸 EWZ 0.060→0.093, GLD 0.545→0.685, PAVE 0.126→0.194",
+  "exited": [],
+  "reweighted": [],
+  "change_reason": "진입 INDA(SC3.3|C)",
   "positions": {
     "GLD": 0.685,
     "PAVE": 0.1943,
@@ -43,7 +19,7 @@
     "INDA": 0.0042
   },
   "exposure": 1.0,
-  "actions": "",
-  "engine": "PRIMA2_v0_5_23_CROWN95_XLUCIBR_LIVE.py",
-  "generated_utc": "2026-07-23T01:09:13Z"
+  "actions": "BUY INDA (SC3.3|C)",
+  "engine": "PRIMA2_v0_5_24_CROWN95_INPUTGATE_LIVE.py",
+  "generated_utc": "2026-07-23T05:03:28Z"
 }
