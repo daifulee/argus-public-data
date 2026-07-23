@@ -1,3 +1,9 @@
+# 🔧 v3.9.1 (2026-07-23, S279): 버전 표기 단일 원천화 — 배너·docstring 고정 문자열 제거.
+#    결함: 실행 배너가 'v3.3' 하드코딩(L2111 계열)이라 헤더 이력과 불일치. 동일 유형 2회차
+#          (v2.4 오표기 선례가 본 파일 주석에 이미 박제) → 수동 동기 방식의 반복 실패 입증.
+#    근본 처방: FETCHER_VER 를 헤더 이력 첫 줄에서 런타임 추출(_detect_fetcher_ver) → 표기 지점 0개.
+#          docstring 제목의 중복 버전 주장도 제거 (버전 주장 지점을 하나만 남김).
+#    fail-safe: 추출 실패 시 'unknown' 표기 (파이프라인 중단 없음 — 데이터 가용성 우선).
 # 🔧 v3.9 (2026-07-23, S279): Date 라벨 원천 교정 [SESSION-DATE] — carry row 구조적 소멸.
 #    결함(v3.8 이하): fetch_today_row 가 date.today()(GHA 러너=UTC)를 Date 로 stamp.
 #      워크플로 cron 은 22:17/23:17 UTC(세션일과 동일 UTC 날짜) 설계이나, GitHub 스케줄러 지연(실측 약 55분)이
@@ -29,7 +35,7 @@
 #    ② Net_Liquidity 공식 정정 — RRP raw 차감 → ×1e3 (BT v5 S188 NL 정정 규약 정합, 자본 경로 0 감사 완료)
 #    ③ main 합류점 전열 재계산 신설 (이력 자기치유). 베이스 = 레포 실행본 v3.1 (sha b1107f86d9ba, Commander 첨부 2026-06-12).
 """
-🦅 ARGUS DATA FETCHER v3.3 — ECY/CAPE 자동 fetch 추가 (S141 Crown #73 정합)
+🦅 ARGUS DATA FETCHER — 변경 이력·버전은 파일 상단 주석이 단일 원천 (v3.9.1)
 PRIMA (최신 Crown #73 = v0.4.0-EXSN_INDIVIDUAL) 전용 데이터 수집기
 
 🌟 v3.1 변경 사항 (S141, 2026-05-26, Commander 명령):
@@ -348,6 +354,30 @@ LIVE_SRC_VALUES = {
 BT_LONG_PATH = os.path.join(SCRIPT_DIR, "BT_LONG_v5_complete.csv")
 SEED_DAYS    = 450
 KST          = timezone(timedelta(hours=9))
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🆕 v3.9.1 (S279): 버전 단일 원천 — 헤더 변경 이력 첫 줄에서 런타임 추출
+#   배경: 배너 하드코딩이 헤더와 어긋나는 사고 2회 (v2.4 · v3.3). 수동 동기는 실패가 반복됨.
+#   원칙: 버전을 "주장"하는 지점을 코드에서 0개로 만들고, 이력 자체를 읽는다.
+#   fail-safe: 추출 실패 시 "unknown" (데이터 파이프라인은 계속 — 표기는 비차단 사안)
+# ═══════════════════════════════════════════════════════════════════════════
+def _detect_fetcher_ver(default="unknown"):
+    """파일 상단 변경 이력 첫 줄(# 🔧 vX.Y[.Z])에서 버전 문자열 추출."""
+    try:
+        with open(os.path.abspath(__file__), encoding="utf-8") as _f:
+            for _ in range(60):
+                _line = _f.readline()
+                if not _line:
+                    break
+                _m = re.match(r"#\s*🔧\s*(v\d+\.\d+(?:\.\d+)?)", _line.strip())
+                if _m:
+                    return _m.group(1)
+    except Exception:
+        pass
+    return default
+
+
+FETCHER_VER = _detect_fetcher_ver()
 
 # 🆕 v2.3: DBnomics ISM PMI Web API URL (무료, 무 API key)
 DBNOMICS_PMI_URL = "https://api.db.nomics.world/v22/series/ISM/pmi/pm?observations=1&format=json"
@@ -2108,7 +2138,7 @@ def compute_smh_triflag(df, prices=None, wsts_series=None):
 
 def main():
     t0 = time.time()
-    print(f"🦅 ARGUS DATA FETCHER v3.3 — {datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')}")
+    print(f"🦅 ARGUS DATA FETCHER {FETCHER_VER} — {datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')}")
     print(f"   FRED_API_KEY: {'✅ 설정됨' if FRED_API_KEY else '🚨 부재'}")
     print(f"   BT_LONG_PATH: {'✅ 가용' if os.path.exists(BT_LONG_PATH) else '⚠️ 부재 (DBnomics 실패 시 fallback 불가)'}")
     print(f"   PMI source:   🌟 4중 방어 (Tradingeconomics 1차 + USSLIND proxy 2차 + BT_LONG 3차 + ffill 4차, v2.9)")
