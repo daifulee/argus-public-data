@@ -1,0 +1,14 @@
+date,field,old_value,new_value,reason,ref,corrected_utc,approver
+2026-07-23,EWZ,0.09261,(행 삭제),세션 미존재 — carry row 산물,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-23,GLD,0.684991,(행 삭제),세션 미존재 — carry row 산물,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-23,NLR,0.023958,(행 삭제),세션 미존재 — carry row 산물,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-23,PAVE,0.194278,(행 삭제),세션 미존재 — carry row 산물,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-23,INDA,0.004163,(행 삭제),세션 미존재 — carry row 산물,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-22,EWZ,0.060266,0.0926,carry row(WTI 84.68 stale)로 산출된 허위 비중 → 확정 종가(WTI 87.98) 기준 정정,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-22,GLD,0.545544,0.685,carry row(WTI 84.68 stale)로 산출된 허위 비중 → 확정 종가(WTI 87.98) 기준 정정,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-22,ITA,0.252173,0.0,carry row(WTI 84.68 stale)로 산출된 허위 비중 → 확정 종가(WTI 87.98) 기준 정정,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-22,NLR,0.015591,0.024,carry row(WTI 84.68 stale)로 산출된 허위 비중 → 확정 종가(WTI 87.98) 기준 정정,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-22,PAVE,0.126427,0.1943,carry row(WTI 84.68 stale)로 산출된 허위 비중 → 확정 종가(WTI 87.98) 기준 정정,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-22,INDA,0.0,0.0042,carry row(WTI 84.68 stale)로 산출된 허위 비중 → 확정 종가(WTI 87.98) 기준 정정,OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-14,(row),,(MISSING),"GHA 일일 작업 미실행 — 값 복원 불가, 날조 금지 원칙에 따라 결측 유지",OBS-S279,2026-07-23T06:30:00Z,Commander
+2026-07-20,(row),,(MISSING),"GHA 일일 작업 미실행 — 값 복원 불가, 날조 금지 원칙에 따라 결측 유지",OBS-S279,2026-07-23T06:30:00Z,Commander
