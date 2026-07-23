@@ -1,3 +1,12 @@
+# 🔧 v3.9 (2026-07-23, S279): Date 라벨 원천 교정 [SESSION-DATE] — carry row 구조적 소멸.
+#    결함(v3.8 이하): fetch_today_row 가 date.today()(GHA 러너=UTC)를 Date 로 stamp.
+#      워크플로 cron 은 22:17/23:17 UTC(세션일과 동일 UTC 날짜) 설계이나, GitHub 스케줄러 지연(실측 약 55분)이
+#      2회차를 00:0x UTC 로 밀어내면 date.today() 가 익일로 넘어가 "직전 세션 종가 = 익일자 행"(carry row) 생성.
+#      실측 2026-07-23 행 = 07-22 종가 전량 복제 → 라벨과 내용 불일치(격언 5조 ③ 인접).
+#    근본 처방: Date 를 가격 원천(yfinance)이 반환한 마지막 거래일로 확정 (resolve_session_date 신설).
+#      값과 라벨이 같은 원천에서 나오므로 스케줄러 지연·시간대와 무관하게 구조적으로 불일치 불가.
+#      하루 2회 실행 시 동일 세션일 재기록 = 멱등(main 이 기존 행 제거 후 재생성, 자기치유 보존).
+#    fail-safe: 세션일 해석 실패 시 fetch 생략(행 날조 금지) — 격언 #96 v2 정합. base=v3.8.
 # 🔧 v3.8 (2026-07-14): _yf_series yfinance 1.x MultiIndex 컬럼 평탄화 — DataFrame 반환→float(Series) 크래시 근본 처방.
 #    증상: BACKFILL_FORCE/저커버 VIX3M 백필에서 exit 1 (정상 일일 실행은 블록 미진입이라 무증상). base=v3.7.
 # 🔧 v3.7 (2026-07-02, S244): WSTS YoY 자동 수집 신설 — wsts.org 랜딩 파싱 → 최신 Historical-Billings xlsx → Worldwide 3MMA YoY → wsts_yoy.json 조건부 갱신.
@@ -1055,6 +1064,35 @@ def _yf_series(symbol: str, start: str, end: str) -> pd.Series:
         return pd.Series(dtype=float)
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# 🆕 v3.9 (S279): 실제 세션일 해석기 — Date 라벨 단일 원천
+#   원칙: Date 는 캘린더(UTC/KST)가 아니라 "가격 원천이 보유한 마지막 완료 거래일".
+#   효과: ① carry row 소멸  ② 스케줄러 지연 무관  ③ 라벨 == 내용 구조적 보장
+#   fail-safe: 전 후보 실패 시 None → 호출부가 fetch 생략 (행 날조 금지)
+# ═══════════════════════════════════════════════════════════════════════════
+SESSION_REF_TICKERS = ["SPY", "QQQ", "GLD"]   # 순차 시도 (단일 티커 장애 방어)
+
+
+def resolve_session_date(ref_tickers=None, lookback_days=10):
+    """가격 원천의 마지막 완료 거래일(date) 반환. 전 후보 실패 시 None."""
+    refs = ref_tickers or SESSION_REF_TICKERS
+    _today = date.today()
+    _s = str(_today - timedelta(days=lookback_days))
+    _e = str(_today + timedelta(days=1))
+    for tk in refs:
+        try:
+            ser = _yf_series(tk, _s, _e)
+        except Exception:
+            continue
+        if ser is None or len(ser) == 0:
+            continue
+        d = ser.index[-1].date()
+        if d > _today:          # 미래일 = 원천 이상치 → 다음 후보
+            continue
+        return d
+    return None
+
+
 def _fred_series(sid: str, start: str) -> pd.Series:
     """🌟 v2.6 (S67 #12): graph CSV endpoint anonymous fallback 추가.
     
@@ -1392,10 +1430,14 @@ def build_seed() -> pd.DataFrame:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # 오늘 행 추가 (누적 모드)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-def fetch_today_row(target_date=None) -> dict:
+def fetch_today_row(target_date=None, is_backfill=None) -> dict:
     # 🌟 v3.2 (S197): target_date 지원 — None=오늘(기존 동작 보존), 지정=임의 날짜 backfill
+    # 🆕 v3.9 (S279): is_backfill 명시 파라미터 — 세션일 stamp(전일 세션 = 정상 일일 수집)를
+    #   backfill 로 오인해 FRED as-of / F&G proxy 경로로 빠지는 것을 차단.
+    #   None(기본) = 기존 산식 그대로 → 기존 호출부 동작 무변경.
     today = target_date if target_date is not None else date.today()
-    is_backfill = target_date is not None and target_date != date.today()
+    if is_backfill is None:
+        is_backfill = target_date is not None and target_date != date.today()
     row   = {"Date": pd.Timestamp(today)}
     s     = str(today - timedelta(days=5))
     e     = str(today + timedelta(days=1))
@@ -2082,6 +2124,7 @@ def main():
     # 🌟 v3.2 (S197): 임의 날짜 backfill — env로 처리 날짜 결정
     target_dates, is_backfill = _resolve_target_dates()
     today = date.today()
+    _sess = None   # 🆕 v3.9: 일일 모드에서만 확정 (backfill 모드는 None 유지)
 
     if is_backfill:
         if not target_dates:
@@ -2090,10 +2133,17 @@ def main():
         print(f"   🌟 v3.2 BACKFILL 모드 — 대상 {len(target_dates)}개장일: "
               f"{target_dates[0]} ~ {target_dates[-1]}")
     else:
-        # 기본 일일 모드 — NYSE 휴장 시 skip (기존 동작 보존)
-        if not is_nyse_open(today):
-            print(f"⏭️ {today} NYSE 휴장 (주말 또는 휴일) — fetch 생략")
+        # 🆕 v3.9 (S279): Date 원천 = 가격 원천의 마지막 거래일 (UTC 캘린더 아님)
+        _sess = resolve_session_date()
+        if _sess is None:
+            print(f"🔴 세션일 해석 실패 (가격 원천 무응답) — fetch 생략 (행 날조 금지)")
             return
+        if not is_nyse_open(_sess):
+            print(f"⏭️ {_sess} NYSE 휴장 판정 — fetch 생략")
+            return
+        if _sess != today:
+            print(f"  🕯️ v3.9 세션일 stamp: UTC today={today} → 마지막 거래일={_sess} (carry row 차단)")
+        target_dates = [_sess]
 
     if not os.path.exists(OUTPUT_PATH):
         df = build_seed()
@@ -2104,6 +2154,16 @@ def main():
         df    = df.sort_index()
         today_ts = pd.Timestamp(today)
 
+        # 🆕 v3.9 (S279): 세션일보다 미래인 행 제거 — v3.8 이하가 남긴 carry row 자기치유.
+        #   근거: 마지막 거래일보다 미래의 종가는 존재할 수 없음 → 잔존 시 브리핑이 복제행을 최신으로 오독.
+        #   backfill 모드(_sess=None)에서는 미동작 (소급 작업 보호).
+        if _sess is not None:
+            _future = df.index[df.index > pd.Timestamp(_sess)]
+            if len(_future):
+                print(f"  🧹 v3.9 carry row 제거 {len(_future)}건: "
+                      f"{[str(x.date()) for x in _future]}")
+                df = df[df.index <= pd.Timestamp(_sess)]
+
         # 🌟 v3.2 (S197): target_dates 루프 (기본=오늘 1개 / backfill=N개)
         for _tgt in target_dates:
             _tgt_ts = pd.Timestamp(_tgt)
@@ -2111,7 +2171,7 @@ def main():
                 df = df[df.index != _tgt_ts]  # 기존 행 제거 후 재생성
             _label = "백필" if is_backfill else "오늘"
             print(f"  📡 {_label} 행 수집 ({_tgt})...")
-            new_row = fetch_today_row(target_date=_tgt if is_backfill else None)
+            new_row = fetch_today_row(target_date=_tgt, is_backfill=is_backfill)  # 🆕 v3.9 명시 전달
             new_df  = pd.DataFrame([new_row]).set_index("Date")
             new_df.index = pd.to_datetime(new_df.index)
             df = pd.concat([df, new_df]).sort_index()
