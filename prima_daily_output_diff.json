@@ -1,44 +1,49 @@
 {
-  "date": "2026-07-22",
+  "date": "2026-07-23",
   "changed": true,
   "entered": [
     {
-      "ticker": "ITA",
-      "weight": 0.2522,
-      "reason": "SC4.1|A"
+      "ticker": "INDA",
+      "weight": 0.0042,
+      "reason": "진입"
     }
   ],
-  "exited": [],
+  "exited": [
+    {
+      "ticker": "ITA",
+      "reason": "청산"
+    }
+  ],
   "reweighted": [
     {
       "ticker": "EWZ",
-      "from": 0.0932,
-      "to": 0.0603,
-      "delta": -0.0329
+      "from": 0.0603,
+      "to": 0.0926,
+      "delta": 0.0323
     },
     {
       "ticker": "GLD",
-      "from": 0.6873,
-      "to": 0.5455,
-      "delta": -0.1418
+      "from": 0.5455,
+      "to": 0.685,
+      "delta": 0.1395
     },
     {
       "ticker": "PAVE",
-      "from": 0.1954,
-      "to": 0.1264,
-      "delta": -0.069
+      "from": 0.1264,
+      "to": 0.1943,
+      "delta": 0.0679
     }
   ],
-  "change_reason": "진입 ITA(SC4.1|A) | 리밸 EWZ 0.093→0.060, GLD 0.687→0.545, PAVE 0.195→0.126",
+  "change_reason": "진입 INDA(진입) | 청산 ITA(청산) | 리밸 EWZ 0.060→0.093, GLD 0.545→0.685, PAVE 0.126→0.194",
   "positions": {
-    "GLD": 0.5455,
-    "ITA": 0.2522,
-    "PAVE": 0.1264,
-    "EWZ": 0.0603,
-    "NLR": 0.0156
+    "GLD": 0.685,
+    "PAVE": 0.1943,
+    "EWZ": 0.0926,
+    "NLR": 0.024,
+    "INDA": 0.0042
   },
   "exposure": 1.0,
-  "actions": "BUY ITA (SC4.1|A)",
+  "actions": "",
   "engine": "PRIMA2_v0_5_23_CROWN95_XLUCIBR_LIVE.py",
-  "generated_utc": "2026-07-22T04:52:14Z"
+  "generated_utc": "2026-07-23T01:09:13Z"
 }
