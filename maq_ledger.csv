@@ -6,5 +6,5 @@ date,queue,grade,slots_full,strong,super,spy_close,fwd21_pct,fwd63_pct
 2026-07-16,4,3+,False,XLU:2.7|SLV:11.0|ITA:4.1|QQQM:3.5,XLU|ITA|SLV,754.81,,
 2026-07-17,3,3+,False,XLU:2.7|SLV:13.0|ITA:6.4,XLU|ITA|SLV,743.29,,
 2026-07-21,3,3+,False,XLU:2.7|SLV:13.0|ITA:4.1,XLU|ITA|SLV,742.09,,
-2026-07-22,1,1,True,XLU:3.2,XLU,748.28,,
+2026-07-22,2,2,True,XLU:2.7|XLE:3.9,XLU,747.41,,
 2026-07-23,2,2,True,XLU:2.7|XLE:3.9,XLU,747.41,,
