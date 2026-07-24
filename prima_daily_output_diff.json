@@ -29,6 +29,6 @@
   "positions": {},
   "exposure": 1.0,
   "actions": "SELL EWZ (WTI>90) ; SELL PAVE (WTI>90) ; SELL GLD (WTI>90) ; SELL NLR (WTI>90) ; SELL INDA (WTI>90)",
-  "engine": "PRIMA2_v0_5_24_CROWN95_INPUTGATE_LIVE.py",
-  "generated_utc": "2026-07-24T01:04:33Z"
+  "engine": "PRIMA2_v0_5_25_CROWN95_INPUTGATE2_LIVE.py",
+  "generated_utc": "2026-07-24T02:35:40Z"
 }
