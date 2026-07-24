@@ -1,25 +1,34 @@
 {
-  "date": "2026-07-22",
+  "date": "2026-07-23",
   "changed": true,
-  "entered": [
+  "entered": [],
+  "exited": [
+    {
+      "ticker": "EWZ",
+      "reason": "WTI>90"
+    },
+    {
+      "ticker": "GLD",
+      "reason": "WTI>90"
+    },
     {
       "ticker": "INDA",
-      "weight": 0.0042,
-      "reason": "SC3.3|C"
+      "reason": "WTI>90"
+    },
+    {
+      "ticker": "NLR",
+      "reason": "WTI>90"
+    },
+    {
+      "ticker": "PAVE",
+      "reason": "WTI>90"
     }
   ],
-  "exited": [],
   "reweighted": [],
-  "change_reason": "진입 INDA(SC3.3|C)",
-  "positions": {
-    "GLD": 0.685,
-    "PAVE": 0.1943,
-    "EWZ": 0.0926,
-    "NLR": 0.024,
-    "INDA": 0.0042
-  },
+  "change_reason": "청산 EWZ(WTI>90), GLD(WTI>90), INDA(WTI>90), NLR(WTI>90), PAVE(WTI>90)",
+  "positions": {},
   "exposure": 1.0,
-  "actions": "BUY INDA (SC3.3|C)",
+  "actions": "SELL EWZ (WTI>90) ; SELL PAVE (WTI>90) ; SELL GLD (WTI>90) ; SELL NLR (WTI>90) ; SELL INDA (WTI>90)",
   "engine": "PRIMA2_v0_5_24_CROWN95_INPUTGATE_LIVE.py",
-  "generated_utc": "2026-07-23T13:34:31Z"
+  "generated_utc": "2026-07-24T01:04:33Z"
 }
