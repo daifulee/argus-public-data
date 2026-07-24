@@ -1,5 +1,5 @@
 {
- "date": "2026-07-23",
+ "date": "2026-07-24",
  "queue": 1,
  "grade": "1",
  "base_f63": 2.79,
@@ -14,9 +14,9 @@
  "held": [],
  "slots_full": false,
  "eff_slots": 0.0,
- "engine": "PRIMA2_v0.5.25-INPUTGATE2",
- "crown": "#95",
+ "engine": "PRIMA2_v0.5.26b-PDBC21_ABS_CROWN96",
+ "crown": "#96",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-07-24T02:35:53+00:00"
+ "generated_utc": "2026-07-24T23:48:33+00:00"
 }
