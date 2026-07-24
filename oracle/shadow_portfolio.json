@@ -385,17 +385,17 @@
     "date": "2026-07-23",
     "weights": {
       "GLD": 0.2,
-      "COPX": 0.1476,
-      "SMH": 0.1364,
-      "NLR": 0.123,
-      "PAVE": 0.1146,
+      "NLR": 0.1748,
+      "SMH": 0.128,
+      "COPX": 0.1234,
+      "PAVE": 0.1054,
       "SGOV": 0.1,
-      "QQQM": 0.0977,
-      "XLU": 0.0807
+      "XLU": 0.0894,
+      "QQQM": 0.079
     },
     "source": "oracle_autopilot_v1.0.6",
     "n_pos": 8,
-    "logged_utc": "2026-07-23T01:09:14Z",
+    "logged_utc": "2026-07-24T01:04:34Z",
     "valid": true
   }
 ]
