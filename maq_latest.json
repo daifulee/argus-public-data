@@ -1,35 +1,22 @@
 {
- "date": "2026-07-22",
- "queue": 2,
- "grade": "2",
- "base_f63": 3.41,
+ "date": "2026-07-23",
+ "queue": 1,
+ "grade": "1",
+ "base_f63": 2.79,
  "strong": [
-  {
-   "ticker": "XLU",
-   "score": 2.7,
-   "ratio": 5.4
-  },
   {
    "ticker": "XLE",
    "score": 3.9,
    "ratio": 1.56
   }
  ],
- "super": [
-  "XLU"
- ],
- "held": [
-  "EWZ",
-  "GLD",
-  "INDA",
-  "NLR",
-  "PAVE"
- ],
- "slots_full": true,
- "eff_slots": 5.0,
+ "super": [],
+ "held": [],
+ "slots_full": false,
+ "eff_slots": 0.0,
  "engine": "PRIMA2_v0.5.24-INPUTGATE",
  "crown": "#95",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-07-23T13:34:42+00:00"
+ "generated_utc": "2026-07-24T01:04:41+00:00"
 }
