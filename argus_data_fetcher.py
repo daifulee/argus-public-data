@@ -1,3 +1,4 @@
+# 🆕 v3.9.2 (2026-07-25, S280): PDBC 21번째 종목 편입 — ETF_TICKERS에 "PDBC" 추가. DEPLOY-S280 정합.
 # 🔧 v3.9.1 (2026-07-23, S279): 버전 표기 단일 원천화 — 배너·docstring 고정 문자열 제거.
 #    결함: 실행 배너가 'v3.3' 하드코딩(L2111 계열)이라 헤더 이력과 불일치. 동일 유형 2회차
 #          (v2.4 오표기 선례가 본 파일 주석에 이미 박제) → 수동 동기 방식의 반복 실패 입증.
@@ -386,6 +387,7 @@ ETF_TICKERS = [
     "GLD","SLV","COPX","NLR","QQQM","VNM","IWM","PAVE",
     "SMH","EWZ","XLE","INDA","ITA","TLT","VEA","XLF",
     "XLV","XLU","CQQQ","CIBR","SGOV","SPY","IEF",
+    "PDBC",   # 🆕 [DEPLOY-S280] 21번째 종목 편입 — 상장 2014-11-07, SEED_DAYS 450 > 엔진 min_periods 252 충족
 ]
 
 YAHOO_MACRO = {
