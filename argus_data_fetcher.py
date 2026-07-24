@@ -1,4 +1,4 @@
-# 🆕 v3.9.2 (2026-07-25, S280): PDBC 21번째 종목 편입 — ETF_TICKERS에 "PDBC" 추가. DEPLOY-S280 정합.
+# 🔧 v3.9.3 (2026-07-25, S280): PDBC 21번째 종목 편입 + 범용 ETF 백필 신설 — 신규 티커 전체 이력 자동 백필(근본 처방).
 # 🔧 v3.9.1 (2026-07-23, S279): 버전 표기 단일 원천화 — 배너·docstring 고정 문자열 제거.
 #    결함: 실행 배너가 'v3.3' 하드코딩(L2111 계열)이라 헤더 이력과 불일치. 동일 유형 2회차
 #          (v2.4 오표기 선례가 본 파일 주석에 이미 박제) → 수동 동기 방식의 반복 실패 입증.
@@ -387,7 +387,7 @@ ETF_TICKERS = [
     "GLD","SLV","COPX","NLR","QQQM","VNM","IWM","PAVE",
     "SMH","EWZ","XLE","INDA","ITA","TLT","VEA","XLF",
     "XLV","XLU","CQQQ","CIBR","SGOV","SPY","IEF",
-    "PDBC",   # 🆕 [DEPLOY-S280] 21번째 종목 편입 — 상장 2014-11-07, SEED_DAYS 450 > 엔진 min_periods 252 충족
+    "PDBC",   # 🆕 [DEPLOY-S280] 21번째 종목 편입 — 상장 2014-11-07, 범용 ETF 백필로 이력 자동 확보
 ]
 
 YAHOO_MACRO = {
@@ -2246,6 +2246,33 @@ def main():
         # 🌟 v2.7 (S68 #1): 결정적 결함 정정 — 부분 가용 시도 자동 백필 (cover < 50%)
         # PMI v2.3 패턴 정합 — 누적 csv에 CCSA 컬럼 추가 필요한 첫 실행 시 자동 백필
         BACKFILL_FORCE = os.getenv("BACKFILL_FORCE", "").lower() in ("1", "true", "yes")
+
+        # 🆕 v3.9.3 (S280): 범용 ETF 백필 — 신규/저커버 ETF 티커 전체 이력 자동 백필 (근본 처방)
+        #   근거: build_seed는 argus_data.csv 부재 시에만 실행 → 기존 CSV에 티커 추가 시 오늘 행만 append되어
+        #         신규 티커가 1일치만 쌓이는 결함. CCSA/VIX3M cover<50% doctrine을 ETF에도 확장.
+        #   대상: 컬럼 부재 OR cover<50% OR BACKFILL_FORCE. (기존 정상 ETF는 cover~100%라 미발동)
+        for _etf in ETF_TICKERS:
+            _col = f"{_etf}_Close"
+            _cov = df[_col].notna().sum() / len(df) if _col in df.columns else 0
+            if _col not in df.columns or _cov < 0.5 or BACKFILL_FORCE:
+                _reason = ("부재" if _col not in df.columns else
+                           f"cover {_cov*100:.1f}% < 50%" if not BACKFILL_FORCE else "BACKFILL_FORCE=1")
+                _start_iso = df.index.min().strftime('%Y-%m-%d')
+                _end_iso = (df.index.max() + pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+                _ser = _yf_series(_etf, _start_iso, _end_iso)
+                if not _ser.empty:
+                    if _ser.index.tz is not None:
+                        _ser.index = _ser.index.tz_localize(None)
+                    _existing = df[_col] if _col in df.columns else pd.Series(index=df.index, dtype=float)
+                    _filled = _ser.reindex(df.index, method='ffill')
+                    # 기존 LIVE 값 보존 우선 (백필은 결측만 보강) — 단 BACKFILL_FORCE 시 전열 갱신
+                    df[_col] = _filled if (BACKFILL_FORCE or _col not in df.columns) else _existing.fillna(_filled)
+                    _v = df[_col].notna().sum()
+                    print(f"  🌟 ETF {_etf} 백필 ({_reason}): {_v}/{len(df)}일 ({_v/len(df)*100:.1f}%, 최신={float(_ser.iloc[-1]):.2f})")
+                elif _col not in df.columns:
+                    df[_col] = np.nan
+                    print(f"  🚨 ETF {_etf} 백필 실패 — Yahoo 이력 empty, 컬럼 NaN 생성")
+
         ccsa_cover = df['CCSA'].notna().sum() / len(df) if 'CCSA' in df.columns else 0
         # v2.7 결정적 트리거: 부재 OR cover < 50% OR 강제
         if 'CCSA' not in df.columns or ccsa_cover < 0.5 or BACKFILL_FORCE:
