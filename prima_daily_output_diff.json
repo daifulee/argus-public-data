@@ -1,34 +1,13 @@
 {
-  "date": "2026-07-23",
-  "changed": true,
+  "date": "2026-07-24",
+  "changed": false,
   "entered": [],
-  "exited": [
-    {
-      "ticker": "EWZ",
-      "reason": "WTI>90"
-    },
-    {
-      "ticker": "GLD",
-      "reason": "WTI>90"
-    },
-    {
-      "ticker": "INDA",
-      "reason": "WTI>90"
-    },
-    {
-      "ticker": "NLR",
-      "reason": "WTI>90"
-    },
-    {
-      "ticker": "PAVE",
-      "reason": "WTI>90"
-    }
-  ],
+  "exited": [],
   "reweighted": [],
-  "change_reason": "청산 EWZ(WTI>90), GLD(WTI>90), INDA(WTI>90), NLR(WTI>90), PAVE(WTI>90)",
+  "change_reason": "전일과 동일 (포지션·비중 무변화)",
   "positions": {},
   "exposure": 1.0,
-  "actions": "SELL EWZ (WTI>90) ; SELL PAVE (WTI>90) ; SELL GLD (WTI>90) ; SELL NLR (WTI>90) ; SELL INDA (WTI>90)",
-  "engine": "PRIMA2_v0_5_25_CROWN95_INPUTGATE2_LIVE.py",
-  "generated_utc": "2026-07-24T02:35:40Z"
+  "actions": "",
+  "engine": "PRIMA2_v0_5_26b_CROWN96_PDBC21_LIVE.py",
+  "generated_utc": "2026-07-24T23:48:19Z"
 }
