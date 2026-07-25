@@ -14,9 +14,9 @@
  "held": [],
  "slots_full": false,
  "eff_slots": 0.0,
- "engine": "PRIMA2_v0.5.26b-PDBC21_ABS_CROWN96",
- "crown": "#96",
+ "engine": "PRIMA2_v0.5.27-PDBC_SHUTDOWN_ENTRY",
+ "crown": "#97",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-07-25T01:07:41+00:00"
+ "generated_utc": "2026-07-25T01:56:45+00:00"
 }
