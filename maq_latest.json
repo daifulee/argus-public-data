@@ -1,16 +1,30 @@
 {
- "date": "2026-07-24",
- "queue": 1,
- "grade": "1",
- "base_f63": 2.79,
+ "date": "2026-07-27",
+ "queue": 3,
+ "grade": "3+",
+ "base_f63": 5.94,
  "strong": [
   {
-   "ticker": "XLE",
-   "score": 3.9,
-   "ratio": 1.56
+   "ticker": "XLU",
+   "score": 3.2,
+   "ratio": 6.4
+  },
+  {
+   "ticker": "GLD",
+   "score": 7.6,
+   "ratio": 3.8
+  },
+  {
+   "ticker": "ITA",
+   "score": 4.1,
+   "ratio": 2.05
   }
  ],
- "super": [],
+ "super": [
+  "XLU",
+  "ITA",
+  "GLD"
+ ],
  "held": [],
  "slots_full": false,
  "eff_slots": 0.0,
@@ -18,5 +32,5 @@
  "crown": "#97",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-07-27T14:27:21+00:00"
+ "generated_utc": "2026-07-28T00:23:28+00:00"
 }
