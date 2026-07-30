@@ -1,13 +1,45 @@
 {
-  "date": "2026-07-29",
-  "changed": false,
-  "entered": [],
+  "date": "2026-07-30",
+  "changed": true,
+  "entered": [
+    {
+      "ticker": "GLD",
+      "weight": 0.1825,
+      "reason": "SC5.4|A"
+    },
+    {
+      "ticker": "ITA",
+      "weight": 0.0607,
+      "reason": "SC4.1|A"
+    },
+    {
+      "ticker": "SLV",
+      "weight": 0.0528,
+      "reason": "SC11.9|S"
+    },
+    {
+      "ticker": "TLT",
+      "weight": 0.004,
+      "reason": "SC2.6|C"
+    },
+    {
+      "ticker": "XLU",
+      "weight": 0.7,
+      "reason": "SC3.2|S"
+    }
+  ],
   "exited": [],
   "reweighted": [],
-  "change_reason": "전일과 동일 (포지션·비중 무변화)",
-  "positions": {},
+  "change_reason": "진입 GLD(SC5.4|A), ITA(SC4.1|A), SLV(SC11.9|S), TLT(SC2.6|C), XLU(SC3.2|S)",
+  "positions": {
+    "XLU": 0.7,
+    "GLD": 0.1825,
+    "ITA": 0.0607,
+    "SLV": 0.0528,
+    "TLT": 0.004
+  },
   "exposure": 1.0,
-  "actions": "",
+  "actions": "BUY SLV (SC11.9|S) ; BUY GLD (SC5.4|A) ; BUY ITA (SC4.1|A) ; BUY XLU (SC3.2|S) ; BUY TLT (SC2.6|C)",
   "engine": "PRIMA2_v0_5_29_CROWN98_CAPWF_LIVE.py",
-  "generated_utc": "2026-07-30T20:16:51Z"
+  "generated_utc": "2026-07-30T20:32:54Z"
 }
