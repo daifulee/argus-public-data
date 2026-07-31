@@ -470,17 +470,17 @@
     "date": "2026-07-30",
     "weights": {
       "GLD": 0.2,
-      "COPX": 0.1475,
-      "SMH": 0.1371,
-      "NLR": 0.1219,
-      "PAVE": 0.1143,
+      "COPX": 0.1477,
+      "SMH": 0.1368,
+      "NLR": 0.1223,
+      "PAVE": 0.1142,
       "SGOV": 0.1,
-      "QQQM": 0.0988,
+      "QQQM": 0.0985,
       "XLU": 0.0805
     },
     "source": "oracle_autopilot_v1.0.6",
     "n_pos": 8,
-    "logged_utc": "2026-07-30T20:32:55Z",
+    "logged_utc": "2026-07-31T00:18:04Z",
     "valid": true
   }
 ]
