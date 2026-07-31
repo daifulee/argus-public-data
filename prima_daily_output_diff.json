@@ -1,45 +1,36 @@
 {
-  "date": "2026-07-30",
+  "date": "2026-07-31",
   "changed": true,
-  "entered": [
+  "entered": [],
+  "exited": [
+    {
+      "ticker": "SLV",
+      "reason": "WTI>80"
+    }
+  ],
+  "reweighted": [
     {
       "ticker": "GLD",
-      "weight": 0.1825,
-      "reason": "SC5.4|A"
+      "from": 0.1825,
+      "to": 0.2215,
+      "delta": 0.039
     },
     {
       "ticker": "ITA",
-      "weight": 0.0607,
-      "reason": "SC4.1|A"
-    },
-    {
-      "ticker": "SLV",
-      "weight": 0.0528,
-      "reason": "SC11.9|S"
-    },
-    {
-      "ticker": "TLT",
-      "weight": 0.004,
-      "reason": "SC2.6|C"
-    },
-    {
-      "ticker": "XLU",
-      "weight": 0.7,
-      "reason": "SC3.2|S"
+      "from": 0.0607,
+      "to": 0.0736,
+      "delta": 0.0129
     }
   ],
-  "exited": [],
-  "reweighted": [],
-  "change_reason": "진입 GLD(SC5.4|A), ITA(SC4.1|A), SLV(SC11.9|S), TLT(SC2.6|C), XLU(SC3.2|S)",
+  "change_reason": "청산 SLV(WTI>80) | 리밸 GLD 0.182→0.222, ITA 0.061→0.074",
   "positions": {
     "XLU": 0.7,
-    "GLD": 0.1825,
-    "ITA": 0.0607,
-    "SLV": 0.0528,
-    "TLT": 0.004
+    "GLD": 0.2215,
+    "ITA": 0.0736,
+    "TLT": 0.0049
   },
   "exposure": 1.0,
-  "actions": "BUY SLV (SC11.9|S) ; BUY GLD (SC5.4|A) ; BUY ITA (SC4.1|A) ; BUY XLU (SC3.2|S) ; BUY TLT (SC2.6|C)",
-  "engine": "PRIMA2_v0_5_32_CROWN100_EXSNFIX_LIVE.py",
-  "generated_utc": "2026-07-31T22:04:00Z"
+  "actions": "SELL SLV (WTI>80)",
+  "engine": "PRIMA2_v0_5_33_CROWN101_TXCOST_LIVE.py",
+  "generated_utc": "2026-07-31T23:29:46Z"
 }
