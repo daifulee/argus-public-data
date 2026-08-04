@@ -1,6 +1,6 @@
 {
-  "date": "2026-07-31",
-  "run_at": "2026-08-03T22:50:44.648364",
+  "date": "2026-08-03",
+  "run_at": "2026-08-04T22:51:29.401808",
   "version": "1.0.6",
   "regime": {
     "regime": "EXPANSION",
@@ -19,9 +19,9 @@
         "g_50_plus": "TIDE 재확인 필수. 그래디언트 단독으로 레짐 전환 불가."
       }
     },
-    "confidence": "MEDIUM",
+    "confidence": "HIGH",
     "trigger_fired": [
-      "🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.41%"
+      "🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.47%"
     ],
     "gradient_adj_note": "프리셋 기준. SGOV 10% 유지.",
     "allocation_final": {
@@ -29,30 +29,30 @@
       "GLD": 20,
       "attack_core": 70
     },
-    "briefing_line": "🟢 확장기 (EXPANSION) | 달러RP 10% · GLD 20% · 공격 70% | 그래디언트 20/100\n  발동 근거: 🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.41%\n  그래디언트 조정: 프리셋 기준. SGOV 10% 유지."
+    "briefing_line": "🟢 확장기 (EXPANSION) | 달러RP 10% · GLD 20% · 공격 70% | 그래디언트 19/100\n  발동 근거: 🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.47%\n  그래디언트 조정: 프리셋 기준. SGOV 10% 유지."
   },
-  "gradient": 20.0,
+  "gradient": 18.8,
   "conviction": 41.0,
   "integrity": "26/26",
   "smoke": false,
   "allocation": {
     "SGOV": 10.0,
     "GLD": 20.0,
-    "COPX": 14.79,
-    "SMH": 13.73,
-    "NLR": 12.2,
-    "PAVE": 11.4,
-    "QQQM": 9.91,
-    "XLU": 7.98
+    "COPX": 14.24,
+    "SMH": 13.85,
+    "NLR": 12.26,
+    "PAVE": 11.6,
+    "QQQM": 9.93,
+    "XLU": 8.12
   },
   "top_picks": [
     [
       "COPX",
-      0.23
+      0.22
     ],
     [
       "SMH",
-      0.22
+      0.21
     ],
     [
       "GLD",
