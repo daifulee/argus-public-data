@@ -1,29 +1,10 @@
 {
-  "date": "2026-08-06",
-  "changed": true,
-  "entered": [
-    {
-      "ticker": "SLV",
-      "weight": 0.2321,
-      "reason": "SC11.9|S"
-    }
-  ],
+  "date": "2026-08-07",
+  "changed": false,
+  "entered": [],
   "exited": [],
-  "reweighted": [
-    {
-      "ticker": "GLD",
-      "from": 0.2215,
-      "to": 0.0502,
-      "delta": -0.1713
-    },
-    {
-      "ticker": "ITA",
-      "from": 0.0736,
-      "to": 0.0167,
-      "delta": -0.0569
-    }
-  ],
-  "change_reason": "진입 SLV(SC11.9|S) | 리밸 GLD 0.222→0.050, ITA 0.074→0.017",
+  "reweighted": [],
+  "change_reason": "전일과 동일 (포지션·비중 무변화)",
   "positions": {
     "XLU": 0.7,
     "SLV": 0.2321,
@@ -32,7 +13,7 @@
     "TLT": 0.0011
   },
   "exposure": 1.0,
-  "actions": "BUY SLV (SC11.9|S)",
+  "actions": "",
   "engine": "PRIMA2_v0_5_35_CROWN101_TAXLANE_LIVE.py",
-  "generated_utc": "2026-08-07T01:52:48Z"
+  "generated_utc": "2026-08-08T00:04:19Z"
 }
