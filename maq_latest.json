@@ -5,25 +5,26 @@
  "base_f63": 2.79,
  "strong": [
   {
-   "ticker": "SLV",
-   "score": 12.5,
-   "ratio": 4.17
+   "ticker": "XLU",
+   "score": 4.0,
+   "ratio": 4.0
   }
  ],
  "super": [
-  "SLV"
+  "XLU"
  ],
  "held": [
   "GLD",
   "ITA",
-  "TLT",
-  "XLU"
+  "NLR",
+  "SLV",
+  "SMH"
  ],
- "slots_full": false,
- "eff_slots": 4.0,
+ "slots_full": true,
+ "eff_slots": 5.0,
  "engine": "PRIMA2_v0.5.34-G0SESSION",
  "crown": "#101",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-08-11T05:10:43+00:00"
+ "generated_utc": "2026-08-11T05:45:08+00:00"
 }
