@@ -31,6 +31,6 @@
   },
   "exposure": 1.0,
   "actions": "SELL SLV (WTI>80)",
-  "engine": "PRIMA2_v0_5_35_CROWN102_TLTDXY_SYM_LIVE.py",
-  "generated_utc": "2026-08-11T00:04:56Z"
+  "engine": "PRIMA2_v0_5_36_CROWN103_SLV_DXYBAND_LIVE.py",
+  "generated_utc": "2026-08-11T05:10:28Z"
 }
