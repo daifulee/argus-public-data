@@ -1,50 +1,19 @@
 {
   "date": "2026-08-10",
-  "changed": true,
-  "entered": [
-    {
-      "ticker": "NLR",
-      "weight": 0.0134,
-      "reason": "진입"
-    },
-    {
-      "ticker": "SMH",
-      "weight": 0.0179,
-      "reason": "진입"
-    }
-  ],
-  "exited": [
-    {
-      "ticker": "TLT",
-      "reason": "청산"
-    },
-    {
-      "ticker": "XLU",
-      "reason": "청산"
-    }
-  ],
-  "reweighted": [
-    {
-      "ticker": "GLD",
-      "from": 0.0502,
-      "to": 0.7,
-      "delta": 0.6498
-    },
-    {
-      "ticker": "ITA",
-      "from": 0.0167,
-      "to": 0.2161,
-      "delta": 0.1994
-    },
-    {
-      "ticker": "SLV",
-      "from": 0.2321,
-      "to": 0.0526,
-      "delta": -0.1795
-    }
-  ],
-  "change_reason": "진입 NLR(진입), SMH(진입) | 청산 TLT(청산), XLU(청산) | 리밸 GLD 0.050→0.700, ITA 0.017→0.216, SLV 0.232→0.053",
+  "changed": false,
+  "entered": [],
+  "exited": [],
+  "reweighted": [],
+  "change_reason": "원장 기준 첫 기록 — 직전 행(재현값 기반)과 비교 불가, 체결 0건",
   "positions": {
+    "XLU": 0.699,
+    "GLD": 0.222,
+    "ITA": 0.074,
+    "TLT": 0.005
+  },
+  "src": "ledger",
+  "ledger_as_of": "2026-08-10",
+  "repro_positions": {
     "GLD": 0.7,
     "ITA": 0.2161,
     "SLV": 0.0526,
@@ -54,5 +23,5 @@
   "exposure": 1.0,
   "actions": "",
   "engine": "PRIMA2_v0_5_37_CROWN104_SLV_EXSN_DXY_LIVE.py",
-  "generated_utc": "2026-08-11T07:03:33Z"
+  "generated_utc": "2026-08-11T07:10:58Z"
 }
