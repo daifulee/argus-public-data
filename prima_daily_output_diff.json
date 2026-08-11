@@ -1,19 +1,36 @@
 {
-  "date": "2026-08-07",
-  "changed": false,
+  "date": "2026-08-10",
+  "changed": true,
   "entered": [],
-  "exited": [],
-  "reweighted": [],
-  "change_reason": "전일과 동일 (포지션·비중 무변화)",
+  "exited": [
+    {
+      "ticker": "SLV",
+      "reason": "WTI>80"
+    }
+  ],
+  "reweighted": [
+    {
+      "ticker": "GLD",
+      "from": 0.0502,
+      "to": 0.2215,
+      "delta": 0.1713
+    },
+    {
+      "ticker": "ITA",
+      "from": 0.0167,
+      "to": 0.0736,
+      "delta": 0.0569
+    }
+  ],
+  "change_reason": "청산 SLV(WTI>80) | 리밸 GLD 0.050→0.222, ITA 0.017→0.074",
   "positions": {
     "XLU": 0.7,
-    "SLV": 0.2321,
-    "GLD": 0.0502,
-    "ITA": 0.0167,
-    "TLT": 0.0011
+    "GLD": 0.2215,
+    "ITA": 0.0736,
+    "TLT": 0.0049
   },
   "exposure": 1.0,
-  "actions": "",
+  "actions": "SELL SLV (WTI>80)",
   "engine": "PRIMA2_v0_5_35_CROWN102_TLTDXY_SYM_LIVE.py",
-  "generated_utc": "2026-08-10T14:20:25Z"
+  "generated_utc": "2026-08-11T00:04:56Z"
 }
