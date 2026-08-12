@@ -20,3 +20,4 @@ date,queue,grade,slots_full,strong,super,spy_close,fwd21_pct,fwd63_pct,pos_src
 2026-08-06,0,0,True,,,768.56,,,
 2026-08-07,0,0,True,,,773.26,,,
 2026-08-10,1,1,False,SLV:12.5,SLV,773.03,,,ledger
+2026-08-11,1,1,False,SLV:12.5,SLV,770.56,,,ledger
