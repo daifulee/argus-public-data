@@ -29,9 +29,9 @@
   "SLV",
   "SMH"
  ],
- "engine": "PRIMA2_v0.5.37-SLV_EXSN_DXY",
- "crown": "#104",
+ "engine": "PRIMA2_v0.5.38-DSK_PERTICKER",
+ "crown": "#105",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-08-12T00:40:43+00:00"
+ "generated_utc": "2026-08-12T10:21:05+00:00"
 }
