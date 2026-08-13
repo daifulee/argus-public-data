@@ -1,3 +1,4 @@
+# 🔧 v3.9.4 (2026-08-13, S288): KIL_SUP 신설 — Crown #106 (WTI Kilian 공급발 게이트 완화) 소비용. Kilian(2009) 유가 3분해의 공급충격 대리 플래그를 데이터층에서 산출한다. 정의: KIL_SUP = (ΔWTI20>0) ∩ (ΔSPY20<0) ∩ NOT(ΔWTI20>0 ∩ ΔCOPX20>0 ∩ PMI>50). 엔진은 컬럼 소비만 하며 부재/NaN 시 fail-safe 기존 동작(identity Δ=0 실증). 신규 수집 소스 0건 — 기보유 4컬럼(WTI/SPY_Close/COPX_Close/PMI) 조합. A5 강건성: Δ창 10~20일 고원(+0.87/+0.78p) · PMI 조건 제거해도 효과 동일(+0.780p) → PMI 결측 무해. 아키텍처 = SMH_TRIFLAG(v3.6) · PDBC(v3.9.3) 선례 준용 (자기치유 + fail-safe 0).
 # 🔧 v3.9.3 (2026-07-25, S280): PDBC 21번째 종목 편입 + 범용 ETF 백필 신설 — 신규 티커 전체 이력 자동 백필(근본 처방).
 # 🔧 v3.9.1 (2026-07-23, S279): 버전 표기 단일 원천화 — 배너·docstring 고정 문자열 제거.
 #    결함: 실행 배너가 'v3.3' 하드코딩(L2111 계열)이라 헤더 이력과 불일치. 동일 유형 2회차
@@ -2085,6 +2086,39 @@ def fetch_wsts_yoy_auto():
     return True
 
 
+def compute_kil_sup(df):
+    """🕯️ v3.9.4 (S288): Kilian 공급충격 플래그 — Crown #106 `_wk` 게이트 완화 소비용.
+
+    Kilian(2009) 유가 3분해의 ARGUS 대리 조작화:
+      · 총수요발(건전) : ΔWTI20>0 ∩ ΔCOPX20>0 ∩ PMI>50   (구리 동반 + 제조업 확장)
+      · 공급발(악성)   : ΔWTI20>0 ∩ ΔSPY20<0 ∩ ¬총수요발  ← 본 함수 산출 대상
+    엔진(Crown #106)은 이 플래그가 1.0 인 구간에서만 _wk 차단 임계를 90→100 으로 상향한다.
+
+    반환: float Series (1.0 = 공급발 / 0.0 = 그 외). 결측은 0.0 (fail-safe).
+    주의: 전열 재계산(자기치유) — 과거 행도 매 실행 시 재산출되므로 정의 변경이 즉시 반영된다.
+    """
+    import numpy as _np
+    import pandas as _pd
+
+    need = ["WTI", "SPY_Close", "COPX_Close"]
+    for c in need:
+        if c not in df.columns:
+            raise KeyError(f"KIL_SUP 산출 필수 컬럼 부재: {c}")
+
+    wti = _pd.to_numeric(df["WTI"], errors="coerce").ffill()
+    spy = _pd.to_numeric(df["SPY_Close"], errors="coerce")
+    cpx = _pd.to_numeric(df["COPX_Close"], errors="coerce")
+    # PMI 는 선택 — 부재/결측 시 총수요발 판별에서 자동 배제 (A5 실측: 효과 동일)
+    pmi = _pd.to_numeric(df["PMI"], errors="coerce").ffill() if "PMI" in df.columns \
+        else _pd.Series(_np.nan, index=df.index)
+
+    d20 = lambda s: s / s.shift(20) - 1
+    dwti20 = wti - wti.shift(20)
+
+    demand = (dwti20 > 0) & (d20(cpx) > 0) & (pmi > 50)          # 총수요발(건전)
+    supply = (dwti20 > 0) & (d20(spy) < 0) & (~demand.fillna(False))
+    return supply.fillna(False).astype(float)
+
 def compute_smh_triflag(df, prices=None, wsts_series=None):
     """삼중(C8∧S2∧WSTS<0) 플래그 산출 → df.index 정렬 0/1 시리즈.
 
@@ -2408,6 +2442,16 @@ def main():
     except Exception as _e:
         df["SMH_TRIFLAG"] = 0
         print(f"  ⛑️ SMH_TRIFLAG fail-safe 0 (산출 실패: {_e})")
+
+    # 🕯️ v3.9.4 (S288): KIL_SUP 전열 재계산 — Crown #106 소비용 (자기치유 패턴, SMH_TRIFLAG 선례)
+    try:
+        df["KIL_SUP"] = compute_kil_sup(df)
+        _ks_on = int(df["KIL_SUP"].fillna(0).sum())
+        print(f"  🕯️ KIL_SUP (Kilian 공급발): 발화 {_ks_on}/{len(df)}일"
+              + (" — 휴면" if _ks_on == 0 else ""))
+    except Exception as _e:
+        df["KIL_SUP"] = 0.0
+        print(f"  ⛑️ KIL_SUP fail-safe 0 (산출 실패: {_e})")
 
     print_quality(df)
     
