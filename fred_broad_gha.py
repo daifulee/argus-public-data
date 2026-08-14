@@ -1,3 +1,4 @@
+# 🦅 v3.5 (2026-08-14, S288): pd.Timestamp.utcnow 폐기 대응(pandas 4 제거 예정) — now('UTC') 교체.
 #!/usr/bin/env python3
 # =====================================================================
 # ARGUS — 광범위 FRED 거시지표 수집 (GitHub Actions 프로덕션)
@@ -187,7 +188,7 @@ def _gpr_load():
             #   원천은 매주 월요일 갱신이므로 GPR_STALE_DAYS 초과면 다음 후보로 넘어간다.
             _dc = next((c for c in df.columns if str(c).lower() == "date"), None)
             _last = pd.to_datetime(df[_dc], errors="coerce").max() if _dc else None
-            _age = (pd.Timestamp.utcnow().tz_localize(None) - _last).days if _last is not None else None
+            _age = (pd.Timestamp.now('UTC').tz_localize(None) - _last).days if _last is not None else None
             if _age is not None and _age > GPR_STALE_DAYS:
                 errs.append(f"{label}/{kind}: STALE {_age}일(말미 {_last.date()})")
                 print(f"  [GPR] ⚠️ {label}/{kind} 낡음 — 말미 {_last.date()} ({_age}일 경과) → 다음 후보",
