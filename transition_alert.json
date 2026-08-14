@@ -5,53 +5,27 @@
   "crown": "#108",
   "src": "transition",
   "ledger_as_of": "2026-08-13",
-  "current": {
-    "XLU": 0.505,
-    "GLD": 0.2173,
-    "ITA": 0.0727,
-    "TLT": 0.005,
-    "SLV": 0.2
+  "prev": {
+    "XLU": 0.7,
+    "GLD": 0.1681,
+    "SLV": 0.0675,
+    "ITA": 0.0623,
+    "TLT": 0.0021
   },
+  "rule_change": false,
   "target": {
     "XLU": 0.7,
     "GLD": 0.1681,
+    "SLV": 0.0675,
     "ITA": 0.0623,
-    "TLT": 0.0021,
-    "SLV": 0.0675
+    "TLT": 0.0021
   },
   "gate_exits": [],
   "entries": [],
-  "reweights": [
-    {
-      "ticker": "XLU",
-      "from": 0.505,
-      "to": 0.7,
-      "delta": 0.195
-    },
-    {
-      "ticker": "GLD",
-      "from": 0.2173,
-      "to": 0.1681,
-      "delta": -0.0492
-    },
-    {
-      "ticker": "SLV",
-      "from": 0.2,
-      "to": 0.0675,
-      "delta": -0.1325
-    },
-    {
-      "ticker": "ITA",
-      "from": 0.0727,
-      "to": 0.0623,
-      "delta": -0.0104
-    }
-  ],
-  "turnover": 0.39,
-  "actionable": true,
-  "open_deviations": [
-    "DEV-S288-1"
-  ],
-  "generated_at": "2026-08-14T22:01:56",
+  "reweights": [],
+  "turnover": 0.0001,
+  "actionable": false,
+  "prev_crown": null,
+  "generated_at": "2026-08-14T22:11:01",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
