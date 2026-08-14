@@ -1,3 +1,4 @@
+# 🔧 v3.9.5 (2026-08-13, S288): GPR_HIGH 통과 배선 — CAND-EWZ_GPR_SIZING 소비용. 🚨 재계산하지 않는다 — fred_broad_gha v3 가 원본 달력 그리드(1985+)에서 산출한 값을 그대로 싣기만 한다. 이유: 확장 q90(min 500)은 argus_data.csv(수백 행)에서 영구 미성립이고, 영업일 그리드 rolling(30)은 달력 30일 정의와 어긋난다 — 초안에서 두 결함 모두 실측 적발 후 계산 위치를 상류로 이전했다(원칙 D: 소비층은 로직을 재구현하지 않는다). 컬럼 부재 시 fail-safe 0.
 # 🔧 v3.9.4 (2026-08-13, S288): KIL_SUP 신설 — Crown #106 (WTI Kilian 공급발 게이트 완화) 소비용. Kilian(2009) 유가 3분해의 공급충격 대리 플래그를 데이터층에서 산출한다. 정의: KIL_SUP = (ΔWTI20>0) ∩ (ΔSPY20<0) ∩ NOT(ΔWTI20>0 ∩ ΔCOPX20>0 ∩ PMI>50). 엔진은 컬럼 소비만 하며 부재/NaN 시 fail-safe 기존 동작(identity Δ=0 실증). 신규 수집 소스 0건 — 기보유 4컬럼(WTI/SPY_Close/COPX_Close/PMI) 조합. A5 강건성: Δ창 10~20일 고원(+0.87/+0.78p) · PMI 조건 제거해도 효과 동일(+0.780p) → PMI 결측 무해. 아키텍처 = SMH_TRIFLAG(v3.6) · PDBC(v3.9.3) 선례 준용 (자기치유 + fail-safe 0).
 # 🔧 v3.9.3 (2026-07-25, S280): PDBC 21번째 종목 편입 + 범용 ETF 백필 신설 — 신규 티커 전체 이력 자동 백필(근본 처방).
 # 🔧 v3.9.1 (2026-07-23, S279): 버전 표기 단일 원천화 — 배너·docstring 고정 문자열 제거.
@@ -2452,6 +2453,19 @@ def main():
     except Exception as _e:
         df["KIL_SUP"] = 0.0
         print(f"  ⛑️ KIL_SUP fail-safe 0 (산출 실패: {_e})")
+
+    # 🕯️ v3.9.5 (S288): GPR_HIGH 통과 배선 — 재계산 금지(상류 fred_broad v3 산출값 사용)
+    try:
+        if "GPR_HIGH" not in df.columns:
+            raise KeyError("GPR_HIGH 컬럼 부재 (fred_broad v3 공급 필요)")
+        df["GPR_HIGH"] = pd.to_numeric(df["GPR_HIGH"], errors="coerce").ffill().fillna(0.0)
+        _gh_on = int((df["GPR_HIGH"] > 0.5).sum())
+        print(f"  🕯️ GPR_HIGH (지정학 고조·상류 산출): 발화 {_gh_on}/{len(df)}일"
+              + (" — 휴면" if _gh_on == 0 else ""))
+    except Exception as _e:
+        df["GPR_HIGH"] = 0.0
+        print(f"  ⛑️ GPR_HIGH fail-safe 0 ({_e})")
+
 
     print_quality(df)
     
