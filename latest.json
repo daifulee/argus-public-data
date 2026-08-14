@@ -20,8 +20,8 @@
   "XLF_Close": 58.2599983215332,
   "XLU_Close": 44.040000915527344,
   "XLV_Close": 168.3800048828125,
-  "WTI": 81.31999969482422,
-  "DXY": 99.91999816894533,
+  "WTI": 81.20999908447266,
+  "DXY": 99.90699768066406,
   "IEF_Close": 93.3000030517578,
   "USD_KRW": 1416.4599609375,
   "RSP_Close": 200.4100036621093,
@@ -105,7 +105,7 @@
   "LME_Cu_spread": null,
   "ECY": 0.0162951168652426,
   "CAPE": 38.1426179648342,
-  "Brent": 87.11000061035156,
+  "Brent": 86.9800033569336,
   "Brent_source": "yahoo_live",
   "SEMI_REACCEL": 1.0,
   "SEMI_REACCEL_source": "fred_semi_live",
@@ -115,5 +115,6 @@
   "PDBC_Close": 17.770000457763672,
   "CAPE_source": "seed_carry_forward",
   "ECY_source": "seed_carry_forward",
-  "KIL_SUP": 0.0
+  "KIL_SUP": 0.0,
+  "GPR_HIGH": 0.0
 }
