@@ -1,5 +1,5 @@
 {
-  "date": "2026-08-12",
+  "date": "2026-08-13",
   "changed": false,
   "entered": [],
   "exited": [],
@@ -23,6 +23,6 @@
   "exposure": 1.0,
   "actions": "",
   "repro_actions": "",
-  "engine": "PRIMA2_v0_5_40_CROWN107_SMH_MOSN_LIVE.py",
-  "generated_utc": "2026-08-13T12:51:44Z"
+  "engine": "PRIMA2_v0_5_41_CROWN108_EWZ_GPR_LIVE.py",
+  "generated_utc": "2026-08-14T00:29:42Z"
 }
