@@ -1,26 +1,19 @@
 {
  "date": "2026-08-13",
- "queue": 1,
- "grade": "1",
- "base_f63": 2.79,
- "strong": [
-  {
-   "ticker": "SLV",
-   "score": 12.5,
-   "ratio": 4.17
-  }
- ],
- "super": [
-  "SLV"
- ],
+ "queue": 0,
+ "grade": "0",
+ "base_f63": -0.23,
+ "strong": [],
+ "super": [],
  "held": [
   "GLD",
   "ITA",
+  "SLV",
   "TLT",
   "XLU"
  ],
- "slots_full": false,
- "eff_slots": 4.0,
+ "slots_full": true,
+ "eff_slots": 5.0,
  "pos_src": "ledger",
  "repro_held": [
   "GLD",
@@ -33,5 +26,5 @@
  "crown": "#108",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-08-14T21:55:01+00:00"
+ "generated_utc": "2026-08-14T22:01:49+00:00"
 }
