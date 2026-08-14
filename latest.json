@@ -67,7 +67,7 @@
   "VIX3M": 18.61000061035156,
   "CCSA": 1777000.0,
   "VIX_VIX3M_ratio": 0.7861364661268833,
-  "F_G_Score": 66.0285714285714,
+  "F_G_Score": 66.1428571428572,
   "F_G_Rating": "greed",
   "VIX_source": "yahoo_live",
   "MOVE_source": "yahoo_live",
@@ -116,5 +116,5 @@
   "CAPE_source": "seed_carry_forward",
   "ECY_source": "seed_carry_forward",
   "KIL_SUP": 0.0,
-  "GPR_HIGH": 0.0
+  "GPR_HIGH": 1.0
 }
