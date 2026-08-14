@@ -7,7 +7,11 @@
 #   2) in-script pip 제거 — 의존성은 워크플로(fred_broad.yml)가 설치
 #   3) 10% 초과실패 시 중단(abort) — 산출/커밋 차단(API 장애 보호)
 #   4) 일시 네트워크 오류 재시도(전송 실패 → 거짓 abort 방지)
-# 🦅 v3.3 (2026-08-14, S288): GPR URL 공식 경로 우선 해석. 제작자 페이지는 날짜 포함 파일명만
+# 🦅 v3.4 (2026-08-14, S288): 실측 정정 — 날짜형 URL 13건 전부 404 였고 날짜 없는 .dta 가 성공했다.
+#      순서를 실증 순으로 뒤집는다(정상 시 요청 1회). 대신 신선도 가드를 넣어 파일이 남아 있어도
+#      갱신이 멈추면(21일 초과) 다음 후보로 넘어가게 한다 — 존재 != 최신.
+#      데이터 말미 날짜와 경과일을 매 실행 로그에 찍는다.
+# 🦅 v3.3 (2026-08-14, S288): GPR URL 공식 경로 우선 해석(추정 — v3.4 에서 실측 반증됨). 제작자 페이지는 날짜 포함 파일명만
 #      링크하며, 쓰던 날짜 없는 URL 은 비공식이라 예고 없이 사라질 수 있다. 일간 데이터는 매주
 #      월요일 갱신이므로 최근 월요일부터 6주 역순으로 (xls, dta) 를 훑고, 전부 실패해야 비공식
 #      URL 을 마지막으로 시도한다. 성공 경로를 매 실행 로그에 명시.
@@ -55,7 +59,8 @@ GPR_URL = "https://www.matteoiacoviello.com/gpr_files/data_gpr_daily_recent.xls"
 # 🆕 v3.2: 무의존성 대체 경로 — pandas.read_stata 는 내장이라 xlrd 설치가 불필요하다
 GPR_DTA_URL = "https://www.matteoiacoviello.com/gpr_files/data_gpr_daily_recent.dta"
 GPR_BASE = "https://www.matteoiacoviello.com/gpr_files/"
-GPR_LOOKBACK_WEEKS = 6   # 일간 GPR 은 매주 월요일 갱신 — 6주 역순 탐색 후 비공식 URL 폴백
+GPR_LOOKBACK_WEEKS = 6   # 표준 URL 이 사라졌을 때만 쓰는 날짜형 역순 탐색 범위(주)
+GPR_STALE_DAYS = 21      # 원천은 매주 월요일 갱신 — 3주 초과 정체면 낡은 것으로 보고 다음 후보로
 GPR_MA = 30        # 이동평균 창 (달력일 — 원본 그리드 기준)
 GPR_Q = 0.90       # 고조 판정 분위
 GPR_MINP = 500     # 확장 분위 최소 표본
@@ -150,13 +155,16 @@ def _gpr_candidates(today=None):
     from datetime import date, timedelta
     d0 = today or date.today()
     mon = d0 - timedelta(days=d0.weekday())      # 이번 주 월요일
-    out = []
+    # 🔴 v3.4 실측 정정: 날짜 포함 URL 13건이 전부 HTTPError(404) 였고 날짜 없는 .dta 가 성공했다.
+    #   제작자 페이지 설명에서 추정한 dated 경로는 이 디렉터리에 존재하지 않는다 — 순서를 뒤집는다.
+    #   ① 실증된 경로 먼저(정상 시 요청 1회) ② 그것이 사라지거나 낡으면 날짜 경로 탐색.
+    #   .dta 를 .xls 보다 먼저 둔다 — pandas 내장이라 xlrd 유무와 무관하게 성공한다(실증).
+    out = [(GPR_DTA_URL, "dta", "표준(날짜없음)"),
+           (GPR_URL, "xls", "표준(날짜없음)")]
     for k in range(GPR_LOOKBACK_WEEKS):
         tag = (mon - timedelta(weeks=k)).strftime("%Y%m%d")
-        out.append((f"{GPR_BASE}data_gpr_daily_recent_{tag}.xls", "xls", f"공식 {tag}"))
-        out.append((f"{GPR_BASE}data_gpr_daily_recent_{tag}.dta", "dta", f"공식 {tag}"))
-    out.append((GPR_URL, "xls", "비공식(날짜없음)"))
-    out.append((GPR_DTA_URL, "dta", "비공식(날짜없음)"))
+        out.append((f"{GPR_BASE}data_gpr_daily_recent_{tag}.dta", "dta", f"날짜형 {tag}"))
+        out.append((f"{GPR_BASE}data_gpr_daily_recent_{tag}.xls", "xls", f"날짜형 {tag}"))
     return out
 
 
@@ -175,7 +183,19 @@ def _gpr_load():
                 raw = r.read()
             df = (pd.read_excel(io.BytesIO(raw), engine="xlrd") if kind == "xls"
                   else pd.read_stata(io.BytesIO(raw)))
-            print(f"  [GPR] 회수 경로 = {label} / {kind} ({len(raw):,}B, {len(df)}행)")
+            # 🆕 v3.4 신선도 가드: 파일이 남아 있어도 갱신이 멈추면 낡은 값을 조용히 쓰게 된다.
+            #   원천은 매주 월요일 갱신이므로 GPR_STALE_DAYS 초과면 다음 후보로 넘어간다.
+            _dc = next((c for c in df.columns if str(c).lower() == "date"), None)
+            _last = pd.to_datetime(df[_dc], errors="coerce").max() if _dc else None
+            _age = (pd.Timestamp.utcnow().tz_localize(None) - _last).days if _last is not None else None
+            if _age is not None and _age > GPR_STALE_DAYS:
+                errs.append(f"{label}/{kind}: STALE {_age}일(말미 {_last.date()})")
+                print(f"  [GPR] ⚠️ {label}/{kind} 낡음 — 말미 {_last.date()} ({_age}일 경과) → 다음 후보",
+                      file=sys.stderr)
+                continue
+            print(f"  [GPR] 회수 경로 = {label} / {kind} ({len(raw):,}B, {len(df)}행 · "
+                  f"말미 {_last.date() if _last is not None else '?'}"
+                  + (f" · {_age}일 경과" if _age is not None else "") + ")")
             if errs:
                 print(f"  [GPR] ↳ 앞선 시도 {len(errs)}건 실패 (첫 사유 {errs[0]})")
             return df, f"{label}/{kind}"
