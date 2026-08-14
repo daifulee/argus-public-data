@@ -1,5 +1,5 @@
 {
- "date": "2026-08-12",
+ "date": "2026-08-13",
  "queue": 1,
  "grade": "1",
  "base_f63": 2.79,
@@ -29,9 +29,9 @@
   "SLV",
   "SMH"
  ],
- "engine": "PRIMA2_v0.5.40-SMH_MOSN",
- "crown": "#107",
+ "engine": "PRIMA2_v0.5.41-EWZ_GPR_SIZE",
+ "crown": "#108",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-08-13T12:51:53+00:00"
+ "generated_utc": "2026-08-14T00:29:49+00:00"
 }
