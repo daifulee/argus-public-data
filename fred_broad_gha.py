@@ -7,6 +7,15 @@
 #   2) in-script pip 제거 — 의존성은 워크플로(fred_broad.yml)가 설치
 #   3) 10% 초과실패 시 중단(abort) — 산출/커밋 차단(API 장애 보호)
 #   4) 일시 네트워크 오류 재시도(전송 실패 → 거짓 abort 방지)
+# 🦅 v3.3 (2026-08-14, S288): GPR URL 공식 경로 우선 해석. 제작자 페이지는 날짜 포함 파일명만
+#      링크하며, 쓰던 날짜 없는 URL 은 비공식이라 예고 없이 사라질 수 있다. 일간 데이터는 매주
+#      월요일 갱신이므로 최근 월요일부터 6주 역순으로 (xls, dta) 를 훑고, 전부 실패해야 비공식
+#      URL 을 마지막으로 시도한다. 성공 경로를 매 실행 로그에 명시.
+# 🦅 v3.2 (2026-08-14, S288): GPR 포맷 2경로 — xls(xlrd) 실패 시 dta(pandas 내장)로 폴백.
+#      xlrd 를 requirements 에 넣으면 ①로, 넣지 않아도 ②로 동작한다. 경로를 로그에 명시.
+# 🦅 v3.1 (2026-08-14, S288): GPR 수집 실패 원인 표면화 — 실행 로그가 'ImportError' 만 찍어
+#      원인을 알 수 없었다. engine='xlrd' 명시 + 의존성 부재 시 처방 문구 + 예외 메시지 전문 출력.
+#      전제: requirements.txt 에 xlrd>=2.0.1 추가 필요(.xls 구형 BIFF 는 xlrd 전용).
 # 🦅 v3 (2026-08-13, S288 CAND-EWZ_GPR_SIZING):
 #   7) GPRD 계열 추가 — Caldara-Iacoviello 지정학 리스크 지수 (일간 1985+, 비FRED xls).
 #      EBP 선례 준용: urllib 회수 · 실패해도 FRED 산출 계속 · abort 계산 제외.
@@ -43,6 +52,10 @@ OUT_META = "argus_fred_meta.csv"
 EBP_URL = "https://www.federalreserve.gov/econres/notes/feds-notes/ebp_csv.csv"
 # 🆕 v3: GPR daily (Caldara-Iacoviello 2022 AER) — 1985+ 일간 무료 공개
 GPR_URL = "https://www.matteoiacoviello.com/gpr_files/data_gpr_daily_recent.xls"
+# 🆕 v3.2: 무의존성 대체 경로 — pandas.read_stata 는 내장이라 xlrd 설치가 불필요하다
+GPR_DTA_URL = "https://www.matteoiacoviello.com/gpr_files/data_gpr_daily_recent.dta"
+GPR_BASE = "https://www.matteoiacoviello.com/gpr_files/"
+GPR_LOOKBACK_WEEKS = 6   # 일간 GPR 은 매주 월요일 갱신 — 6주 역순 탐색 후 비공식 URL 폴백
 GPR_MA = 30        # 이동평균 창 (달력일 — 원본 그리드 기준)
 GPR_Q = 0.90       # 고조 판정 분위
 GPR_MINP = 500     # 확장 분위 최소 표본
@@ -124,6 +137,58 @@ def fetch_ebp():
     return out
 
 
+def _gpr_candidates(today=None):
+    """🆕 v3.3: GPR 다운로드 후보 URL 목록 — 공식(날짜 포함) 우선 · 비공식(날짜 없음) 최후.
+
+    제작자 페이지는 `data_gpr_daily_recent_YYYYMMDD.(xls|dta)` 만 링크한다.
+    현재 쓰던 날짜 없는 URL 은 서버에 실재하나 **페이지에 없는 비공식 경로**라
+    예고 없이 사라질 수 있다 → 공식 경로를 먼저 시도한다.
+
+    일간 데이터는 **매주 월요일** 갱신되므로 최근 월요일부터 역순으로 훑는다.
+    6주까지 거슬러도 없으면 원천이 멈춘 것이므로 비공식 URL 로 마지막 시도.
+    """
+    from datetime import date, timedelta
+    d0 = today or date.today()
+    mon = d0 - timedelta(days=d0.weekday())      # 이번 주 월요일
+    out = []
+    for k in range(GPR_LOOKBACK_WEEKS):
+        tag = (mon - timedelta(weeks=k)).strftime("%Y%m%d")
+        out.append((f"{GPR_BASE}data_gpr_daily_recent_{tag}.xls", "xls", f"공식 {tag}"))
+        out.append((f"{GPR_BASE}data_gpr_daily_recent_{tag}.dta", "dta", f"공식 {tag}"))
+    out.append((GPR_URL, "xls", "비공식(날짜없음)"))
+    out.append((GPR_DTA_URL, "dta", "비공식(날짜없음)"))
+    return out
+
+
+def _gpr_load():
+    """후보 URL 을 순서대로 시도해 (DataFrame, 경로설명) 반환. 전부 실패 시 예외.
+
+    포맷 2종: .xls 는 xlrd 필요 · .dta 는 pandas 내장(무의존성).
+    xlrd 미설치 환경에서도 .dta 로 살아남는다. 어느 경로로 성공했는지 반드시 로그에 남긴다.
+    """
+    _hdr = {"User-Agent": "ARGUS-fetcher/3.3 (+github.com/daifulee/argus-public-data)"}
+    errs = []
+    for url, kind, label in _gpr_candidates():
+        try:
+            req = urllib.request.Request(url, headers=_hdr)
+            with urllib.request.urlopen(req, timeout=60) as r:
+                raw = r.read()
+            df = (pd.read_excel(io.BytesIO(raw), engine="xlrd") if kind == "xls"
+                  else pd.read_stata(io.BytesIO(raw)))
+            print(f"  [GPR] 회수 경로 = {label} / {kind} ({len(raw):,}B, {len(df)}행)")
+            if errs:
+                print(f"  [GPR] ↳ 앞선 시도 {len(errs)}건 실패 (첫 사유 {errs[0]})")
+            return df, f"{label}/{kind}"
+        except Exception as e:  # noqa: BLE001
+            errs.append(f"{label}/{kind}: {type(e).__name__}")
+    raise RuntimeError(
+        "GPR 전 경로 실패 — 시도 " + str(len(errs)) + "건. 사유 예: "
+        + " · ".join(errs[:4])
+        + " | .xls 계열이 ImportError 면 requirements.txt 에 xlrd>=2.0.1 을 추가하십시오."
+    )
+
+
+
 def fetch_gpr():
     """🆕 v3: GPRD 지정학 리스크 지수 + GPR_HIGH 플래그 (일간 · 비FRED xls).
 
@@ -137,11 +202,12 @@ def fetch_gpr():
     """
     out = {}
     try:
-        req = urllib.request.Request(
-            GPR_URL, headers={"User-Agent": "ARGUS-fetcher/3.0 (+github.com/daifulee/argus-public-data)"})
-        with urllib.request.urlopen(req, timeout=120) as resp:
-            raw = resp.read()
-        d = pd.read_excel(io.BytesIO(raw))
+        # 🔴 v3.2: 포맷 2경로. 원천은 하나(Caldara-Iacoviello)이고 배포 포맷만 둘이다.
+        #   ① .xls  — xlrd 필요. GHA 에 없으면 ImportError (실사고 2026-08-14).
+        #   ② .dta  — pandas 내장 read_stata. 추가 의존성 없음.
+        #   ①이 의존성 문제로 실패하면 ②로 넘어간다. 어느 경로로 성공했는지 로그에 남긴다.
+        #   다운로드 자체는 이미 성공이 증명됐다(실패 지점이 파싱 단계였다).
+        d, _via = _gpr_load()
         dc = next(c for c in d.columns if str(c).lower() == "date")
         d[dc] = pd.to_datetime(d[dc], errors="coerce")
         d = d.dropna(subset=[dc])
@@ -173,7 +239,9 @@ def fetch_gpr():
                 if len(s):
                     out[extra] = s
     except Exception as e:  # noqa: BLE001
-        print(f"  [GPR] ❌ GPR xls 실패: {type(e).__name__} — FRED 산출 계속", file=sys.stderr)
+        # 🔴 v3.1: 예외 종류만 찍으면 원인을 알 수 없다(실사고: ImportError 만 보고 원인 불명).
+        #   메시지 전문을 남긴다 — fail-safe 는 원인을 감추지 않는다(원칙 I).
+        print(f"  [GPR] ❌ GPR 수집 실패: {type(e).__name__}: {e} — FRED 산출 계속", file=sys.stderr)
     return out
 
 
