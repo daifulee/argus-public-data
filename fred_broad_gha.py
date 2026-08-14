@@ -7,6 +7,14 @@
 #   2) in-script pip 제거 — 의존성은 워크플로(fred_broad.yml)가 설치
 #   3) 10% 초과실패 시 중단(abort) — 산출/커밋 차단(API 장애 보호)
 #   4) 일시 네트워크 오류 재시도(전송 실패 → 거짓 abort 방지)
+# 🦅 v3 (2026-08-13, S288 CAND-EWZ_GPR_SIZING):
+#   7) GPRD 계열 추가 — Caldara-Iacoviello 지정학 리스크 지수 (일간 1985+, 비FRED xls).
+#      EBP 선례 준용: urllib 회수 · 실패해도 FRED 산출 계속 · abort 계산 제외.
+#   8) 🚨 GPR_HIGH 를 **여기서** 산출한다 (소비층 재계산 금지).
+#      이유: GPR_HIGH = MA30 > 확장 q90(min 500)인데, argus_data.csv 는 414행뿐이라
+#      fetcher 에서 계산하면 min_periods 미달로 영구 침묵한다. 또 fetcher 는 영업일
+#      그리드라 rolling(30)이 30영업일(≈42달력일)이 되어 연구 정의와 어긋난다.
+#      원본 달력 그리드 + 40년 이력이 있는 이 지점이 유일하게 옳은 계산 위치다.
 # 🦅 v2 (2026-08-13, S288 DIR-S288_DATA_SUPPLY_SSOT):
 #   5) THREEFYTP10 추가 — ACM 10년 기간프리미엄 (신규 카테고리 "기간프리미엄")
 #   6) EBP·GZ_SPREAD 추가 — Gilchrist–Zakrajšek (연준 노트 CSV, 비FRED).
@@ -33,6 +41,11 @@ ABORT_FRAC = 0.10             # 예상가능 시리즈의 10% 초과 실패 시 
 OUT_BROAD = "argus_fred_broad.csv"
 OUT_META = "argus_fred_meta.csv"
 EBP_URL = "https://www.federalreserve.gov/econres/notes/feds-notes/ebp_csv.csv"
+# 🆕 v3: GPR daily (Caldara-Iacoviello 2022 AER) — 1985+ 일간 무료 공개
+GPR_URL = "https://www.matteoiacoviello.com/gpr_files/data_gpr_daily_recent.xls"
+GPR_MA = 30        # 이동평균 창 (달력일 — 원본 그리드 기준)
+GPR_Q = 0.90       # 고조 판정 분위
+GPR_MINP = 500     # 확장 분위 최소 표본
 
 # --- 1) 추출 대상 시리즈 (검증된 111종 + v2 기간프리미엄 1종, 카테고리별) ---
 #   ARGUS 유니버스(반도체/원전/구리/금은/EM/기술/방산/유틸/금융/에너지) driver 망라
@@ -111,6 +124,59 @@ def fetch_ebp():
     return out
 
 
+def fetch_gpr():
+    """🆕 v3: GPRD 지정학 리스크 지수 + GPR_HIGH 플래그 (일간 · 비FRED xls).
+
+    🚨 GPR_HIGH 를 이 함수에서 산출하는 이유 — 소비층(fetcher)에서 계산하면 두 가지가 깨진다.
+       ① argus_data.csv 는 수백 행뿐이라 확장 분위(min 500) 가 영구 미성립 → 신호 침묵.
+       ② fetcher 는 영업일 그리드라 rolling(30) 이 30영업일(≈42달력일)로 정의가 바뀐다.
+       원본 달력 그리드 + 1985년부터의 전체 이력이 있는 여기가 유일하게 옳은 계산 위치다.
+
+    GPR_HIGH = GPRD_MA30 > 확장 q90(min 500) — 확장 분위라 look-ahead 없음(PIT 안전).
+    반환: {이름: Series} · 실패 시 빈 dict (FRED 산출 계속 · abort 계산 제외).
+    """
+    out = {}
+    try:
+        req = urllib.request.Request(
+            GPR_URL, headers={"User-Agent": "ARGUS-fetcher/3.0 (+github.com/daifulee/argus-public-data)"})
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            raw = resp.read()
+        d = pd.read_excel(io.BytesIO(raw))
+        dc = next(c for c in d.columns if str(c).lower() == "date")
+        d[dc] = pd.to_datetime(d[dc], errors="coerce")
+        d = d.dropna(subset=[dc])
+        d = d[~d[dc].duplicated(keep="last")].set_index(dc).sort_index()
+
+        gcol = next((c for c in d.columns if str(c).upper() == "GPRD"), None)
+        if gcol is None:
+            raise KeyError("GPRD 컬럼 부재")
+        gprd = pd.to_numeric(d[gcol], errors="coerce").ffill()
+
+        # MA30 — 파일이 제공하면 그대로(연구 정의와 동일), 없으면 원본 그리드에서 산출
+        mcol = next((c for c in d.columns if str(c).upper() == "GPRD_MA30"), None)
+        ma30 = pd.to_numeric(d[mcol], errors="coerce") if mcol else \
+            gprd.rolling(GPR_MA, min_periods=10).mean()
+
+        q = ma30.expanding(min_periods=GPR_MINP).quantile(GPR_Q)
+        high = (ma30 > q).astype(float)
+
+        for name, s in [("GPRD", gprd), ("GPRD_MA30", ma30), ("GPR_HIGH", high)]:
+            s = s.dropna()
+            s = s[s.index >= START]
+            if len(s):
+                out[name] = s
+        for extra in ["GPRD_ACT", "GPRD_THREAT"]:
+            hit = next((c for c in d.columns if str(c).upper() == extra), None)
+            if hit:
+                s = pd.to_numeric(d[hit], errors="coerce").dropna()
+                s = s[s.index >= START]
+                if len(s):
+                    out[extra] = s
+    except Exception as e:  # noqa: BLE001
+        print(f"  [GPR] ❌ GPR xls 실패: {type(e).__name__} — FRED 산출 계속", file=sys.stderr)
+    return out
+
+
 def main():
     # --- FRED 키 확인 (없으면 즉시 실패 — 빈 산출/커밋 방지) ---
     api_key = os.environ.get("FRED_API_KEY", "").strip()
@@ -157,6 +223,20 @@ def main():
         time.sleep(SLEEP)
 
     # --- 2b) 🆕 v2: EBP 계열 수집 (비FRED · abort 미포함 · 실패 허용) ---
+    # 🆕 v3: GPR 병합 (EBP 와 동일 규약 — abort 계산 제외)
+    gpr_series = fetch_gpr()
+    for name, s in gpr_series.items():
+        all_series[name] = s
+        meta_rows.append({"series": name, "category": "지정학", "n_obs": len(s),
+                          "start": str(s.index.min().date()), "end": str(s.index.max().date()),
+                          "freq": "일간", "gap_days": 1})
+    if gpr_series:
+        _hi = gpr_series.get("GPR_HIGH")
+        print(f"  [GPR] ✅ {len(gpr_series)}계열 수집 · GPR_HIGH 발화 "
+              f"{int(_hi.sum()) if _hi is not None else 0}/{len(_hi) if _hi is not None else 0}일")
+    else:
+        meta_rows.append({"series": "GPRD", "category": "지정학", "n_obs": 0, "freq": "FAIL"})
+
     ebp_series = fetch_ebp()
     for name, s in ebp_series.items():
         all_series[name] = s
