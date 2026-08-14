@@ -1,3 +1,4 @@
+# 🔧 v3.9.6 (2026-08-14, S288): GPR_HIGH 실제 병합 — v3.9.5 설계 오류 정정. v3.9.5 는 '상류가 공급한 값을 통과만 한다' 고 전제했으나 fetcher 는 argus_fred_broad.csv 를 읽지 않는다(별개 파이프라인). 그 결과 첫 실행의 fail-safe 0 이 argus_data.csv 에 새겨졌고 이후 그 0 을 읽어 0 을 쓰는 자기참조 루프가 됐다 — 상류 261/420일 발화가 하류 0/415일 로 소실됐고 로그는 성공 메시지를 찍었다. 이제 상류 파일을 실제로 읽어 Date 기준 병합하고 기존 컬럼을 무조건 덮어쓴다(0 고착 해소). 실패 시 사유를 반드시 출력한다.
 # 🔧 v3.9.5 (2026-08-13, S288): GPR_HIGH 통과 배선 — CAND-EWZ_GPR_SIZING 소비용. 🚨 재계산하지 않는다 — fred_broad_gha v3 가 원본 달력 그리드(1985+)에서 산출한 값을 그대로 싣기만 한다. 이유: 확장 q90(min 500)은 argus_data.csv(수백 행)에서 영구 미성립이고, 영업일 그리드 rolling(30)은 달력 30일 정의와 어긋난다 — 초안에서 두 결함 모두 실측 적발 후 계산 위치를 상류로 이전했다(원칙 D: 소비층은 로직을 재구현하지 않는다). 컬럼 부재 시 fail-safe 0.
 # 🔧 v3.9.4 (2026-08-13, S288): KIL_SUP 신설 — Crown #106 (WTI Kilian 공급발 게이트 완화) 소비용. Kilian(2009) 유가 3분해의 공급충격 대리 플래그를 데이터층에서 산출한다. 정의: KIL_SUP = (ΔWTI20>0) ∩ (ΔSPY20<0) ∩ NOT(ΔWTI20>0 ∩ ΔCOPX20>0 ∩ PMI>50). 엔진은 컬럼 소비만 하며 부재/NaN 시 fail-safe 기존 동작(identity Δ=0 실증). 신규 수집 소스 0건 — 기보유 4컬럼(WTI/SPY_Close/COPX_Close/PMI) 조합. A5 강건성: Δ창 10~20일 고원(+0.87/+0.78p) · PMI 조건 제거해도 효과 동일(+0.780p) → PMI 결측 무해. 아키텍처 = SMH_TRIFLAG(v3.6) · PDBC(v3.9.3) 선례 준용 (자기치유 + fail-safe 0).
 # 🔧 v3.9.3 (2026-07-25, S280): PDBC 21번째 종목 편입 + 범용 ETF 백필 신설 — 신규 티커 전체 이력 자동 백필(근본 처방).
@@ -2454,17 +2455,47 @@ def main():
         df["KIL_SUP"] = 0.0
         print(f"  ⛑️ KIL_SUP fail-safe 0 (산출 실패: {_e})")
 
-    # 🕯️ v3.9.5 (S288): GPR_HIGH 통과 배선 — 재계산 금지(상류 fred_broad v3 산출값 사용)
+    # 🕯️ v3.9.6 (S288): GPR_HIGH 상류 병합 — 재계산 금지, 그러나 **읽어서** 가져온다.
+    #   🚨 v3.9.5 는 df 에 이미 컬럼이 있다고 전제했다가 자기참조 0 루프에 빠졌다.
+    #      기존 컬럼이 있어도 무조건 상류 값으로 덮는다 — 그것이 0 고착을 푸는 유일한 방법이다.
     try:
-        if "GPR_HIGH" not in df.columns:
-            raise KeyError("GPR_HIGH 컬럼 부재 (fred_broad v3 공급 필요)")
-        df["GPR_HIGH"] = pd.to_numeric(df["GPR_HIGH"], errors="coerce").ffill().fillna(0.0)
+        _gsrc, _gdf = "", None
+        for _cand in (os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "argus_fred_broad.csv"),
+                      "argus_fred_broad.csv"):
+            if os.path.exists(_cand):
+                _gdf, _gsrc = pd.read_csv(_cand), f"로컬 {os.path.basename(_cand)}"
+                break
+        if _gdf is None:
+            import io as _io
+            import urllib.request as _ur
+            _url = ("https://raw.githubusercontent.com/daifulee/argus-public-data/main/"
+                    "argus_fred_broad.csv")
+            with _ur.urlopen(_ur.Request(_url, headers={"User-Agent": "ARGUS-fetcher/3.9.6"}),
+                             timeout=60) as _r:
+                _gdf = pd.read_csv(_io.StringIO(_r.read().decode()))
+            _gsrc = "원격 raw"
+        _dcol = next((c for c in _gdf.columns if str(c).lower() in ("date", "unnamed: 0")), None)
+        if _dcol is None or "GPR_HIGH" not in _gdf.columns:
+            raise KeyError(f"상류에 GPR_HIGH 또는 Date 부재 ({_gsrc}, 열 {len(_gdf.columns)}개)")
+        _gs = (_gdf[[_dcol, "GPR_HIGH"]].copy()
+               .assign(**{_dcol: lambda x: pd.to_datetime(x[_dcol], errors="coerce")})
+               .dropna(subset=[_dcol]).set_index(_dcol)["GPR_HIGH"])
+        _gs = pd.to_numeric(_gs, errors="coerce").sort_index()
+        _gs = _gs[~_gs.index.duplicated(keep="last")]
+        _idx = pd.to_datetime(df.index, errors="coerce")
+        _merged = _gs.reindex(_gs.index.union(_idx)).ffill().reindex(_idx)
+        _prev = int((pd.to_numeric(df["GPR_HIGH"], errors="coerce") > 0.5).sum()) \
+            if "GPR_HIGH" in df.columns else -1
+        df["GPR_HIGH"] = _merged.fillna(0.0).values      # 🚨 무조건 덮어쓰기
         _gh_on = int((df["GPR_HIGH"] > 0.5).sum())
-        print(f"  🕯️ GPR_HIGH (지정학 고조·상류 산출): 발화 {_gh_on}/{len(df)}일"
-              + (" — 휴면" if _gh_on == 0 else ""))
+        print(f"  🕯️ GPR_HIGH (지정학 고조 · 상류 {_gsrc} 병합): 발화 {_gh_on}/{len(df)}일 · "
+              f"최근값 {float(df['GPR_HIGH'].iloc[-1]):.0f}"
+              + (" — 휴면" if _gh_on == 0 else "")
+              + (f" (직전 컬럼 발화 {_prev}일 → 덮어씀)" if _prev >= 0 and _prev != _gh_on else ""))
     except Exception as _e:
         df["GPR_HIGH"] = 0.0
-        print(f"  ⛑️ GPR_HIGH fail-safe 0 ({_e})")
+        print(f"  ⛑️ GPR_HIGH fail-safe 0 — 사유 {type(_e).__name__}: {_e}")
 
 
     print_quality(df)
