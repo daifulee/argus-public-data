@@ -1,18 +1,37 @@
 {
   "date": "2026-08-13",
-  "changed": false,
-  "entered": [],
-  "exited": [],
-  "reweighted": [],
-  "change_reason": "실계좌 변경 없음 (체결 0건)",
+  "changed": true,
+  "entered": [
+    {
+      "ticker": "SLV",
+      "weight": 0.2,
+      "reason": "Commander 재량 진입 (SC12.5|S · 지시 7.37% 초과)"
+    }
+  ],
+  "exited": [
+    {
+      "ticker": "XLU",
+      "reason": "SLV 재원 조달 (부분 매도)"
+    }
+  ],
+  "reweighted": [
+    {
+      "ticker": "XLU",
+      "from": 0.699,
+      "to": 0.505,
+      "delta": -0.194
+    }
+  ],
+  "change_reason": "체결 매수 SLV(Commander 재량 진입 (SC12.5|S · 지시 7.37% 초과)) | 체결 매도 XLU(SLV 재원 조달 (부분 매도)) | 비중 변화 XLU 0.699→0.505",
   "positions": {
-    "XLU": 0.699,
-    "GLD": 0.222,
-    "ITA": 0.074,
+    "XLU": 0.505,
+    "GLD": 0.2173,
+    "SLV": 0.2,
+    "ITA": 0.0727,
     "TLT": 0.005
   },
   "src": "ledger",
-  "ledger_as_of": "2026-08-10",
+  "ledger_as_of": "2026-08-13",
   "repro_positions": {
     "GLD": 0.7,
     "ITA": 0.2379,
@@ -21,8 +40,8 @@
     "NLR": 0.0073
   },
   "exposure": 1.0,
-  "actions": "",
+  "actions": "SELL XLU (SLV 재원 조달 (부분 매도)) / BUY SLV (Commander 재량 진입 (SC12.5|S · 지시 7.37% 초과))",
   "repro_actions": "",
   "engine": "PRIMA2_v0_5_41_CROWN108_EWZ_GPR_LIVE.py",
-  "generated_utc": "2026-08-14T21:54:51Z"
+  "generated_utc": "2026-08-14T22:01:41Z"
 }
