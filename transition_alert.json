@@ -1,8 +1,8 @@
 {
   "schema": "transition_alert/1.0",
   "date": "2026-08-14",
-  "engine": "PRIMA2_v0_5_42_CROWN109_COND_PTS_LIVE.py",
-  "crown": "#109",
+  "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
+  "crown": "#110",
   "src": "transition",
   "ledger_as_of": "2026-08-13",
   "prev": {
@@ -45,6 +45,6 @@
   "turnover": 0.4067,
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-08-15T03:06:25",
+  "generated_at": "2026-08-15T13:44:17",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
