@@ -1,6 +1,6 @@
 {
   "schema": "transition_alert/1.0",
-  "date": "2026-08-18",
+  "date": "2026-08-19",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
@@ -15,36 +15,44 @@
   "rule_change": false,
   "target": {
     "XLU": 0.7,
-    "GLD": 0.0211,
-    "SLV": 0.2709,
-    "ITA": 0.0078,
-    "TLT": 0.0003
+    "GLD": 0.0367,
+    "ITA": 0.0136,
+    "TLT": 0.0005,
+    "SLV": 0.2492
   },
-  "gate_exits": [],
-  "entries": [],
-  "reweights": [
+  "gate_exits": [
     {
       "ticker": "SLV",
-      "from": 0.0675,
-      "to": 0.2709,
-      "delta": 0.2034
-    },
+      "type": "FULL",
+      "reason": "WTI>80",
+      "weight": 0.0675
+    }
+  ],
+  "entries": [
+    {
+      "ticker": "SLV",
+      "weight": 0.2492,
+      "score": 11.0,
+      "threshold": 3.0
+    }
+  ],
+  "reweights": [
     {
       "ticker": "GLD",
       "from": 0.1681,
-      "to": 0.0211,
-      "delta": -0.147
+      "to": 0.0367,
+      "delta": -0.1314
     },
     {
       "ticker": "ITA",
       "from": 0.0623,
-      "to": 0.0078,
-      "delta": -0.0545
+      "to": 0.0136,
+      "delta": -0.0487
     }
   ],
-  "turnover": 0.4067,
+  "turnover": 0.3634,
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-08-18T23:55:06",
+  "generated_at": "2026-08-19T23:55:52",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
