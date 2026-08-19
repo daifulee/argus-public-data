@@ -1,5 +1,5 @@
 {
-  "date": "2026-08-18",
+  "date": "2026-08-19",
   "changed": false,
   "entered": [],
   "exited": [],
@@ -15,15 +15,15 @@
   "src": "ledger",
   "ledger_as_of": "2026-08-13",
   "repro_positions": {
-    "GLD": 0.7,
-    "ITA": 0.2379,
-    "SLV": 0.0407,
-    "SMH": 0.0141,
-    "NLR": 0.0073
+    "GLD": 0.5347,
+    "SLV": 0.4472,
+    "ITA": 0.0166,
+    "SMH": 0.001,
+    "NLR": 0.0005
   },
   "exposure": 1.0,
   "actions": "",
-  "repro_actions": "",
+  "repro_actions": "SELL SLV (WTI>80) ; BUY SLV (SC11.9|S)",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-08-18T23:54:53Z"
+  "generated_utc": "2026-08-19T23:55:43Z"
 }
