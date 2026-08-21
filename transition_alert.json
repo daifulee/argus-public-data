@@ -6,24 +6,24 @@
   "src": "transition",
   "ledger_as_of": "2026-08-20",
   "prev": {
-    "GLD": 0.7,
-    "NLR": 0.0085,
-    "ITA": 0.2752,
-    "SMH": 0.0163
+    "GLD": 0.2395,
+    "ITA": 0.0604,
+    "XLU": 0.7,
+    "TLT": 0.0
   },
   "rule_change": false,
   "target": {
-    "GLD": 0.6238,
-    "NLR": 0.0006,
-    "ITA": 0.0194,
-    "SMH": 0.0011,
-    "SLV": 0.3551
+    "GLD": 0.051,
+    "ITA": 0.0129,
+    "XLU": 0.7,
+    "TLT": 0.0004,
+    "SLV": 0.2357
   },
   "gate_exits": [],
   "entries": [
     {
       "ticker": "SLV",
-      "weight": 0.3551,
+      "weight": 0.2357,
       "score": 11.0,
       "threshold": 3.0
     }
@@ -31,32 +31,20 @@
   "reweights": [
     {
       "ticker": "GLD",
-      "from": 0.7,
-      "to": 0.6238,
-      "delta": -0.0762
+      "from": 0.2395,
+      "to": 0.051,
+      "delta": -0.1885
     },
     {
       "ticker": "ITA",
-      "from": 0.2752,
-      "to": 0.0194,
-      "delta": -0.2558
-    },
-    {
-      "ticker": "SMH",
-      "from": 0.0163,
-      "to": 0.0011,
-      "delta": -0.0151
-    },
-    {
-      "ticker": "NLR",
-      "from": 0.0085,
-      "to": 0.0006,
-      "delta": -0.0079
+      "from": 0.0604,
+      "to": 0.0129,
+      "delta": -0.0476
     }
   ],
-  "turnover": 0.7102,
+  "turnover": 0.4721,
   "actionable": true,
   "prev_crown": "#108",
-  "generated_at": "2026-08-21T14:30:40",
+  "generated_at": "2026-08-21T14:43:05",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
