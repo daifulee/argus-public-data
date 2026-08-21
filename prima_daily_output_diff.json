@@ -1,29 +1,10 @@
 {
   "date": "2026-08-20",
   "changed": true,
-  "entered": [
-    {
-      "ticker": "NLR",
-      "weight": 0.0085,
-      "reason": "신규 산출"
-    },
-    {
-      "ticker": "SMH",
-      "weight": 0.0163,
-      "reason": "신규 산출"
-    }
-  ],
+  "entered": [],
   "exited": [
     {
       "ticker": "SLV",
-      "reason": "산출 이탈"
-    },
-    {
-      "ticker": "TLT",
-      "reason": "산출 이탈"
-    },
-    {
-      "ticker": "XLU",
       "reason": "산출 이탈"
     }
   ],
@@ -31,22 +12,16 @@
     {
       "ticker": "GLD",
       "from": 0.1681,
-      "to": 0.7,
-      "delta": 0.5319
-    },
-    {
-      "ticker": "ITA",
-      "from": 0.0623,
-      "to": 0.2752,
-      "delta": 0.2129
+      "to": 0.2395,
+      "delta": 0.0714
     }
   ],
-  "change_reason": "신규 NLR(신규 산출), SMH(신규 산출) | 이탈 SLV(산출 이탈), TLT(산출 이탈), XLU(산출 이탈) | 비중 변화 GLD 0.168→0.700, ITA 0.062→0.275",
+  "change_reason": "이탈 SLV(산출 이탈) | 비중 변화 GLD 0.168→0.239",
   "positions": {
-    "GLD": 0.7,
-    "ITA": 0.2752,
-    "SMH": 0.0163,
-    "NLR": 0.0085
+    "XLU": 0.7,
+    "GLD": 0.2395,
+    "ITA": 0.0604,
+    "TLT": 0.0
   },
   "src": "ledger",
   "ledger_as_of": "2026-08-20",
@@ -60,5 +35,5 @@
   "actions": "",
   "repro_actions": "SELL SLV (WTI>80)",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-08-21T14:30:26Z"
+  "generated_utc": "2026-08-21T14:42:50Z"
 }
