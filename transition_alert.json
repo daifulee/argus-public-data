@@ -4,34 +4,26 @@
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
-  "ledger_as_of": "2026-08-13",
+  "ledger_as_of": "2026-08-20",
   "prev": {
-    "XLU": 0.7,
-    "GLD": 0.1681,
-    "SLV": 0.0675,
-    "ITA": 0.0623,
-    "TLT": 0.0021
+    "GLD": 0.7,
+    "NLR": 0.0085,
+    "ITA": 0.2752,
+    "SMH": 0.0163
   },
   "rule_change": false,
   "target": {
-    "XLU": 0.7,
-    "GLD": 0.0367,
-    "ITA": 0.0136,
-    "TLT": 0.0005,
-    "SLV": 0.2492
+    "GLD": 0.6238,
+    "NLR": 0.0006,
+    "ITA": 0.0194,
+    "SMH": 0.0011,
+    "SLV": 0.3551
   },
-  "gate_exits": [
-    {
-      "ticker": "SLV",
-      "type": "FULL",
-      "reason": "WTI>80",
-      "weight": 0.0675
-    }
-  ],
+  "gate_exits": [],
   "entries": [
     {
       "ticker": "SLV",
-      "weight": 0.2492,
+      "weight": 0.3551,
       "score": 11.0,
       "threshold": 3.0
     }
@@ -39,20 +31,32 @@
   "reweights": [
     {
       "ticker": "GLD",
-      "from": 0.1681,
-      "to": 0.0367,
-      "delta": -0.1314
+      "from": 0.7,
+      "to": 0.6238,
+      "delta": -0.0762
     },
     {
       "ticker": "ITA",
-      "from": 0.0623,
-      "to": 0.0136,
-      "delta": -0.0487
+      "from": 0.2752,
+      "to": 0.0194,
+      "delta": -0.2558
+    },
+    {
+      "ticker": "SMH",
+      "from": 0.0163,
+      "to": 0.0011,
+      "delta": -0.0151
+    },
+    {
+      "ticker": "NLR",
+      "from": 0.0085,
+      "to": 0.0006,
+      "delta": -0.0079
     }
   ],
-  "turnover": 0.3634,
+  "turnover": 0.7102,
   "actionable": true,
-  "prev_crown": null,
-  "generated_at": "2026-08-21T13:45:55",
+  "prev_crown": "#108",
+  "generated_at": "2026-08-21T14:30:40",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
