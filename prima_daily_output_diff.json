@@ -1,38 +1,38 @@
 {
-  "date": "2026-08-26",
+  "date": "2026-08-27",
   "changed": true,
-  "entered": [
-    {
-      "ticker": "SLV",
-      "weight": 0.2357,
-      "reason": "신규 산출"
-    }
-  ],
+  "entered": [],
   "exited": [],
   "reweighted": [
     {
       "ticker": "GLD",
-      "from": 0.2395,
-      "to": 0.051,
-      "delta": -0.1885
+      "from": 0.051,
+      "to": 0.2366,
+      "delta": 0.1856
     },
     {
       "ticker": "ITA",
-      "from": 0.0604,
-      "to": 0.0129,
-      "delta": -0.0475
+      "from": 0.0129,
+      "to": 0.0597,
+      "delta": 0.0468
+    },
+    {
+      "ticker": "SLV",
+      "from": 0.2357,
+      "to": 0.0016,
+      "delta": -0.2341
     }
   ],
-  "change_reason": "신규 SLV(신규 산출) | 비중 변화 GLD 0.239→0.051, ITA 0.060→0.013",
+  "change_reason": "비중 변화 GLD 0.051→0.237, ITA 0.013→0.060, SLV 0.236→0.002",
   "positions": {
     "XLU": 0.7,
-    "SLV": 0.2357,
-    "GLD": 0.051,
-    "ITA": 0.0129,
-    "TLT": 0.0004
+    "GLD": 0.2366,
+    "ITA": 0.0597,
+    "TLT": 0.002,
+    "SLV": 0.0016
   },
   "src": "ledger",
-  "ledger_as_of": "2026-08-25",
+  "ledger_as_of": "2026-08-26",
   "repro_positions": {
     "SLV": 0.6052,
     "GLD": 0.3818,
@@ -42,7 +42,7 @@
   },
   "exposure": 1.0,
   "actions": "",
-  "repro_actions": "BUY SLV (SC13.5|S)",
+  "repro_actions": "",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-08-27T05:00:40Z"
+  "generated_utc": "2026-08-28T07:04:07Z"
 }
