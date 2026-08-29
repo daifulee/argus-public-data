@@ -810,17 +810,17 @@
     "date": "2026-08-27",
     "weights": {
       "GLD": 0.2,
-      "COPX": 0.1469,
-      "SMH": 0.1341,
-      "NLR": 0.1261,
-      "PAVE": 0.1139,
+      "COPX": 0.1472,
+      "SMH": 0.1347,
+      "NLR": 0.1255,
+      "PAVE": 0.1141,
       "SGOV": 0.1,
-      "QQQM": 0.0975,
-      "XLU": 0.0816
+      "QQQM": 0.0981,
+      "XLU": 0.0805
     },
     "source": "oracle_autopilot_v1.0.6",
     "n_pos": 8,
-    "logged_utc": "2026-08-28T07:04:09Z",
+    "logged_utc": "2026-08-29T04:18:51Z",
     "valid": true
   }
 ]
