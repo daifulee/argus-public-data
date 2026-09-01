@@ -1,23 +1,10 @@
 {
-  "date": "2026-08-27",
-  "changed": true,
+  "date": "2026-08-31",
+  "changed": false,
   "entered": [],
   "exited": [],
-  "reweighted": [
-    {
-      "ticker": "GLD",
-      "from": 0.051,
-      "to": 0.0212,
-      "delta": -0.0298
-    },
-    {
-      "ticker": "SLV",
-      "from": 0.2357,
-      "to": 0.2732,
-      "delta": 0.0375
-    }
-  ],
-  "change_reason": "비중 변화 GLD 0.051→0.021, SLV 0.236→0.273",
+  "reweighted": [],
+  "change_reason": "산출 변화 없음",
   "positions": {
     "XLU": 0.7,
     "SLV": 0.2732,
@@ -38,5 +25,5 @@
   "actions": "",
   "repro_actions": "",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-08-31T00:41:12Z"
+  "generated_utc": "2026-09-01T02:01:57Z"
 }
