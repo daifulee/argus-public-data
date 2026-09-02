@@ -10,3 +10,4 @@ date,queue,grade,slots_full,strong,super,spy_close,fwd21_pct,fwd63_pct,pos_src
 2026-08-26,0,0,True,,,766.08,,,ledger
 2026-08-27,0,0,True,,,771.1,,,ledger
 2026-08-31,0,0,True,,,767.05,,,ledger
+2026-09-01,2,2,True,PAVE:6.7|XLE:3.9,,761.78,,,ledger
