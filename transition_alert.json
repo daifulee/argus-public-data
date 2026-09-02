@@ -1,10 +1,10 @@
 {
   "schema": "transition_alert/1.1",
-  "date": "2026-08-31",
+  "date": "2026-09-01",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
-  "ledger_as_of": "2026-08-27",
+  "ledger_as_of": "2026-08-31",
   "prev": {
     "GLD": 0.0212,
     "ITA": 0.0054,
@@ -14,50 +14,70 @@
   },
   "rule_change": false,
   "target": {
-    "GLD": 0.0212,
-    "ITA": 0.0054,
-    "TLT": 0.0002,
-    "SLV": 0.2732,
-    "XLU": 0.7
+    "TLT": 0.0335,
+    "SLV": 0.7,
+    "XLE": 0.2543,
+    "ITA": 0.0122
   },
-  "gate_exits": [],
-  "entries": [],
-  "reweights": [],
+  "gate_exits": [
+    {
+      "ticker": "GLD",
+      "type": "FULL",
+      "reason": "WTI>90",
+      "weight": 0.0212
+    },
+    {
+      "ticker": "ITA",
+      "type": "FULL",
+      "reason": "WTI>90",
+      "weight": 0.0054
+    },
+    {
+      "ticker": "XLU",
+      "type": "FULL",
+      "reason": "WTI>90",
+      "weight": 0.7
+    }
+  ],
+  "entries": [
+    {
+      "ticker": "XLE",
+      "weight": 0.2543,
+      "score": 3.9,
+      "threshold": 2.5
+    },
+    {
+      "ticker": "ITA",
+      "weight": 0.0122,
+      "score": 1.7000000000000002,
+      "threshold": 2.0
+    }
+  ],
+  "reweights": [
+    {
+      "ticker": "SLV",
+      "from": 0.2732,
+      "to": 0.7,
+      "delta": 0.4268
+    },
+    {
+      "ticker": "TLT",
+      "from": 0.0002,
+      "to": 0.0335,
+      "delta": 0.0333
+    }
+  ],
   "position_state": {
-    "GLD": {
-      "entry_date": "2026-07-29",
-      "entry_price": 371.08,
-      "entry_score": 5.4,
-      "entry_threshold": 2.0,
-      "target_days": 63,
-      "held_days": 23,
-      "weight_factor": 1.0,
-      "level": "A",
-      "weight": 0.021245,
-      "score_recovered": false
-    },
-    "ITA": {
-      "entry_date": "2026-07-29",
-      "entry_price": 236.26,
-      "entry_score": 4.1,
-      "entry_threshold": 2.0,
-      "target_days": 42,
-      "held_days": 23,
-      "weight_factor": 1.0,
-      "level": "A",
-      "weight": 0.005361,
-      "score_recovered": false
-    },
     "TLT": {
       "entry_date": "2026-08-05",
       "entry_price": 83.0,
       "entry_score": 2.6,
       "entry_threshold": 2.5,
       "target_days": 126,
-      "held_days": 18,
+      "held_days": 19,
       "weight_factor": 1.0,
       "level": "C",
-      "weight": 0.00018,
+      "weight": 0.033488,
       "score_recovered": false
     },
     "SLV": {
@@ -66,28 +86,40 @@
       "entry_score": 13.5,
       "entry_threshold": 3.0,
       "target_days": 189,
-      "held_days": 3,
-      "weight_factor": 1.0,
-      "level": "S",
-      "weight": 0.273214,
-      "score_recovered": false
-    },
-    "XLU": {
-      "entry_date": "",
-      "entry_price": 44.91,
-      "entry_score": 3.2,
-      "entry_threshold": 1.0,
-      "target_days": 21,
-      "held_days": 0,
+      "held_days": 4,
       "weight_factor": 1.0,
       "level": "S",
       "weight": 0.7,
       "score_recovered": false
+    },
+    "XLE": {
+      "entry_date": "2026-09-01",
+      "entry_price": 64.77,
+      "entry_score": 3.9,
+      "entry_threshold": 2.5,
+      "target_days": 63,
+      "held_days": 0,
+      "weight_factor": 1.0,
+      "level": "B",
+      "weight": 0.254299,
+      "score_recovered": false
+    },
+    "ITA": {
+      "entry_date": "2026-09-01",
+      "entry_price": 225.46,
+      "entry_score": 1.7,
+      "entry_threshold": 2.0,
+      "target_days": 42,
+      "held_days": 0,
+      "weight_factor": 1.0,
+      "level": "C",
+      "weight": 0.012213,
+      "score_recovered": false
     }
   },
-  "turnover": 0.0001,
-  "actionable": false,
+  "turnover": 1.4425,
+  "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-01T02:02:23",
+  "generated_at": "2026-09-02T01:23:37",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
