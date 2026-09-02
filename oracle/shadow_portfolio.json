@@ -839,5 +839,22 @@
     "n_pos": 8,
     "logged_utc": "2026-09-01T02:01:58Z",
     "valid": true
+  },
+  {
+    "date": "2026-09-01",
+    "weights": {
+      "GLD": 0.2,
+      "NLR": 0.1744,
+      "SMH": 0.1201,
+      "COPX": 0.1194,
+      "PAVE": 0.1108,
+      "SGOV": 0.1,
+      "XLU": 0.0948,
+      "CIBR": 0.0805
+    },
+    "source": "oracle_autopilot_v1.0.6",
+    "n_pos": 8,
+    "logged_utc": "2026-09-02T01:23:04Z",
+    "valid": true
   }
 ]
