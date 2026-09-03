@@ -42,15 +42,11 @@
   "src": "ledger",
   "ledger_as_of": "2026-09-01",
   "repro_positions": {
-    "SLV": 0.6052,
-    "GLD": 0.3818,
-    "ITA": 0.0119,
-    "SMH": 0.0007,
-    "NLR": 0.0004
+    "SLV": 1.0
   },
   "exposure": 1.0,
   "actions": "",
-  "repro_actions": "",
+  "repro_actions": "SELL GLD (WTI>90) ; SELL NLR (WTI>90) ; SELL ITA (WTI>90) ; SELL SMH (WTI>90)",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-03T01:25:52Z"
+  "generated_utc": "2026-09-03T02:14:02Z"
 }
