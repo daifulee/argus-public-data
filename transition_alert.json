@@ -4,67 +4,48 @@
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
-  "ledger_as_of": "2026-08-31",
+  "ledger_as_of": "2026-09-01",
   "prev": {
-    "GLD": 0.0212,
-    "ITA": 0.0054,
-    "TLT": 0.0002,
-    "SLV": 0.2732,
-    "XLU": 0.7
-  },
-  "rule_change": false,
-  "target": {
     "TLT": 0.0335,
     "SLV": 0.7,
     "XLE": 0.2543,
     "ITA": 0.0122
   },
-  "gate_exits": [
-    {
-      "ticker": "GLD",
-      "type": "FULL",
-      "reason": "WTI>90",
-      "weight": 0.0212
-    },
-    {
-      "ticker": "ITA",
-      "type": "FULL",
-      "reason": "WTI>90",
-      "weight": 0.0054
-    },
-    {
-      "ticker": "XLU",
-      "type": "FULL",
-      "reason": "WTI>90",
-      "weight": 0.7
-    }
-  ],
+  "rule_change": false,
+  "target": {
+    "TLT": 0.0034,
+    "SLV": 0.7,
+    "XLE": 0.0255,
+    "ITA": 0.0012,
+    "GLD": 0.2699
+  },
+  "gate_exits": [],
   "entries": [
     {
-      "ticker": "XLE",
-      "weight": 0.2543,
-      "score": 3.9,
-      "threshold": 2.5
-    },
-    {
-      "ticker": "ITA",
-      "weight": 0.0122,
-      "score": 1.7000000000000002,
+      "ticker": "GLD",
+      "weight": 0.2699,
+      "score": 5.0,
       "threshold": 2.0
     }
   ],
   "reweights": [
     {
-      "ticker": "SLV",
-      "from": 0.2732,
-      "to": 0.7,
-      "delta": 0.4268
+      "ticker": "XLE",
+      "from": 0.2543,
+      "to": 0.0255,
+      "delta": -0.2288
     },
     {
       "ticker": "TLT",
-      "from": 0.0002,
-      "to": 0.0335,
-      "delta": 0.0333
+      "from": 0.0335,
+      "to": 0.0034,
+      "delta": -0.0301
+    },
+    {
+      "ticker": "ITA",
+      "from": 0.0122,
+      "to": 0.0012,
+      "delta": -0.011
     }
   ],
   "position_state": {
@@ -77,7 +58,7 @@
       "held_days": 19,
       "weight_factor": 1.0,
       "level": "C",
-      "weight": 0.033488,
+      "weight": 0.003362,
       "score_recovered": false
     },
     "SLV": {
@@ -101,7 +82,7 @@
       "held_days": 0,
       "weight_factor": 1.0,
       "level": "B",
-      "weight": 0.254299,
+      "weight": 0.025532,
       "score_recovered": false
     },
     "ITA": {
@@ -113,13 +94,25 @@
       "held_days": 0,
       "weight_factor": 1.0,
       "level": "C",
-      "weight": 0.012213,
+      "weight": 0.001226,
+      "score_recovered": false
+    },
+    "GLD": {
+      "entry_date": "2026-09-01",
+      "entry_price": 396.75,
+      "entry_score": 5.0,
+      "entry_threshold": 2.0,
+      "target_days": 63,
+      "held_days": 0,
+      "weight_factor": 1.0,
+      "level": "A",
+      "weight": 0.269879,
       "score_recovered": false
     }
   },
-  "turnover": 1.4425,
+  "turnover": 0.5398,
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-02T01:23:37",
+  "generated_at": "2026-09-03T01:26:27",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
