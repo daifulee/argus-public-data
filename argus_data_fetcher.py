@@ -1,5 +1,11 @@
 # 🔧 v3.9.6 (2026-08-14, S288): GPR_HIGH 실제 병합 — v3.9.5 설계 오류 정정. v3.9.5 는 '상류가 공급한 값을 통과만 한다' 고 전제했으나 fetcher 는 argus_fred_broad.csv 를 읽지 않는다(별개 파이프라인). 그 결과 첫 실행의 fail-safe 0 이 argus_data.csv 에 새겨졌고 이후 그 0 을 읽어 0 을 쓰는 자기참조 루프가 됐다 — 상류 261/420일 발화가 하류 0/415일 로 소실됐고 로그는 성공 메시지를 찍었다. 이제 상류 파일을 실제로 읽어 Date 기준 병합하고 기존 컬럼을 무조건 덮어쓴다(0 고착 해소). 실패 시 사유를 반드시 출력한다.
 # 🔧 v3.9.5 (2026-08-13, S288): GPR_HIGH 통과 배선 — CAND-EWZ_GPR_SIZING 소비용. 🚨 재계산하지 않는다 — fred_broad_gha v3 가 원본 달력 그리드(1985+)에서 산출한 값을 그대로 싣기만 한다. 이유: 확장 q90(min 500)은 argus_data.csv(수백 행)에서 영구 미성립이고, 영업일 그리드 rolling(30)은 달력 30일 정의와 어긋난다 — 초안에서 두 결함 모두 실측 적발 후 계산 위치를 상류로 이전했다(원칙 D: 소비층은 로직을 재구현하지 않는다). 컬럼 부재 시 fail-safe 0.
+# 🔧 v3.9.5 (2026-09-03, S290): 데이터 소거 근본 처방 3건 — REG-S290_1.
+#   ① FFILL_COLS 에 Yahoo 매크로 값 열 12종 편입 (종전 *_source 라벨만 보호 = 라벨 거짓 구조)
+#   ② 행 재생성 시 확정값 보존 (delete+recreate → 신규 우선 병합, 결측 자리만 복원)
+#   ③ 저장 직전 무결성 게이트 G1(라벨-값 정합) · G2(비단조 회귀 = 유효→NaN 차단)
+#   발단: 2026-09-03 실행이 2026-09-01 행 재생성 중 WTI 91.69 소거 → 엔진 ExSn WTI>90 미발동
+#         → GLD 허위 진입 27% (귀금속 97%). 엔진 무결함 · 데이터 레인 단독 결함.
 # 🔧 v3.9.4 (2026-08-13, S288): KIL_SUP 신설 — Crown #106 (WTI Kilian 공급발 게이트 완화) 소비용. Kilian(2009) 유가 3분해의 공급충격 대리 플래그를 데이터층에서 산출한다. 정의: KIL_SUP = (ΔWTI20>0) ∩ (ΔSPY20<0) ∩ NOT(ΔWTI20>0 ∩ ΔCOPX20>0 ∩ PMI>50). 엔진은 컬럼 소비만 하며 부재/NaN 시 fail-safe 기존 동작(identity Δ=0 실증). 신규 수집 소스 0건 — 기보유 4컬럼(WTI/SPY_Close/COPX_Close/PMI) 조합. A5 강건성: Δ창 10~20일 고원(+0.87/+0.78p) · PMI 조건 제거해도 효과 동일(+0.780p) → PMI 결측 무해. 아키텍처 = SMH_TRIFLAG(v3.6) · PDBC(v3.9.3) 선례 준용 (자기치유 + fail-safe 0).
 # 🔧 v3.9.3 (2026-07-25, S280): PDBC 21번째 종목 편입 + 범용 ETF 백필 신설 — 신규 티커 전체 이력 자동 백필(근본 처방).
 # 🔧 v3.9.1 (2026-07-23, S279): 버전 표기 단일 원천화 — 배너·docstring 고정 문자열 제거.
@@ -463,7 +469,14 @@ LIVE_SOURCE_COLS = [
 ]
 
 # 🌟 v2.12: LIVE_SOURCE_COLS 모두 ffill (source는 매일 갱신되지만 결측 시 어제 source 보존)
-FFILL_COLS = FFILL_COLS + LIVE_SOURCE_COLS
+# 🔧 v3.9.5 (S290, REG-S290_1): Yahoo 매크로 '값' 열 ffill 보호 편입.
+#   결함: 종전 FFILL_COLS 는 *_source 라벨(LIVE_SOURCE_COLS)만 보호했다. Yahoo 단일 심볼
+#   실패 시 row[col] 미설정 → 값 NaN, row[col_source]='ffill' 라벨만 기록되어
+#   '라벨은 ffill 인데 값은 결측' 이라는 구조적 거짓이 성립했다 (2026-09-01 WTI/Brent/VIX3M 소거).
+#   v3.5(S218)가 ETF *_Close 는 ffill 에 편입했으나 매크로 값 열은 누락했다 — 그 누락의 정정.
+#   문서화된 4단 방어('4차: ffill')를 코드가 실제로 이행하게 만드는 변경이며 신규 개념 아님.
+YAHOO_MACRO_VALUE_COLS = list(YAHOO_MACRO.values())
+FFILL_COLS = FFILL_COLS + LIVE_SOURCE_COLS + YAHOO_MACRO_VALUE_COLS
 
 DEPRECATED_FRED = {"NAPM"}
 
@@ -2235,11 +2248,35 @@ def main():
         # 🌟 v3.2 (S197): target_dates 루프 (기본=오늘 1개 / backfill=N개)
         for _tgt in target_dates:
             _tgt_ts = pd.Timestamp(_tgt)
+            # 🔧 v3.9.5 (S290, REG-S290_1): 재생성 전 기존 행 보존.
+            #   결함: 종전은 기존 행을 삭제하고 새 fetch 결과로 통째 대체했다. 부분 실패(단일 심볼
+            #   무응답)가 발생하면 이미 확정된 값이 NaN 으로 덮여 영구 소거됐다. 실측 2026-09-03 실행이
+            #   2026-09-01 행을 재생성하며 WTI 91.69 / Brent 96.32 / VIX3M 18.33 을 소거했다.
+            #   처방: 신규 값 우선(LIVE 갱신 보장), 신규가 결측인 자리에만 기존 확정값 복원.
+            _prev_row = None
             if _tgt_ts in df.index:
-                df = df[df.index != _tgt_ts]  # 기존 행 제거 후 재생성
+                _sel = df.loc[_tgt_ts]
+                _prev_row = _sel.iloc[-1] if isinstance(_sel, pd.DataFrame) else _sel
+                df = df[df.index != _tgt_ts]
             _label = "백필" if is_backfill else "오늘"
             print(f"  📡 {_label} 행 수집 ({_tgt})...")
             new_row = fetch_today_row(target_date=_tgt, is_backfill=is_backfill)  # 🆕 v3.9 명시 전달
+            if _prev_row is not None:
+                _restored = []
+                for _c, _v in _prev_row.items():
+                    if _c == "Date":
+                        continue
+                    try:
+                        _missing = _c not in new_row or pd.isna(new_row[_c])
+                        _has_old = pd.notna(_v)
+                    except (TypeError, ValueError):
+                        continue
+                    if _missing and _has_old:
+                        new_row[_c] = _v
+                        _restored.append(_c)
+                if _restored:
+                    print(f"  🛡️ v3.9.5 확정값 복원 {len(_restored)}건: {_restored[:12]}"
+                          + (" ..." if len(_restored) > 12 else ""))
             new_df  = pd.DataFrame([new_row]).set_index("Date")
             new_df.index = pd.to_datetime(new_df.index)
             df = pd.concat([df, new_df]).sort_index()
@@ -2497,6 +2534,50 @@ def main():
         df["GPR_HIGH"] = 0.0
         print(f"  ⛑️ GPR_HIGH fail-safe 0 — 사유 {type(_e).__name__}: {_e}")
 
+
+    # 🔧 v3.9.5 (S290, REG-S290_1): 저장 직전 무결성 2종 검사 (자본 레인 보호).
+    #   G1 라벨-값 정합: _source 가 'ffill' 인데 값이 NaN 이면 4단 방어 미이행 = 라벨 거짓.
+    #   G2 비단조 회귀: 디스크의 확정값(유효)이 이번 산출에서 NaN 으로 바뀌면 소거 = 저장 차단.
+    #   ABORT_ON_INTEGRITY=0 으로 경고 전용 전환 가능 (기본 1 = 차단).
+    def _integrity_gate(_df):
+        _abort = os.getenv("ABORT_ON_INTEGRITY", "1").lower() not in ("0", "false", "no")
+        _viol = []
+        _last = _df.iloc[-1]
+        for _c in list(globals().get("YAHOO_MACRO_VALUE_COLS", [])) + list(FFILL_COLS):
+            _sc = f"{_c}_source"
+            if _c in _df.columns and _sc in _df.columns:
+                if str(_last.get(_sc)) == "ffill" and pd.isna(_last.get(_c)):
+                    _viol.append(f"G1 라벨거짓 {_c}: source=ffill 인데 값 NaN")
+        if os.path.exists(OUTPUT_PATH):
+            try:
+                _disk = pd.read_csv(OUTPUT_PATH, index_col=0, parse_dates=True).sort_index()
+                for _ts in _disk.index.intersection(_df.index):
+                    for _c in _disk.columns:
+                        if _c not in _df.columns:
+                            continue
+                        _o, _n = _disk.loc[_ts, _c], _df.loc[_ts, _c]
+                        if hasattr(_o, "__len__") and not isinstance(_o, str):
+                            continue
+                        try:
+                            if pd.notna(_o) and pd.isna(_n):
+                                _viol.append(f"G2 값소거 {_ts.date()} {_c}: {_o} → NaN")
+                        except (TypeError, ValueError):
+                            continue
+            except Exception as _e:
+                print(f"  ⚠️ G2 회귀 가드 대조 생략 — {type(_e).__name__}: {_e}")
+        if _viol:
+            print(f"\n🚨 무결성 위반 {len(_viol)}건:")
+            for _v in _viol[:20]:
+                print(f"    🔴 {_v}")
+            if len(_viol) > 20:
+                print(f"    ... 외 {len(_viol)-20}건")
+            if _abort:
+                raise SystemExit("🔴 v3.9.5 무결성 게이트 — 저장 차단 (확정값 소거·라벨 거짓 방지). "
+                                 "의도된 정정이면 ABORT_ON_INTEGRITY=0 으로 재실행.")
+            print("  ⚠️ ABORT_ON_INTEGRITY=0 — 경고만 하고 저장 진행")
+        else:
+            print("  ✅ v3.9.5 무결성 게이트 통과 (라벨-값 정합 · 값 소거 0건)")
+    _integrity_gate(df)
 
     print_quality(df)
     
