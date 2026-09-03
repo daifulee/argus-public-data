@@ -1,29 +1,16 @@
 {
  "date": "2026-09-01",
- "queue": 3,
- "grade": "3+",
- "base_f63": 5.94,
+ "queue": 1,
+ "grade": "1",
+ "base_f63": 2.79,
  "strong": [
-  {
-   "ticker": "XLU",
-   "score": 4.0,
-   "ratio": 4.0
-  },
-  {
-   "ticker": "GLD",
-   "score": 5.0,
-   "ratio": 2.5
-  },
   {
    "ticker": "PAVE",
    "score": 6.7,
    "ratio": 1.68
   }
  ],
- "super": [
-  "XLU",
-  "GLD"
- ],
+ "super": [],
  "held": [
   "ITA",
   "SLV",
@@ -34,15 +21,11 @@
  "eff_slots": 4.0,
  "pos_src": "ledger",
  "repro_held": [
-  "GLD",
-  "ITA",
-  "NLR",
-  "SLV",
-  "SMH"
+  "SLV"
  ],
  "engine": "PRIMA2_v0.5.43-XLU_SIZE16",
  "crown": "#110",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-09-03T01:26:02+00:00"
+ "generated_utc": "2026-09-03T02:14:12+00:00"
 }
