@@ -13,41 +13,28 @@
   },
   "rule_change": false,
   "target": {
-    "TLT": 0.0034,
+    "TLT": 0.0335,
     "SLV": 0.7,
-    "XLE": 0.0255,
-    "ITA": 0.0012,
-    "GLD": 0.2699
+    "XLE": 0.2543,
+    "ITA": 0.0122
   },
-  "gate_exits": [],
+  "gate_exits": [
+    {
+      "ticker": "ITA",
+      "type": "FULL",
+      "reason": "WTI>90",
+      "weight": 0.0122
+    }
+  ],
   "entries": [
     {
-      "ticker": "GLD",
-      "weight": 0.2699,
-      "score": 5.0,
+      "ticker": "ITA",
+      "weight": 0.0122,
+      "score": 1.7000000000000002,
       "threshold": 2.0
     }
   ],
-  "reweights": [
-    {
-      "ticker": "XLE",
-      "from": 0.2543,
-      "to": 0.0255,
-      "delta": -0.2288
-    },
-    {
-      "ticker": "TLT",
-      "from": 0.0335,
-      "to": 0.0034,
-      "delta": -0.0301
-    },
-    {
-      "ticker": "ITA",
-      "from": 0.0122,
-      "to": 0.0012,
-      "delta": -0.011
-    }
-  ],
+  "reweights": [],
   "position_state": {
     "TLT": {
       "entry_date": "2026-08-05",
@@ -58,7 +45,7 @@
       "held_days": 19,
       "weight_factor": 1.0,
       "level": "C",
-      "weight": 0.003362,
+      "weight": 0.033488,
       "score_recovered": false
     },
     "SLV": {
@@ -82,7 +69,7 @@
       "held_days": 0,
       "weight_factor": 1.0,
       "level": "B",
-      "weight": 0.025532,
+      "weight": 0.254299,
       "score_recovered": false
     },
     "ITA": {
@@ -94,25 +81,13 @@
       "held_days": 0,
       "weight_factor": 1.0,
       "level": "C",
-      "weight": 0.001226,
-      "score_recovered": false
-    },
-    "GLD": {
-      "entry_date": "2026-09-01",
-      "entry_price": 396.75,
-      "entry_score": 5.0,
-      "entry_threshold": 2.0,
-      "target_days": 63,
-      "held_days": 0,
-      "weight_factor": 1.0,
-      "level": "A",
-      "weight": 0.269879,
+      "weight": 0.012213,
       "score_recovered": false
     }
   },
-  "turnover": 0.5398,
+  "turnover": 0.0,
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-03T01:26:27",
+  "generated_at": "2026-09-03T02:14:38",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
