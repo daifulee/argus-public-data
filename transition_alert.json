@@ -1,6 +1,6 @@
 {
   "schema": "transition_alert/1.1",
-  "date": "2026-09-01",
+  "date": "2026-09-02",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
@@ -42,7 +42,7 @@
       "entry_score": 2.6,
       "entry_threshold": 2.5,
       "target_days": 126,
-      "held_days": 19,
+      "held_days": 20,
       "weight_factor": 1.0,
       "level": "C",
       "weight": 0.033488,
@@ -54,7 +54,7 @@
       "entry_score": 13.5,
       "entry_threshold": 3.0,
       "target_days": 189,
-      "held_days": 4,
+      "held_days": 5,
       "weight_factor": 1.0,
       "level": "S",
       "weight": 0.7,
@@ -66,15 +66,15 @@
       "entry_score": 3.9,
       "entry_threshold": 2.5,
       "target_days": 63,
-      "held_days": 0,
+      "held_days": 1,
       "weight_factor": 1.0,
       "level": "B",
       "weight": 0.254299,
       "score_recovered": false
     },
     "ITA": {
-      "entry_date": "2026-09-01",
-      "entry_price": 225.46,
+      "entry_date": "2026-09-02",
+      "entry_price": 223.37,
       "entry_score": 1.7,
       "entry_threshold": 2.0,
       "target_days": 42,
@@ -88,6 +88,6 @@
   "turnover": 0.0,
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-03T02:14:38",
+  "generated_at": "2026-09-04T01:21:44",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
