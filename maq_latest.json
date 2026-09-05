@@ -1,5 +1,5 @@
 {
- "date": "2026-09-02",
+ "date": "2026-09-03",
  "queue": 0,
  "grade": "0",
  "base_f63": -0.23,
@@ -15,7 +15,6 @@
  "eff_slots": 4.0,
  "pos_src": "ledger",
  "repro_held": [
-  "ITA",
   "PDBC",
   "SLV",
   "TLT"
@@ -24,5 +23,5 @@
  "crown": "#110",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-09-04T01:21:26+00:00"
+ "generated_utc": "2026-09-05T01:22:39+00:00"
 }
