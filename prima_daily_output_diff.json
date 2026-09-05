@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-02",
+  "date": "2026-09-03",
   "changed": false,
   "entered": [],
   "exited": [],
@@ -12,16 +12,15 @@
     "ITA": 0.0122
   },
   "src": "ledger",
-  "ledger_as_of": "2026-09-01",
+  "ledger_as_of": "2026-09-02",
   "repro_positions": {
     "SLV": 0.7,
-    "ITA": 0.1418,
-    "TLT": 0.0885,
-    "PDBC": 0.0697
+    "TLT": 0.1678,
+    "PDBC": 0.1322
   },
   "exposure": 1.0,
   "actions": "",
-  "repro_actions": "BUY TLT (SC4.5|B) ; BUY PDBC (SC4.3|B) ; BUY ITA (SC4.0|A)",
+  "repro_actions": "SELL ITA (WTI>90)",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-04T01:21:17Z"
+  "generated_utc": "2026-09-05T01:22:31Z"
 }
