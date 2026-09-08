@@ -13,10 +13,9 @@
   },
   "rule_change": false,
   "target": {
-    "TLT": 0.0335,
+    "TLT": 0.0349,
     "SLV": 0.7,
-    "XLE": 0.2543,
-    "ITA": 0.0122
+    "XLE": 0.2651
   },
   "gate_exits": [
     {
@@ -26,15 +25,15 @@
       "weight": 0.0122
     }
   ],
-  "entries": [
+  "entries": [],
+  "reweights": [
     {
-      "ticker": "ITA",
-      "weight": 0.0122,
-      "score": 1.7000000000000002,
-      "threshold": 2.0
+      "ticker": "XLE",
+      "from": 0.2543,
+      "to": 0.2651,
+      "delta": 0.0108
     }
   ],
-  "reweights": [],
   "position_state": {
     "TLT": {
       "entry_date": "2026-08-05",
@@ -45,7 +44,7 @@
       "held_days": 22,
       "weight_factor": 1.0,
       "level": "C",
-      "weight": 0.033488,
+      "weight": 0.034909,
       "score_recovered": false
     },
     "SLV": {
@@ -69,25 +68,13 @@
       "held_days": 3,
       "weight_factor": 1.0,
       "level": "B",
-      "weight": 0.254299,
-      "score_recovered": false
-    },
-    "ITA": {
-      "entry_date": "2026-09-04",
-      "entry_price": 225.61,
-      "entry_score": 1.7,
-      "entry_threshold": 2.0,
-      "target_days": 42,
-      "held_days": 0,
-      "weight_factor": 1.0,
-      "level": "C",
-      "weight": 0.012213,
+      "weight": 0.265091,
       "score_recovered": false
     }
   },
-  "turnover": 0.0,
+  "turnover": 0.0244,
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-08T07:02:14",
+  "generated_at": "2026-09-08T07:41:26",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
