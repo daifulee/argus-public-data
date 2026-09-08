@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-03",
+  "date": "2026-09-04",
   "changed": false,
   "entered": [],
   "exited": [],
@@ -12,7 +12,7 @@
     "ITA": 0.0122
   },
   "src": "ledger",
-  "ledger_as_of": "2026-09-02",
+  "ledger_as_of": "2026-09-03",
   "repro_positions": {
     "SLV": 0.7,
     "TLT": 0.1678,
@@ -20,7 +20,7 @@
   },
   "exposure": 1.0,
   "actions": "",
-  "repro_actions": "SELL ITA (WTI>90)",
+  "repro_actions": "",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-05T01:22:31Z"
+  "generated_utc": "2026-09-08T01:22:31Z"
 }
