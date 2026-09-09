@@ -895,17 +895,17 @@
     "date": "2026-09-04",
     "weights": {
       "GLD": 0.2,
-      "NLR": 0.172,
-      "SMH": 0.126,
-      "COPX": 0.1183,
-      "PAVE": 0.1097,
+      "NLR": 0.1723,
+      "SMH": 0.1257,
+      "COPX": 0.1182,
+      "PAVE": 0.1098,
       "SGOV": 0.1,
-      "XLU": 0.0937,
-      "CIBR": 0.0802
+      "XLU": 0.0939,
+      "CIBR": 0.0801
     },
     "source": "oracle_autopilot_v1.0.6",
     "n_pos": 8,
-    "logged_utc": "2026-09-08T08:54:13Z",
+    "logged_utc": "2026-09-09T01:30:42Z",
     "valid": true
   }
 ]
