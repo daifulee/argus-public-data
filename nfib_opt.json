@@ -4,7 +4,7 @@
   "source": "api.nfib-sbet.org getIndicators2 OPT_INDEX",
   "version": "seed_v1_0",
   "built": "2026-07-02 S247",
-  "last_update": "2026-08-12"
+  "last_update": "2026-09-09"
  },
  "series": [
   {
@@ -946,6 +946,10 @@
   {
    "asof": "2026-07-31",
    "opt": 99.55
+  },
+  {
+   "asof": "2026-08-31",
+   "opt": 98.19
   }
  ]
 }
