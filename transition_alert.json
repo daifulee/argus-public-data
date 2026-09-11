@@ -1,50 +1,22 @@
 {
-  "schema": "transition_alert/1.1",
+  "schema": "transition_alert/1.2",
   "date": "2026-09-09",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
-  "ledger_as_of": "2026-09-04",
+  "ledger_as_of": "2026-09-09",
   "prev": {
-    "TLT": 0.0335,
-    "SLV": 0.7,
-    "XLE": 0.2543,
-    "ITA": 0.0122
+    "TLT": 0.3,
+    "XLE": 0.7
   },
   "rule_change": false,
   "target": {
     "TLT": 0.3,
     "XLE": 0.7
   },
-  "gate_exits": [
-    {
-      "ticker": "SLV",
-      "type": "FULL",
-      "reason": "WTI>80",
-      "weight": 0.7
-    },
-    {
-      "ticker": "ITA",
-      "type": "FULL",
-      "reason": "WTI>90",
-      "weight": 0.0122
-    }
-  ],
+  "gate_exits": [],
   "entries": [],
-  "reweights": [
-    {
-      "ticker": "XLE",
-      "from": 0.2543,
-      "to": 0.7,
-      "delta": 0.4457
-    },
-    {
-      "ticker": "TLT",
-      "from": 0.0335,
-      "to": 0.3,
-      "delta": 0.2665
-    }
-  ],
+  "reweights": [],
   "position_state": {
     "TLT": {
       "entry_date": "2026-08-05",
@@ -71,9 +43,92 @@
       "score_recovered": false
     }
   },
-  "turnover": 1.4244,
+  "turnover": 0.0,
+  "engine_actionable": false,
+  "brokerage": {
+    "schema": "brokerage_transition/1.0",
+    "available": true,
+    "as_of_statement": "2026-09-09",
+    "market_as_of": "2026-09-09",
+    "positions": {
+      "SLV": {
+        "shares": 4391.0,
+        "price": 60.720001220703125,
+        "value": 266621.5253601074
+      },
+      "ITA": {
+        "shares": 298.0,
+        "price": 219.4499969482422,
+        "value": 65396.09909057617
+      }
+    },
+    "positions_value": 332017.6244506836,
+    "cash_amount": null,
+    "nav": null,
+    "exact_weighting": false,
+    "action_ready": false,
+    "current_weights": {},
+    "cash_weight": null,
+    "target_weights": {
+      "TLT": 0.30000000000000004,
+      "XLE": 0.7
+    },
+    "target_cash_weight": 0.0,
+    "orders": [
+      {
+        "ticker": "XLE",
+        "action": "NEW_BUY",
+        "shares": 0.0,
+        "current_weight": null,
+        "target_weight": 0.7,
+        "delta_weight": null,
+        "current_value": null,
+        "target_value": null,
+        "delta_value": null
+      },
+      {
+        "ticker": "TLT",
+        "action": "NEW_BUY",
+        "shares": 0.0,
+        "current_weight": null,
+        "target_weight": 0.30000000000000004,
+        "delta_weight": null,
+        "current_value": null,
+        "target_value": null,
+        "delta_value": null
+      },
+      {
+        "ticker": "ITA",
+        "action": "SELL_ALL",
+        "shares": 298.0,
+        "current_weight": null,
+        "target_weight": 0.0,
+        "delta_weight": null,
+        "current_value": 65396.09909057617,
+        "target_value": null,
+        "delta_value": null
+      },
+      {
+        "ticker": "SLV",
+        "action": "SELL_ALL",
+        "shares": 4391.0,
+        "current_weight": null,
+        "target_weight": 0.0,
+        "delta_weight": null,
+        "current_value": 266621.5253601074,
+        "target_value": null,
+        "delta_value": null
+      }
+    ],
+    "turnover_one_way": null,
+    "actionable": true,
+    "unresolved": [
+      "cash.amount"
+    ],
+    "note": "실보유 shares 가 주문 출발점. cash.amount 부재 시 포트 비중·달러 주문·회전율은 fail-closed 로 미산출한다."
+  },
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-11T02:56:50",
+  "generated_at": "2026-09-11T03:18:21",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
