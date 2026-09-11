@@ -1,21 +1,10 @@
 {
-  "date": "2026-09-09",
-  "changed": true,
-  "entered": [
-    {
-      "ticker": "TLT",
-      "weight": 0.3,
-      "reason": "신규 산출"
-    },
-    {
-      "ticker": "XLE",
-      "weight": 0.7,
-      "reason": "신규 산출"
-    }
-  ],
+  "date": "2026-09-10",
+  "changed": false,
+  "entered": [],
   "exited": [],
   "reweighted": [],
-  "change_reason": "신규 TLT(신규 산출), XLE(신규 산출)",
+  "change_reason": "산출 변화 없음",
   "positions": {
     "XLE": 0.7,
     "TLT": 0.3
@@ -23,12 +12,14 @@
   "src": "ledger",
   "ledger_as_of": "2026-09-09",
   "repro_positions": {
-    "TLT": 0.5593,
-    "PDBC": 0.4407
+    "SLV": 0.4851,
+    "ITA": 0.2692,
+    "TLT": 0.168,
+    "XLE": 0.0777
   },
   "exposure": 1.0,
   "actions": "",
-  "repro_actions": "",
+  "repro_actions": "SELL PDBC (WTI>100) ; BUY SLV (SC13.5|S) ; BUY ITA (SC4.0|A) ; BUY XLE (SC3.9|B)",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-11T03:18:00Z"
+  "generated_utc": "2026-09-11T04:13:34Z"
 }
