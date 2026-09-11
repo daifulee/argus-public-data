@@ -1,34 +1,46 @@
 # ════════════════════════════════════════════════════════════════════
-# 🦅 ARGUS Data Update — self-update (argus-public-data)
+# 🦅 ARGUS Data Update — v3.9.15 Migration Contract
 # ════════════════════════════════════════════════════════════════════
-# 목적: argus-public-data 레포가 "스스로" 데이터를 갱신 (cross-repo 인증 제거)
-#   ① argus_data_fetcher.py 실행 → argus_data.csv + daily/weekly/monthly
-#   ② make_latest_json.py 실행 → latest.json (csv 마지막 행, 형식 보존)
-#   ③ 변경분만 자기 레포에 commit + push (GITHUB_TOKEN)
+# 저장소: argus-public-data (PUBLIC)
 #
-# 인증 : GITHUB_TOKEN (같은 레포 쓰기) — PAT / Deploy Key 불필요 (S157 403 회피)
-# 시점 : 미국 평일 장 마감 후
-#        primary 22:17 UTC = KST 익일 07:17 / retry 23:17 UTC = KST 익일 08:17
-#        (여름 18:00 ET / 겨울 17:00 ET — 두 시점 모두 마감 후 → 거래일 정합)
-# 비용 : Actions Free 한도 내 (실행당 약 3~5분)
-# 정합 : 데이터 갱신·브리핑 분리 / 격언 #105 형식 보존 / #107 User-Agent
-# ─── 정체(오늘) 근본처방 (실행 outage 대응) ─────────────────────────
-#   🔧 cron :00 → :17 이동 — GitHub 정시(:00) 고부하 스케줄 드롭 완화.
-#   🔧 retry 23:17 UTC 추가 — primary 드롭 시 같은 저녁 재시도(거래일 동일 → 정합).
-#            primary 성공 시 retry 는 git diff 무변화로 자동 no-op (무해).
-#   🔧 backfill_start/end dispatch 입력 — 누락 거래일 소급 append (BACKFILL_START/END).
-#   ※ 자동 비활성화(60일) 방지 = argus_keepalive.yml, 정체 감지·알림 = argus_stall_alert.yml (분리 파일).
-# v3.7 : wsts_yoy.json commit 대상 추가 (S244 — WSTS 자동 수집 갱신분 영속화)
+# 핵심 계약
+#   NORMAL
+#     ① argus_data_fetcher.py 실행
+#     ② 마지막 완결 XNYS 세션 == argus_data.csv 말미를 강제 검증
+#     ③ latest.json 생성
+#     ④ PENDING_GENERATION.json 부재를 확인한 뒤 데이터만 commit
+#
+#   PREPARE_AND_MIGRATE (수동 1회 전용)
+#     A. make_migration_bundle.py — network 허용, 의존성 동결
+#     B/C/D. CALENDAR_MIGRATION_MODE=1 — network hard-off
+#     E. generation / CURRENT / baseline / public regular-file SHA 검증
+#     F. migration 증거를 PUBLIC repo에 commit
+#     ※ migration run에서는 정상 daily fetch를 이어서 실행하지 않는다.
+#        Crown BEFORE/AFTER 순수성을 보존한 뒤 NORMAL 수동 실행으로 최신 세션을 붙인다.
+#
+# P0 방어
+#   - fetcher가 migration_required에서 exit 0으로 반환해도 session freshness gate가 차단한다.
+#   - stale CSV는 latest.json/commit으로 정상 승격되지 않는다.
+#   - PENDING_GENERATION.json이 남아 있으면 어떤 commit도 금지한다.
+#   - migration_baseline_frozen.csv / migration_generations / CURRENT_GENERATION.json을 영속화한다.
 # ════════════════════════════════════════════════════════════════════
 
 name: 🦅 ARGUS Data Update
 
 on:
   schedule:
-    - cron: '17 22 * * 1-5'         # primary — 미 평일 장 마감 후 (KST 익일 07:17), :17 = 정시 드롭 완화
-    - cron: '17 23 * * 1-5'         # retry   — primary 드롭 대비 같은 저녁 재시도 (KST 익일 08:17)
-  workflow_dispatch:                 # 수동 즉시 실행 (정지 복구 / 소급 백필)
+    - cron: '17 22 * * 1-5'   # primary: 미국장 마감 후
+    - cron: '17 23 * * 1-5'   # retry
+  workflow_dispatch:
     inputs:
+      calendar_migration:
+        description: '캘린더 마이그레이션 모드'
+        required: true
+        default: 'off'
+        type: choice
+        options:
+          - 'off'
+          - 'prepare_and_migrate'
       backfill_force:
         description: '백필 강제 (cover<50% 컬럼 전체 재백필)'
         required: false
@@ -38,37 +50,37 @@ on:
           - 'false'
           - 'true'
       backfill_start:
-        description: '소급 백필 시작일 YYYY-MM-DD (누락 거래일 소급 append. end 와 함께 지정)'
+        description: '소급 백필 시작일 YYYY-MM-DD (end와 함께 지정)'
         required: false
         default: ''
         type: string
       backfill_end:
-        description: '소급 백필 종료일 YYYY-MM-DD (start 와 함께 지정)'
+        description: '소급 백필 종료일 YYYY-MM-DD (start와 함께 지정)'
         required: false
         default: ''
         type: string
 
 permissions:
-  contents: write                    # 자기 레포 commit / push
+  contents: write
 
 concurrency:
   group: argus-data-update
-  cancel-in-progress: false          # 진행 중 실행 보호 (데이터 정합)
+  cancel-in-progress: false
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
 
     steps:
       - name: 📥 Checkout argus-public-data
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 1
 
       - name: 🐍 Setup Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: 'pip'
@@ -77,8 +89,160 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          python - <<'PY'
+          import importlib.metadata as md
+          import exchange_calendars as xcals
+          v = md.version("exchange-calendars")
+          print("exchange-calendars =", v)
+          if v != "4.13.2":
+              raise SystemExit(f"exchange-calendars pin mismatch: {v} != 4.13.2")
+          print("XNYS =", xcals.get_calendar("XNYS").name)
+          PY
 
-      - name: 📡 데이터 수집 (fetcher v3.7)
+      - name: 🧭 실행 모드 확인
+        id: mode
+        shell: bash
+        run: |
+          MIG="${{ github.event.inputs.calendar_migration || 'off' }}"
+          if [[ "${{ github.event_name }}" != "workflow_dispatch" ]]; then
+            MIG="off"
+          fi
+          echo "migration=${MIG}" >> "$GITHUB_OUTPUT"
+          echo "calendar_migration=${MIG}"
+
+      # ═══════════════════════════════════════════════════════════════
+      # MIGRATION — 수동 1회 전용
+      # ═══════════════════════════════════════════════════════════════
+      - name: 📦 PHASE A — migration dependency bundle
+        if: steps.mode.outputs.migration == 'prepare_and_migrate'
+        run: |
+          test "${{ github.event_name }}" = "workflow_dispatch" || {
+            echo "::error::migration은 workflow_dispatch에서만 허용"
+            exit 1
+          }
+          python make_migration_bundle.py --fetcher argus_data_fetcher.py
+
+      - name: 🔒 PHASE B/C/D — calendar migration
+        if: steps.mode.outputs.migration == 'prepare_and_migrate'
+        env:
+          CALENDAR_MIGRATION_MODE: '1'
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          python argus_data_fetcher.py
+
+      - name: 🧪 Migration generation 검증
+        if: steps.mode.outputs.migration == 'prepare_and_migrate'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json, sys
+
+          root = Path(".")
+          pending = root / "PENDING_GENERATION.json"
+          if pending.exists():
+              raise SystemExit("PENDING_GENERATION.json 잔존 — commit 금지")
+
+          current_path = root / "CURRENT_GENERATION.json"
+          baseline = root / "migration_baseline_frozen.csv"
+          report = root / "calendar_integrity_report.json"
+
+          for p in (current_path, baseline, report):
+              if not p.is_file() or p.is_symlink():
+                  raise SystemExit(f"migration artifact 비정상: {p}")
+
+          cur = json.loads(current_path.read_text(encoding="utf-8"))
+          if cur.get("state") != "committed":
+              raise SystemExit(f"CURRENT state 비정상: {cur.get('state')!r}")
+
+          gen_rel = cur.get("generation_relpath")
+          hashes = cur.get("files_sha256") or {}
+          if not gen_rel or not hashes:
+              raise SystemExit("CURRENT_GENERATION.json 불완전")
+
+          gen = root / gen_rel
+          if not gen.is_dir():
+              raise SystemExit(f"generation dir 없음: {gen}")
+
+          required = (
+              "argus_data.csv",
+              "argus_data_daily.csv",
+              "argus_data_weekly.csv",
+              "argus_data_monthly.csv",
+              "migration_baseline_frozen.csv",
+              "calendar_integrity_report.json",
+          )
+
+          def sha(p):
+              h = hashlib.sha256()
+              with open(p, "rb") as f:
+                  for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          for name in required:
+              want = hashes.get(name)
+              if not want:
+                  raise SystemExit(f"CURRENT hash 누락: {name}")
+
+              gp = gen / name
+              pp = root / name
+              for label, p in (("generation", gp), ("public", pp)):
+                  if not p.is_file() or p.is_symlink():
+                      raise SystemExit(f"{label} regular-file 위반: {p}")
+                  got = sha(p)
+                  if got != want:
+                      raise SystemExit(
+                          f"{label} SHA 불일치 {name}: {got[:12]} != {want[:12]}"
+                      )
+
+          print("✅ migration generation/public SHA 전수 일치")
+          print("generation_id =", cur["generation_id"])
+          print("baseline_sha  =", sha(baseline))
+          print("after_sha     =", sha(gen / "argus_data.csv"))
+          PY
+
+      - name: 🧩 Migration latest.json 생성
+        if: steps.mode.outputs.migration == 'prepare_and_migrate'
+        run: python make_latest_json.py
+
+      - name: 💾 Migration 증거 commit + push
+        if: steps.mode.outputs.migration == 'prepare_and_migrate'
+        run: |
+          test ! -e PENDING_GENERATION.json || {
+            echo "::error::PENDING_GENERATION.json 잔존 — commit 금지"
+            exit 1
+          }
+
+          git config user.name  "argus-bot"
+          git config user.email "argus-bot@users.noreply.github.com"
+
+          git add \
+            argus_data.csv argus_data_daily.csv argus_data_weekly.csv argus_data_monthly.csv \
+            latest.json calendar_integrity_report.json \
+            CURRENT_GENERATION.json migration_baseline_frozen.csv \
+            migration_generations/ migration_inputs/
+
+          if git diff --staged --quiet; then
+            echo "::error::migration 실행 후 staged 변경 없음 — 비정상"
+            exit 1
+          fi
+
+          GEN_ID="$(python -c "import json;print(json.load(open('CURRENT_GENERATION.json'))['generation_id'])")"
+          git commit -m "🧭 calendar migration ${GEN_ID}"
+          git pull --rebase origin main
+          git push
+          echo "✅ migration 증거 push 완료: ${GEN_ID}"
+          echo ""
+          echo "🔒 여기서 의도적으로 종료한다."
+          echo "다음: PRIVATE Crown BEFORE=migration_baseline_frozen.csv"
+          echo "      PRIVATE Crown AFTER =migration_generations/${GEN_ID}/argus_data.csv"
+          echo "Crown 검증 후 이 workflow를 calendar_migration=off 로 수동 실행해 최신 세션을 붙인다."
+
+      # ═══════════════════════════════════════════════════════════════
+      # NORMAL DAILY / BACKFILL
+      # ═══════════════════════════════════════════════════════════════
+      - name: 📡 데이터 수집
+        if: steps.mode.outputs.migration == 'off'
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           BACKFILL_FORCE: ${{ github.event.inputs.backfill_force || 'false' }}
@@ -86,36 +250,154 @@ jobs:
           BACKFILL_END: ${{ github.event.inputs.backfill_end || '' }}
         run: python argus_data_fetcher.py
 
-      - name: 🧩 latest.json 생성 (argus_data.csv 마지막 행)
+      # 수동 historical backfill 후 현재 세션도 다시 동기화해 public head가 과거에 머무는 것을 막는다.
+      - name: 🔁 Backfill 후 현재 세션 동기화
+        if: >-
+          steps.mode.outputs.migration == 'off' &&
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.backfill_start != '' &&
+          github.event.inputs.backfill_end != ''
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          BACKFILL_FORCE: 'false'
+          BACKFILL_DATE: ''
+          BACKFILL_START: ''
+          BACKFILL_END: ''
+        run: python argus_data_fetcher.py
+
+      - name: 🕰️ XNYS completed-session freshness gate
+        if: steps.mode.outputs.migration == 'off'
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          import pandas as pd
+          import exchange_calendars as xcals
+
+          now = pd.Timestamp.now(tz="UTC")
+          cal = xcals.get_calendar("XNYS")
+
+          # 충분한 과거 구간에서 마지막 session close <= now를 고른다.
+          start = (now - pd.Timedelta(days=14)).date()
+          end = (now + pd.Timedelta(days=1)).date()
+          sessions = cal.sessions_in_range(start, end)
+
+          completed = []
+          for s in sessions:
+              close = cal.session_close(s)
+              if close <= now:
+                  completed.append((s, close))
+
+          if not completed:
+              raise SystemExit("XNYS completed session 계산 실패")
+
+          expected_session, expected_close = completed[-1]
+          expected = pd.Timestamp(expected_session).date()
+
+          df = pd.read_csv("argus_data.csv", usecols=["Date"])
+          if df.empty:
+              raise SystemExit("argus_data.csv 데이터 0행")
+          dates = pd.to_datetime(df["Date"], errors="coerce")
+          if dates.isna().any():
+              raise SystemExit("argus_data.csv Date 파싱 실패")
+          data_last = dates.max().date()
+
+          print("UTC now       :", now.isoformat())
+          print("XNYS expected :", expected, "(close", expected_close.isoformat() + ")")
+          print("CSV data_last :", data_last)
+
+          if data_last != expected:
+              mode = None
+              rp = Path("calendar_integrity_report.json")
+              if rp.is_file():
+                  try:
+                      mode = json.loads(rp.read_text(encoding="utf-8")).get("mode")
+                  except Exception:
+                      pass
+
+              if mode == "migration_required":
+                  raise SystemExit(
+                      "DATA STALE + CALENDAR MIGRATION REQUIRED — "
+                      f"csv={data_last} expected={expected}. "
+                      "Actions > ARGUS Data Update > Run workflow > "
+                      "calendar_migration=prepare_and_migrate 를 1회 실행할 것."
+                  )
+
+              raise SystemExit(
+                  "DATA STALE — 마지막 완결 XNYS 세션과 불일치: "
+                  f"csv={data_last} expected={expected}"
+              )
+
+          print("✅ SESSION FRESHNESS PASS")
+          PY
+
+      - name: 🧩 latest.json 생성
+        if: steps.mode.outputs.migration == 'off'
         run: python make_latest_json.py
 
+      - name: 🧷 Commit 전 generation 안전검사
+        if: steps.mode.outputs.migration == 'off'
+        run: |
+          test ! -e PENDING_GENERATION.json || {
+            echo "::error::PENDING_GENERATION.json 잔존 — mixed generation commit 금지"
+            exit 1
+          }
+
+          for f in argus_data.csv argus_data_daily.csv argus_data_weekly.csv argus_data_monthly.csv; do
+            test -f "$f" || { echo "::error::$f 부재"; exit 1; }
+            test ! -L "$f" || { echo "::error::$f symlink 금지"; exit 1; }
+          done
+          echo "✅ public data files = regular files"
+
       - name: 💾 변경분 commit + push
+        if: steps.mode.outputs.migration == 'off'
         run: |
           git config user.name  "argus-bot"
           git config user.email "argus-bot@users.noreply.github.com"
-          git add argus_data.csv latest.json \
-                  argus_data_daily.csv argus_data_weekly.csv argus_data_monthly.csv \
-                  wsts_yoy.json
+
+          git add \
+            argus_data.csv latest.json \
+            argus_data_daily.csv argus_data_weekly.csv argus_data_monthly.csv \
+            wsts_yoy.json
+
+          # fetcher 감사 산출물은 존재할 때 함께 영속화한다.
+          test -f calendar_integrity_report.json && git add calendar_integrity_report.json || true
+          test -f CURRENT_GENERATION.json && git add CURRENT_GENERATION.json || true
+
           if git diff --staged --quiet; then
-            echo "ℹ️ 변경 없음 — commit skip (휴장 / 동일 데이터 / retry no-op)"
+            echo "ℹ️ 변경 없음 — commit skip"
           else
-            git commit -m "📡 data: $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST') 자동 갱신 [skip ci]"
+            DATA_DATE="$(python - <<'PY'
+          import pandas as pd
+          d = pd.read_csv("argus_data.csv", usecols=["Date"])
+          print(pd.to_datetime(d["Date"]).max().date())
+          PY
+          )"
+            git commit -m "📡 data: ${DATA_DATE} session update [skip ci]"
             git pull --rebase origin main
             git push
-            echo "✅ push 완료"
+            echo "✅ push 완료 — ${DATA_DATE}"
           fi
 
       - name: 📊 실행 요약
         if: always()
         run: |
-          echo "## 🦅 ARGUS Data Update 결과" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- 실행 시각: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')" >> $GITHUB_STEP_SUMMARY
-          echo "- fetcher: v3.7 (WSTS 자동 수집 + SMH_TRIFLAG)" >> $GITHUB_STEP_SUMMARY
-          echo "- FRED_API_KEY: ${{ secrets.FRED_API_KEY != '' && '✅ 설정됨' || '⚠️ 미설정 (graph fallback 동작)' }}" >> $GITHUB_STEP_SUMMARY
-          if [ -n "${{ github.event.inputs.backfill_start }}" ]; then
-            echo "- 🕳️ 소급 백필: ${{ github.event.inputs.backfill_start }} ~ ${{ github.event.inputs.backfill_end }}" >> $GITHUB_STEP_SUMMARY
+          echo "## 🦅 ARGUS Data Update 결과" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 실행 시각: $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')" >> "$GITHUB_STEP_SUMMARY"
+          echo "- migration: ${{ steps.mode.outputs.migration || 'unknown' }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- exchange-calendars: $(python -c "import importlib.metadata as m; print(m.version('exchange-calendars'))" 2>/dev/null || echo '?')" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -f argus_data.csv ]; then
+            echo "- argus_data.csv Date: \`$(python -c "import pandas as pd;d=pd.read_csv('argus_data.csv',usecols=['Date']);print(pd.to_datetime(d['Date']).max().date())")\`" >> "$GITHUB_STEP_SUMMARY"
           fi
           if [ -f latest.json ]; then
-            echo "- latest.json Date: \`$(python -c "import json;print(json.load(open('latest.json'))['Date'])")\`" >> $GITHUB_STEP_SUMMARY
+            echo "- latest.json Date: \`$(python -c "import json;print(json.load(open('latest.json'))['Date'])")\`" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f CURRENT_GENERATION.json ]; then
+            echo "- generation: \`$(python -c "import json;d=json.load(open('CURRENT_GENERATION.json'));print(d.get('generation_id'),d.get('state'))")\`" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f calendar_integrity_report.json ]; then
+            echo "- calendar report mode: \`$(python -c "import json;print(json.load(open('calendar_integrity_report.json')).get('mode'))")\`" >> "$GITHUB_STEP_SUMMARY"
           fi
