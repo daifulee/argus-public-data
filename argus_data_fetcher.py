@@ -1,3 +1,22 @@
+# 🔧 v3.9.8 (2026-09-10, S290): 세션 캘린더 삭제 안전장치 — v3.9.7 감사 처방 4건.
+#   v3.9.7 의 캘린더 판정 자체는 정확하다(XNYS 회귀 7/7 통과). 위험은 그 판정을 신뢰할 수 없을 때 행을 지운다는 데 있었다.
+#   ① 삭제 권한 제한 — 유령행 삭제는 1순위 캘린더(exchange_calendars:XNYS)에서만 허용한다. fallback(yfinance SPY)은
+#      네트워크 최선노력 결과이며 부분 수신이면 진짜 거래일을 유령으로 지목한다. fallback 에서는 적발·보고만 하고 삭제하지 않는다.
+#   ② 밀도 가드 — _yf_series 는 예외를 삼키고 부분 Series 를 돌려준다. 영업일 대비 세션 90% 미만이면 부분 수신으로 보고 fail-closed.
+#   ③ 삭제 상한 — 유령 건수가 max(40, 전체의 10%) 를 넘으면 캘린더 오판 의심으로 중단한다.
+#   ④ 빈 DataFrame 경로 — v3.9.7 은 카운터 키를 만들지 않아 fail-closed 대신 KeyError 로 죽었다(실측). 키를 0 으로 채운다.
+#   ⑤ seed 경로 — 시드도 자기치유·결측복구를 거친다. v3.9.7 은 시드를 통과시켜, 시드에 결함이 있으면 부트스트랩이 영구 불가였다.
+#   실측 정정: LIVE argus_data.csv 는 431행이 아니라 432행이다(유령 16 · 결측 3 · 중복 0 → 정리 후 419행).
+#   기대 행수는 스냅샷마다 달라지므로 불변식으로 고정하지 않는다. 불변식은 오직 ghost=0 · missing=0 · duplicate=0 이다.
+#   ⚠️ 미검증: yfinance fallback 의 정상·부분 수신 동작. 검증 환경에서 Yahoo 접속이 차단되어 실행하지 못했다.
+#   자본 엔진 로직 변경 0건.
+# 🔧 v3.9.7 (2026-09-10, S290): US Equity Regular Session Calendar SSOT — 비세션 행/결측 세션 근본 차단.
+#   결함: is_nyse_open()이 주말 + 고정휴일(1/1·7/4·12/25)만 검사해 MLK·Presidents·Memorial·Juneteenth·Labor·Thanksgiving·Good Friday·임시휴장 등을 개장일로 오판.
+#   실측: LIVE argus_data.csv 431행 중 비세션 16건 · 정규장 결측 3건. 행 기반 held_days/rolling window 의미를 오염.
+#   처방: XNYS 정규장 캘린더(exchange_calendars 우선) → SPY 실제 거래세션(yfinance) fallback → 둘 다 실패 시 fail-closed.
+#         기존 비세션 행 자기치유 제거 + 결측 정규장 세션 기존 backfill 경로 자동 복구 + 저장 직전 ghost/missing/duplicate=0 강제.
+#         BACKFILL_DATE/START/END도 동일 세션 SSOT 사용. calendar_integrity_report.json을 매 실행 기록.
+#   자본 엔진 로직 변경 0건. 데이터 시간축 불변식: 1 row = 1 completed US equity regular session.
 # 🔧 v3.9.6 (2026-08-14, S288): GPR_HIGH 실제 병합 — v3.9.5 설계 오류 정정. v3.9.5 는 '상류가 공급한 값을 통과만 한다' 고 전제했으나 fetcher 는 argus_fred_broad.csv 를 읽지 않는다(별개 파이프라인). 그 결과 첫 실행의 fail-safe 0 이 argus_data.csv 에 새겨졌고 이후 그 0 을 읽어 0 을 쓰는 자기참조 루프가 됐다 — 상류 261/420일 발화가 하류 0/415일 로 소실됐고 로그는 성공 메시지를 찍었다. 이제 상류 파일을 실제로 읽어 Date 기준 병합하고 기존 컬럼을 무조건 덮어쓴다(0 고착 해소). 실패 시 사유를 반드시 출력한다.
 # 🔧 v3.9.5 (2026-08-13, S288): GPR_HIGH 통과 배선 — CAND-EWZ_GPR_SIZING 소비용. 🚨 재계산하지 않는다 — fred_broad_gha v3 가 원본 달력 그리드(1985+)에서 산출한 값을 그대로 싣기만 한다. 이유: 확장 q90(min 500)은 argus_data.csv(수백 행)에서 영구 미성립이고, 영업일 그리드 rolling(30)은 달력 30일 정의와 어긋난다 — 초안에서 두 결함 모두 실측 적발 후 계산 위치를 상류로 이전했다(원칙 D: 소비층은 로직을 재구현하지 않는다). 컬럼 부재 시 fail-safe 0.
 # 🔧 v3.9.5 (2026-09-03, S290): 데이터 소거 근본 처방 3건 — REG-S290_1.
@@ -489,11 +508,15 @@ SEMI_SIGNAL_DEF = {
     "CONSUMER_ELEC": (("RSEAS", "R42343M163SCEN"), 45),
 }
 
-US_HOLIDAYS_FIXED = [
-    (1, 1),    # New Year's Day
-    (7, 4),    # Independence Day
-    (12, 25),  # Christmas
-]
+# ═══════════════════════════════════════════════════════════════════════════
+# 🔧 v3.9.7 (S290): 미국 주식 정규장 세션 캘린더 SSOT
+#   - PRIMARY: exchange_calendars XNYS (이동휴일·Good Friday·임시휴장 포함)
+#   - FALLBACK: yfinance SPY 실제 거래일 인덱스
+#   - 두 소스 모두 실패: fail-closed (행 날조/휴일 행 생성 금지)
+# ═══════════════════════════════════════════════════════════════════════════
+US_EQUITY_CALENDAR_NAME = "XNYS"
+SESSION_CALENDAR_REPORT_PATH = os.path.join(SCRIPT_DIR, "calendar_integrity_report.json")
+_SESSION_INDEX_CACHE = {}
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1060,13 +1083,228 @@ def _fetch_fg_4layer_defense(row: dict) -> tuple:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # 유틸 v2.2 (보존)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+def _norm_session_index(idx) -> pd.DatetimeIndex:
+    """세션 인덱스를 timezone 없는 자정 DatetimeIndex로 정규화."""
+    x = pd.DatetimeIndex(pd.to_datetime(idx, errors="coerce")).dropna()
+    if x.tz is not None:
+        x = x.tz_localize(None)
+    return pd.DatetimeIndex(x.normalize().unique()).sort_values()
+
+
+def _sessions_exchange_calendars(start, end):
+    """exchange_calendars XNYS 세션. 모듈 부재/범위 실패 시 예외를 호출부로 전달."""
+    import exchange_calendars as xcals
+    cal = xcals.get_calendar(US_EQUITY_CALENDAR_NAME)
+    ss = cal.sessions_in_range(pd.Timestamp(start).normalize(), pd.Timestamp(end).normalize())
+    return _norm_session_index(ss)
+
+
+def _sessions_yfinance_observed(start, end):
+    """SPY 실제 거래일을 세션 fallback으로 사용. 휴장일에는 관측 행 자체가 없다는 성질을 이용."""
+    s0 = pd.Timestamp(start).normalize() - pd.Timedelta(days=7)
+    e0 = pd.Timestamp(end).normalize() + pd.Timedelta(days=2)
+    ser = _yf_series("SPY", s0.strftime("%Y-%m-%d"), e0.strftime("%Y-%m-%d"))
+    if ser is None or len(ser) == 0:
+        raise RuntimeError("SPY 세션 fallback 데이터 0건")
+    idx = _norm_session_index(ser.index)
+    lo, hi = pd.Timestamp(start).normalize(), pd.Timestamp(end).normalize()
+    idx = idx[(idx >= lo) & (idx <= hi)]
+    # 🔧 v3.9.8 밀도 가드: _yf_series 는 예외를 삼키고 빈/부분 Series 를 돌려준다.
+    #   완전 실패(0건)는 위에서 막히지만 **부분 수신**은 걸러지지 않는다. 부분 수신을 그대로
+    #   세션 집합으로 쓰면 진짜 거래일이 유령으로 분류되어 삭제된다 — 되돌릴 수 없는 사고다.
+    #   미국 정규장은 영업일의 약 96%(연 252/261) 이므로, 영업일 대비 90% 미만이면
+    #   신뢰 불가로 보고 fail-closed 한다. 범위가 짧으면(영업일 5일 미만) 통계가 무의미하므로 면제.
+    _bdays = len(pd.bdate_range(lo, hi))
+    if _bdays >= 5:
+        _ratio = len(idx) / float(_bdays)
+        if _ratio < 0.90:
+            raise RuntimeError(
+                f"SPY 세션 fallback 밀도 미달 {len(idx)}/{_bdays} = {_ratio:.1%} "
+                "(부분 수신 의심) — 세션 집합으로 사용 금지")
+    return idx
+
+
+def get_us_equity_regular_sessions(start, end, *, return_source=False):
+    """[v3.9.7] 미국 상장 ETF 정규장 세션 SSOT.
+
+    우선순위:
+      1) exchange_calendars XNYS — 규칙/임시휴장 포함 정식 캘린더
+      2) yfinance SPY 실제 거래일 — 운영환경 무추가의존 fallback
+      3) 둘 다 실패 → RuntimeError (fail-closed)
+
+    주의: 단순 평일/고정휴일 계산으로 fallback하지 않는다. 그 방식이 본 결함의 원인이기 때문.
+    """
+    lo = pd.Timestamp(start).normalize()
+    hi = pd.Timestamp(end).normalize()
+    if lo > hi:
+        lo, hi = hi, lo
+    key = (str(lo.date()), str(hi.date()))
+    if key in _SESSION_INDEX_CACHE:
+        idx, source = _SESSION_INDEX_CACHE[key]
+        return (idx.copy(), source) if return_source else idx.copy()
+
+    errors = []
+    try:
+        idx = _sessions_exchange_calendars(lo, hi)
+        source = f"exchange_calendars:{US_EQUITY_CALENDAR_NAME}"
+    except Exception as e:
+        errors.append(f"exchange_calendars={type(e).__name__}:{e}")
+        try:
+            idx = _sessions_yfinance_observed(lo, hi)
+            source = "yfinance:SPY_observed_sessions"
+        except Exception as e2:
+            errors.append(f"yfinance={type(e2).__name__}:{e2}")
+            raise RuntimeError("US equity session calendar unavailable; " + " | ".join(errors))
+
+    idx = _norm_session_index(idx)
+    _SESSION_INDEX_CACHE[key] = (idx.copy(), source)
+    return (idx, source) if return_source else idx
+
+
 def is_nyse_open(d: date) -> bool:
-    """NYSE 영업일 여부 — 주말 + 미국 주요 휴일 단순 체크."""
-    if d.weekday() >= 5:
-        return False
-    if (d.month, d.day) in US_HOLIDAYS_FIXED:
-        return False
-    return True
+    """호환 wrapper. 실제 판정은 US Equity Regular Session SSOT를 사용."""
+    ts = pd.Timestamp(d).normalize()
+    sessions = get_us_equity_regular_sessions(ts, ts)
+    return bool(ts in sessions)
+
+
+def _calendar_integrity_snapshot(df: pd.DataFrame, stage: str) -> dict:
+    """현재 DataFrame의 세션 시간축 무결성을 측정. 데이터를 수정하지 않는다."""
+    if df is None or len(df) == 0:
+        # 🔧 v3.9.8: 카운터 키를 반드시 채운다. v3.9.7 은 이 분기에서 ghost_n/missing_n/
+        #   duplicate_n/nat_dates 를 만들지 않아, 빈 df 가 들어오면 fail-closed 대신
+        #   KeyError 로 죽었다 (실측: _sanitize → KeyError 'duplicate_n',
+        #   _enforce → KeyError 'ghost_n'). 의도한 차단과 예기치 못한 크래시는 다르다.
+        return {
+            "stage": stage, "rows": 0, "calendar_source": None,
+            "nat_dates": 0, "ghost_n": 0, "missing_n": 0, "duplicate_n": 0,
+            "ghost_dates": [], "missing_dates": [], "duplicate_dates": [],
+        }
+    idx_raw = pd.DatetimeIndex(pd.to_datetime(df.index, errors="coerce"))
+    bad_nat = int(idx_raw.isna().sum())
+    idx = _norm_session_index(idx_raw)
+    if len(idx) == 0:
+        raise RuntimeError("calendar audit: 유효 Date index 0건")
+    expected, source = get_us_equity_regular_sessions(idx.min(), idx.max(), return_source=True)
+
+    normalized_all = pd.DatetimeIndex(pd.to_datetime(df.index, errors="coerce"))
+    if normalized_all.tz is not None:
+        normalized_all = normalized_all.tz_localize(None)
+    normalized_all = normalized_all.normalize()
+    dup = normalized_all[normalized_all.duplicated(keep=False) & ~normalized_all.isna()]
+    duplicate_dates = sorted({str(x.date()) for x in dup})
+    actual_unique = _norm_session_index(normalized_all)
+    ghost = actual_unique.difference(expected)
+    missing = expected.difference(actual_unique)
+    return {
+        "stage": stage,
+        "rows": int(len(df)),
+        "start": str(idx.min().date()),
+        "end": str(idx.max().date()),
+        "calendar_source": source,
+        "nat_dates": bad_nat,
+        "ghost_n": int(len(ghost)),
+        "ghost_dates": [str(x.date()) for x in ghost],
+        "missing_n": int(len(missing)),
+        "missing_dates": [str(x.date()) for x in missing],
+        "duplicate_n": int(len(duplicate_dates)),
+        "duplicate_dates": duplicate_dates,
+    }
+
+
+def _write_calendar_integrity_report(report: dict):
+    """캘린더 감사 결과를 원자적으로 기록."""
+    payload = dict(report)
+    payload["generated_utc"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    tmp = SESSION_CALENDAR_REPORT_PATH + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    os.replace(tmp, SESSION_CALENDAR_REPORT_PATH)
+
+
+def _sanitize_non_session_rows(df: pd.DataFrame, stage="pre_fetch"):
+    """구버전에서 남은 비세션/중복 행을 제거. 신규 생성 차단과 별개인 1회성 자기치유 레인."""
+    snap = _calendar_integrity_snapshot(df, stage)
+    if snap.get("nat_dates", 0):
+        raise RuntimeError(f"Date index NaT {snap['nat_dates']}건 — 자동복구 금지")
+
+    work = df.copy()
+    work.index = pd.to_datetime(work.index, errors="raise").normalize()
+    if snap["duplicate_n"]:
+        print(f"  🧹 v3.9.7 중복 세션 정리 {snap['duplicate_n']}일: {snap['duplicate_dates']}")
+        work = work[~work.index.duplicated(keep="last")]
+
+    if snap["ghost_n"]:
+        # 🔧 v3.9.8 삭제 권한 제한. 행 삭제는 되돌릴 수 없으므로 **결정적 캘린더**에서만 허용한다.
+        #   fallback(yfinance SPY)은 네트워크 최선노력 결과이며, 부분 수신이면 진짜 거래일을
+        #   유령으로 지목한다. 그 상태에서 삭제하면 데이터가 사라진다.
+        #   fallback 에서는 적발·보고만 하고 삭제하지 않는다 — 조용히 넘어가지도 않는다.
+        _srcname = str(snap.get("calendar_source") or "")
+        _trusted = _srcname.startswith("exchange_calendars:")
+        _cap = max(40, int(len(work) * 0.10))
+        if not _trusted:
+            print(f"  🟡 v3.9.8 유령행 {snap['ghost_n']}건 적발했으나 삭제 보류 — "
+                  f"캘린더 소스가 1순위가 아니다({_srcname}). 목록: {snap['ghost_dates']}")
+            print("     처방: requirements 에 exchange_calendars 를 추가해 1순위 캘린더로 재실행.")
+        elif snap["ghost_n"] > _cap:
+            raise RuntimeError(
+                f"유령행 {snap['ghost_n']}건 > 상한 {_cap}건 — 캘린더 오판 의심으로 삭제 중단. "
+                f"목록 앞 10건: {snap['ghost_dates'][:10]}")
+        else:
+            print(f"  🧹 v3.9.8 비세션 유령행 자기치유 {snap['ghost_n']}건: {snap['ghost_dates']}")
+            work = work[~work.index.isin(ghosts := pd.DatetimeIndex(pd.to_datetime(snap["ghost_dates"])))]
+    work = work.sort_index()
+    work.index.name = "Date"
+    return work, snap
+
+
+def _repair_missing_session_rows(df: pd.DataFrame, missing_dates):
+    """정규장 결측을 기존 historical backfill 경로로 복구.
+
+    가격 앵커 SPY_Close를 실제로 확보하지 못한 날짜는 행을 만들지 않고 fail-closed한다.
+    macro/저빈도 열은 이후 apply_ffill_safety 및 기존 backfill 로직이 보강한다.
+    """
+    if not missing_dates:
+        return df, []
+    repaired = []
+    work = df.copy()
+    for ds in missing_dates:
+        d = pd.Timestamp(ds).date()
+        print(f"  🩹 v3.9.7 결측 정규장 세션 자동복구: {d}")
+        row = fetch_today_row(target_date=d, is_backfill=True)
+        spy = row.get("SPY_Close")
+        if spy is None or pd.isna(spy):
+            raise RuntimeError(f"{d} SPY_Close 확보 실패 — 결측 세션 행 생성 금지")
+        rdf = pd.DataFrame([row]).set_index("Date")
+        rdf.index = pd.to_datetime(rdf.index).normalize()
+        work = pd.concat([work[work.index != pd.Timestamp(d)], rdf]).sort_index()
+        repaired.append(str(d))
+    work.index.name = "Date"
+    return work, repaired
+
+
+def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, repaired_dates=None):
+    """저장 직전 강제 게이트. ghost/missing/duplicate가 하나라도 남으면 저장 차단."""
+    final = _calendar_integrity_snapshot(df, "pre_save_final")
+    report = {
+        "version": FETCHER_VER,
+        "invariant": "1 row = 1 completed US equity regular session",
+        "pre_repair": pre_snapshot,
+        "repaired_missing_dates": list(repaired_dates or []),
+        "final": final,
+    }
+    _write_calendar_integrity_report(report)
+    bad = final["ghost_n"] + final["missing_n"] + final["duplicate_n"] + final.get("nat_dates", 0)
+    if bad:
+        raise SystemExit(
+            "🔴 v3.9.7 SESSION INTEGRITY — 저장 차단: "
+            f"ghost={final['ghost_n']} missing={final['missing_n']} "
+            f"duplicate={final['duplicate_n']} NaT={final.get('nat_dates', 0)}. "
+            f"report={SESSION_CALENDAR_REPORT_PATH}"
+        )
+    print(f"  ✅ v3.9.7 세션 무결성 PASS — {final['rows']}행 · ghost 0 · missing 0 · duplicate 0 "
+          f"({final['calendar_source']})")
+    return final
 
 
 def _yf_batch(symbols: list, start: str, end: str) -> dict:
@@ -1937,9 +2175,10 @@ def _parse_date(s: str):
 
 
 def _resolve_target_dates():
-    """env로 처리 날짜 목록 결정.
+    """env로 처리 날짜 목록 결정 — v3.9.7부터 US Equity Regular Session SSOT 사용.
+
     우선순위: BACKFILL_DATE(단일) > BACKFILL_START+END(범위) > today(기본).
-    반환: (dates: list, is_backfill: bool)
+    반환: (dates: list[date], is_backfill: bool)
     """
     bf_date  = os.getenv("BACKFILL_DATE", "").strip()
     bf_start = os.getenv("BACKFILL_START", "").strip()
@@ -1950,6 +2189,9 @@ def _resolve_target_dates():
         if d is None:
             print(f"  🚨 BACKFILL_DATE 파싱 실패: '{bf_date}' (YYYY-MM-DD 필요) → today 대체")
             return [date.today()], False
+        if not is_nyse_open(d):
+            print(f"  ⏭️ BACKFILL_DATE {d} = 미국 주식 비세션 — 행 생성 금지")
+            return [], True
         return [d], True
 
     if bf_start and bf_end:
@@ -1959,11 +2201,9 @@ def _resolve_target_dates():
             return [date.today()], False
         if ds > de:
             ds, de = de, ds
-        days, cur = [], ds
-        while cur <= de:
-            if is_nyse_open(cur):
-                days.append(cur)
-            cur += timedelta(days=1)
+        sessions, source = get_us_equity_regular_sessions(ds, de, return_source=True)
+        days = [x.date() for x in sessions]
+        print(f"  📅 v3.9.7 BACKFILL 세션 해석: {len(days)}개 ({source})")
         return days, True
 
     return [date.today()], False
@@ -2226,8 +2466,20 @@ def main():
             print(f"  🕯️ v3.9 세션일 stamp: UTC today={today} → 마지막 거래일={_sess} (carry row 차단)")
         target_dates = [_sess]
 
+    _calendar_pre_snapshot = None
+    _calendar_repaired_dates = []
+
     if not os.path.exists(OUTPUT_PATH):
         df = build_seed()
+        # 🔧 v3.9.8: 시드도 자기치유·결측복구를 거친다.
+        #   v3.9.7 은 시드를 스냅샷만 찍고 통과시켜, 시드에 유령/결측이 하나라도 있으면
+        #   최종 게이트가 SystemExit 을 내고 **부트스트랩 자체가 영구 불가**였다.
+        df, _calendar_pre_snapshot = _sanitize_non_session_rows(df, stage="new_seed")
+        _seed_missing = _calendar_integrity_snapshot(df, "new_seed_after_cleanup").get("missing_dates", [])
+        if _seed_missing:
+            print(f"  🚨 v3.9.8 시드 정규장 결측 {len(_seed_missing)}건: {_seed_missing}")
+            df, _calendar_repaired_dates = _repair_missing_session_rows(df, _seed_missing)
+            df = apply_ffill_safety(df)
         # 시드는 SEED_DAYS 전체 history 포함 → backfill 날짜도 커버 (별도 fetch 불요)
     else:
         df    = pd.read_csv(OUTPUT_PATH, index_col=0, parse_dates=True)
@@ -2244,6 +2496,18 @@ def main():
                 print(f"  🧹 v3.9 carry row 제거 {len(_future)}건: "
                       f"{[str(x.date()) for x in _future]}")
                 df = df[df.index <= pd.Timestamp(_sess)]
+
+        # 🔧 v3.9.7 (S290): 기존 세션 시간축 자기치유 + 결측 정규장 세션 자동복구.
+        #   반드시 rolling/backfill/feature 계산보다 먼저 수행해 행 기반 lookback 오염을 차단한다.
+        df, _calendar_pre_snapshot = _sanitize_non_session_rows(df, stage="loaded_before_fetch")
+        _calendar_repaired_dates = []
+        _missing_pre = _calendar_integrity_snapshot(df, "after_ghost_cleanup").get("missing_dates", [])
+        if _missing_pre:
+            print(f"  🚨 v3.9.7 정규장 결측 {len(_missing_pre)}건 발견: {_missing_pre}")
+            df, _calendar_repaired_dates = _repair_missing_session_rows(df, _missing_pre)
+            # 복구 row의 저빈도/부분 fetch 결측은 기존 ffill 정책으로 보강
+            df = apply_ffill_safety(df)
+            print(f"  🩹 v3.9.7 결측 세션 복구 완료 {len(_calendar_repaired_dates)}건")
 
         # 🌟 v3.2 (S197): target_dates 루프 (기본=오늘 1개 / backfill=N개)
         for _tgt in target_dates:
@@ -2534,6 +2798,12 @@ def main():
         df["GPR_HIGH"] = 0.0
         print(f"  ⛑️ GPR_HIGH fail-safe 0 — 사유 {type(_e).__name__}: {_e}")
 
+
+    # 🔧 v3.9.7 (S290): 저장 직전 세션 시간축 강제 게이트.
+    #   비세션/결측/중복 중 하나라도 남으면 4개 CSV 저장 전 차단한다.
+    _enforce_final_session_integrity(
+        df, pre_snapshot=_calendar_pre_snapshot, repaired_dates=_calendar_repaired_dates
+    )
 
     # 🔧 v3.9.5 (S290, REG-S290_1): 저장 직전 무결성 2종 검사 (자본 레인 보호).
     #   G1 라벨-값 정합: _source 가 'ffill' 인데 값이 NaN 이면 4단 방어 미이행 = 라벨 거짓.
