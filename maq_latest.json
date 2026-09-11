@@ -1,13 +1,13 @@
 {
- "date": "2026-09-09",
+ "date": "2026-09-10",
  "queue": 2,
  "grade": "2",
  "base_f63": 3.41,
  "strong": [
   {
    "ticker": "SLV",
-   "score": 11.0,
-   "ratio": 3.67
+   "score": 12.5,
+   "ratio": 4.17
   },
   {
    "ticker": "ITA",
@@ -27,12 +27,14 @@
  "eff_slots": 2.0,
  "pos_src": "ledger",
  "repro_held": [
-  "PDBC",
-  "TLT"
+  "ITA",
+  "SLV",
+  "TLT",
+  "XLE"
  ],
  "engine": "PRIMA2_v0.5.43-XLU_SIZE16",
  "crown": "#110",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-09-11T03:18:06+00:00"
+ "generated_utc": "2026-09-11T04:13:41+00:00"
 }
