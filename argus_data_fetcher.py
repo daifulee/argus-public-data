@@ -1,3 +1,10 @@
+# 🔧 v3.9.16 (2026-09-11, S290): VIX3M EXACT-DATE SOURCE FALLBACK — Yahoo hole 차단.
+#   PHASE A 실환경에서 2026-07-28 ^VIX3M Yahoo exact-date bar 가 누락되어 MARKET_IMMUTABLE
+#   36열 중 35열만 동결되고 migration bundle 이 fail-closed 됐다. 전일값 대체는 금지다.
+#   FRED VXVCLS 는 Cboe S&P 500 3-Month Volatility Index 일별 종가의 공식 재게시이며,
+#   Yahoo exact-date 가 없을 때만 **동일 날짜 값**을 2순위로 사용한다. ffill/인접일 대체 0건.
+#   fallback 은 yf_value_on_exact_date() 내부에 두어 PHASE A와 production missing-session repair가
+#   동일 SSOT를 공유한다. 다른 MARKET_IMMUTABLE 심볼에는 영향 없음. 자본 엔진 로직 변경 0건.
 # 🔧 v3.9.15 (2026-09-11, S290): GIT-SAFE GENERATION — symlink 폐기 + 수렴형 실파일 commit.
 #   v3.9.14 의 generation+symlink pointer 는 로컬 파일시스템에서는 원자적이었지만 배포 매체가 git/raw 인
 #   ARGUS 에서는 계약이 보존되지 않았다. git 은 symlink 를 mode 120000 + 경로 문자열 blob 으로 저장하고,
@@ -1402,20 +1409,61 @@ def _market_repair_map():
     return MARKET_IMMUTABLE_COLS
 
 
-def yf_value_on_exact_date(symbol, d, window_days=7):
-    """그 날짜의 **실제 bar** 값만 돌려준다. 없으면 None.
+# 🔧 v3.9.16: Yahoo exact-date hole 이 확인된 시장지표의 권위 fallback.
+# 값은 반드시 같은 날짜 observation 이어야 하며 인접일/ffill 대체는 금지한다.
+EXACT_DATE_FRED_FALLBACK = {
+    "^VIX3M": "VXVCLS",  # CBOE S&P 500 3-Month Volatility Index, Daily Close
+}
 
-    🔴 'window 안 마지막 값'을 target date 값으로 간주하지 않는다. 그 습관이
-    미래/인접일 값을 다른 날짜로 stamp 하는 사고의 원인이다.
+
+def _fred_value_on_exact_date(series_id, d, window_days=7):
+    """FRED series 에서 target date 와 **정확히 같은 날짜** 값만 반환한다."""
+    lo = str(pd.Timestamp(d).date() - timedelta(days=window_days))
+    s = _fred_series(series_id, lo)
+    if s is None or len(s) == 0:
+        return None
+    try:
+        x = pd.Series(s).copy()
+        x.index = pd.to_datetime(x.index, errors="coerce")
+        if getattr(x.index, "tz", None) is not None:
+            x.index = x.index.tz_localize(None)
+        x.index = x.index.normalize()
+        target = pd.Timestamp(d).normalize()
+        hit = pd.to_numeric(x[x.index == target], errors="coerce").dropna()
+        if len(hit) == 0:
+            return None
+        v = float(hit.iloc[-1])
+        return v if np.isfinite(v) else None
+    except Exception:
+        return None
+
+
+def yf_value_on_exact_date(symbol, d, window_days=7):
+    """그 날짜의 **실제 bar/observation** 값만 돌려준다. 없으면 None.
+
+    Primary 는 Yahoo exact-date. v3.9.16부터 심볼별 권위 fallback이 등록된 경우에만
+    FRED exact-date를 2순위로 사용한다. 어느 경로도 인접일/ffill 값을 target date로
+    재라벨하지 않는다.
     """
     # 🔧 v3.9.12 P1-a: 시장데이터 취득을 _yf_batch 단일 경로로 합친다.
-    #   v3.9.11 은 daily/backfill 은 _yf_batch, repair 는 _yf_series 로 둘이었다.
-    #   둘 다 exact-date 를 지키므로 결과 결함은 없었으나 SSOT 주장과 구현이 달랐다.
     lo = str(pd.Timestamp(d).date() - timedelta(days=window_days))
     hi = str(pd.Timestamp(d).date() + timedelta(days=2))
     got = _yf_batch([symbol], lo, hi, exact_date=d)
     v = got.get(symbol)
-    return float(v) if v is not None and np.isfinite(v) else None
+    if v is not None and np.isfinite(v):
+        return float(v)
+
+    # 🔧 v3.9.16: Yahoo hole 이면 같은 날짜 FRED observation만 허용.
+    sid = EXACT_DATE_FRED_FALLBACK.get(symbol)
+    if sid:
+        fv = _fred_value_on_exact_date(sid, d, window_days=window_days)
+        if fv is not None:
+            print(f"    ✅ exact-date fallback {symbol} → FRED {sid}: "
+                  f"{pd.Timestamp(d).date()}={fv:.6g}")
+            return float(fv)
+        print(f"    ⚠️ exact-date fallback {symbol} → FRED {sid}도 동일 날짜 값 없음: "
+              f"{pd.Timestamp(d).date()}")
+    return None
 
 def _calendar_integrity_snapshot(df: pd.DataFrame, stage: str, *, primary_only=False) -> dict:
     """현재 DataFrame의 세션 시간축 무결성을 측정. 데이터를 수정하지 않는다.
