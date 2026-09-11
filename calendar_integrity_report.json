@@ -1,0 +1,54 @@
+{
+  "version": "v3.9.16",
+  "mode": "atomic_migration_transaction",
+  "invariant": "1 row = 1 completed US equity regular session",
+  "input_sha256": "227d92552a27f3edddc3f7830e1c5dc92a2be8755f47bb5fabfa3a079d6d0d65",
+  "output_sha256": "e249a3951e21e9f8b69c82aa5f5c52097872b50f5e087d89cfb5eac7c3f3b771",
+  "baseline_frozen_sha256": "977d14a4a18a0a1aef919e9abc8982d15a99057c155bb5a843eb5aa23250a69f",
+  "staged_sha256": {
+    "migration_baseline_frozen.csv": "977d14a4a18a0a1a",
+    "argus_data_daily.csv": "759f1c9550d2201d",
+    "argus_data_weekly.csv": "2e9db7ce23dc35ed",
+    "argus_data_monthly.csv": "b02a625684fce760",
+    "argus_data.csv": "e249a3951e21e9f8"
+  },
+  "calendar_source": "exchange_calendars:XNYS",
+  "ghost_removed_n": 16,
+  "missing_repaired_n": 3,
+  "missing_repair_source": "frozen_bundle",
+  "market_exact_repair_n": 53,
+  "pit_ffill_n": 60,
+  "pit_unresolved_n": 9,
+  "external_network_calls": 0,
+  "network_attempts": [],
+  "guard_scope": "PHASE_B_C_D",
+  "transform_seal": "normalize_frozen_view (BEFORE·AFTER 동일)",
+  "commit_seal": "immutable generation + pending convergence + CURRENT_GENERATION.json",
+  "dependency_sha256": {
+    "smh_prices.csv": "47af30daa8b09319",
+    "wsts_yoy.json": "cbc2aadd989aeb34",
+    "missing_market.csv": "ed03c5dc8b86cf26"
+  },
+  "dependency_parity": {
+    "checked": true,
+    "smh_triflag_diff_days": 0,
+    "rows": 433
+  },
+  "rows": 420,
+  "final": {
+    "stage": "pre_save_final",
+    "rows": 420,
+    "start": "2025-01-06",
+    "end": "2026-09-09",
+    "calendar_source": "exchange_calendars:XNYS",
+    "nat_dates": 0,
+    "ghost_n": 0,
+    "ghost_dates": [],
+    "missing_n": 0,
+    "missing_dates": [],
+    "duplicate_n": 0,
+    "duplicate_dates": []
+  },
+  "generation_id": "mig_20260911T041057Z_e249a3951e21",
+  "generated_utc": "2026-09-11T04:10:57Z"
+}

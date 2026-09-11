@@ -1,0 +1,46 @@
+{
+  "bundle_version": "2.0",
+  "phase": "A_PREPARE",
+  "purpose": "calendar migration 의 before/after 를 동일 입력으로 계산하기 위한 동결본",
+  "source_csv": "argus_data.csv",
+  "source_csv_sha256": "227d92552a27f3edddc3f7830e1c5dc92a2be8755f47bb5fabfa3a079d6d0d65",
+  "source_csv_rows": 433,
+  "calendar_source": "exchange_calendars:XNYS",
+  "ghost_dates": [
+    "2025-01-09",
+    "2025-01-20",
+    "2025-02-17",
+    "2025-05-26",
+    "2025-06-19",
+    "2025-07-04",
+    "2025-09-01",
+    "2025-11-27",
+    "2026-01-19",
+    "2026-02-16",
+    "2026-04-03",
+    "2026-05-02",
+    "2026-05-03",
+    "2026-05-25",
+    "2026-06-19",
+    "2026-07-03"
+  ],
+  "missing_dates": [
+    "2026-05-18",
+    "2026-05-19",
+    "2026-07-28"
+  ],
+  "smh_symbols": [
+    "MU",
+    "HYG",
+    "LQD"
+  ],
+  "smh_observed_through": "2026-09-10",
+  "wsts_entries": 180,
+  "generated_utc": "2026-09-11T04:10:55Z",
+  "source_sha256": {
+    "missing_market.csv": "ed03c5dc8b86cf263347875cd0df7f244afee8920df0b7540532311f211bc9bf",
+    "smh_prices.csv": "47af30daa8b09319b26e1f0dc041057489e689ea9ca93cf7f89e104a727101df",
+    "wsts_yoy.json": "cbc2aadd989aeb348ba6df8a12cca6549ee4171c979c3a2053c89ea9c812fa8b"
+  },
+  "note": "fetcher 는 이 해시를 현재 파일과 대조한다. 불일치 시 fail-closed. 원본 CSV 해시도 대조하므로 CSV 가 바뀌면 번들을 다시 만들어야 한다."
+}
