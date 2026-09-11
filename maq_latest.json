@@ -1,37 +1,18 @@
 {
  "date": "2026-09-09",
- "queue": 4,
- "grade": "3+",
- "base_f63": 5.94,
- "strong": [
-  {
-   "ticker": "SLV",
-   "score": 11.0,
-   "ratio": 3.67
-  },
-  {
-   "ticker": "ITA",
-   "score": 4.0,
-   "ratio": 2.0
-  },
-  {
-   "ticker": "TLT",
-   "score": 4.55,
-   "ratio": 1.82
-  },
-  {
-   "ticker": "XLE",
-   "score": 3.9,
-   "ratio": 1.56
-  }
- ],
- "super": [
+ "queue": 0,
+ "grade": "0",
+ "base_f63": -0.23,
+ "strong": [],
+ "super": [],
+ "held": [
   "ITA",
-  "SLV"
+  "SLV",
+  "TLT",
+  "XLE"
  ],
- "held": [],
  "slots_full": false,
- "eff_slots": 0.0,
+ "eff_slots": 4.0,
  "pos_src": "ledger",
  "repro_held": [
   "PDBC",
@@ -41,5 +22,5 @@
  "crown": "#110",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-09-11T02:20:55+00:00"
+ "generated_utc": "2026-09-11T02:56:24+00:00"
 }
