@@ -1,6 +1,6 @@
 {
   "schema": "transition_alert/1.2",
-  "date": "2026-09-09",
+  "date": "2026-09-10",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
@@ -24,7 +24,7 @@
       "entry_score": 2.6,
       "entry_threshold": 2.5,
       "target_days": 126,
-      "held_days": 24,
+      "held_days": 25,
       "weight_factor": 1.0,
       "level": "C",
       "weight": 0.3,
@@ -36,7 +36,7 @@
       "entry_score": 3.9,
       "entry_threshold": 2.5,
       "target_days": 63,
-      "held_days": 5,
+      "held_days": 6,
       "weight_factor": 1.0,
       "level": "B",
       "weight": 0.7,
@@ -49,20 +49,20 @@
     "schema": "brokerage_transition/1.0",
     "available": true,
     "as_of_statement": "2026-09-09",
-    "market_as_of": "2026-09-09",
+    "market_as_of": "2026-09-10",
     "positions": {
       "SLV": {
         "shares": 4391.0,
-        "price": 60.720001220703125,
-        "value": 266621.5253601074
+        "price": 57.5,
+        "value": 252482.5
       },
       "ITA": {
         "shares": 298.0,
-        "price": 219.4499969482422,
-        "value": 65396.09909057617
+        "price": 218.32000732421875,
+        "value": 65059.36218261719
       }
     },
-    "positions_value": 332017.6244506836,
+    "positions_value": 317541.8621826172,
     "cash_amount": null,
     "nav": null,
     "exact_weighting": false,
@@ -104,7 +104,7 @@
         "current_weight": null,
         "target_weight": 0.0,
         "delta_weight": null,
-        "current_value": 65396.09909057617,
+        "current_value": 65059.36218261719,
         "target_value": null,
         "delta_value": null
       },
@@ -115,7 +115,7 @@
         "current_weight": null,
         "target_weight": 0.0,
         "delta_weight": null,
-        "current_value": 266621.5253601074,
+        "current_value": 252482.5,
         "target_value": null,
         "delta_value": null
       }
@@ -129,6 +129,6 @@
   },
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-11T03:18:21",
+  "generated_at": "2026-09-11T04:13:55",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
