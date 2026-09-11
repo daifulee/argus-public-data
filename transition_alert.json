@@ -1,6 +1,6 @@
 {
   "schema": "transition_alert/1.1",
-  "date": "2026-09-04",
+  "date": "2026-09-09",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
@@ -13,11 +13,16 @@
   },
   "rule_change": false,
   "target": {
-    "TLT": 0.0349,
-    "SLV": 0.7,
-    "XLE": 0.2651
+    "TLT": 0.3,
+    "XLE": 0.7
   },
   "gate_exits": [
+    {
+      "ticker": "SLV",
+      "type": "FULL",
+      "reason": "WTI>80",
+      "weight": 0.7
+    },
     {
       "ticker": "ITA",
       "type": "FULL",
@@ -30,8 +35,14 @@
     {
       "ticker": "XLE",
       "from": 0.2543,
-      "to": 0.2651,
-      "delta": 0.0108
+      "to": 0.7,
+      "delta": 0.4457
+    },
+    {
+      "ticker": "TLT",
+      "from": 0.0335,
+      "to": 0.3,
+      "delta": 0.2665
     }
   ],
   "position_state": {
@@ -41,22 +52,10 @@
       "entry_score": 2.6,
       "entry_threshold": 2.5,
       "target_days": 126,
-      "held_days": 22,
+      "held_days": 24,
       "weight_factor": 1.0,
       "level": "C",
-      "weight": 0.034909,
-      "score_recovered": false
-    },
-    "SLV": {
-      "entry_date": "2026-08-26",
-      "entry_price": 61.59,
-      "entry_score": 13.5,
-      "entry_threshold": 3.0,
-      "target_days": 189,
-      "held_days": 7,
-      "weight_factor": 1.0,
-      "level": "S",
-      "weight": 0.7,
+      "weight": 0.3,
       "score_recovered": false
     },
     "XLE": {
@@ -65,16 +64,16 @@
       "entry_score": 3.9,
       "entry_threshold": 2.5,
       "target_days": 63,
-      "held_days": 3,
+      "held_days": 5,
       "weight_factor": 1.0,
       "level": "B",
-      "weight": 0.265091,
+      "weight": 0.7,
       "score_recovered": false
     }
   },
-  "turnover": 0.0244,
+  "turnover": 1.4244,
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-09T01:31:19",
+  "generated_at": "2026-09-11T02:56:50",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
