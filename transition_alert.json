@@ -46,7 +46,7 @@
   "turnover": 0.0,
   "engine_actionable": false,
   "brokerage": {
-    "schema": "brokerage_transition/1.0",
+    "schema": "brokerage_transition/1.1",
     "available": true,
     "as_of_statement": "2026-09-09",
     "market_as_of": "2026-09-10",
@@ -66,7 +66,7 @@
     "cash_amount": null,
     "nav": null,
     "exact_weighting": false,
-    "action_ready": false,
+    "orders_computable": false,
     "current_weights": {},
     "cash_weight": null,
     "target_weights": {
@@ -98,17 +98,6 @@
         "delta_value": null
       },
       {
-        "ticker": "SLV",
-        "action": "SELL_ALL",
-        "shares": 4391.0,
-        "current_weight": null,
-        "target_weight": 0.0,
-        "delta_weight": null,
-        "current_value": 252482.5,
-        "target_value": null,
-        "delta_value": null
-      },
-      {
         "ticker": "ITA",
         "action": "SELL_ALL",
         "shares": 298.0,
@@ -116,6 +105,17 @@
         "target_weight": 0.0,
         "delta_weight": null,
         "current_value": 65059.36218261719,
+        "target_value": null,
+        "delta_value": null
+      },
+      {
+        "ticker": "SLV",
+        "action": "SELL_ALL",
+        "shares": 4391.0,
+        "current_weight": null,
+        "target_weight": 0.0,
+        "delta_weight": null,
+        "current_value": 252482.5,
         "target_value": null,
         "delta_value": null
       }
@@ -129,6 +129,6 @@
   },
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-11T04:59:32",
+  "generated_at": "2026-09-11T06:38:25",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
