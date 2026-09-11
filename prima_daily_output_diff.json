@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-08",
+  "date": "2026-09-09",
   "changed": false,
   "entered": [],
   "exited": [],
@@ -14,7 +14,7 @@
   },
   "exposure": 1.0,
   "actions": "",
-  "repro_actions": "SELL SLV (WTI>80)",
+  "repro_actions": "",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-10T01:26:09Z"
+  "generated_utc": "2026-09-11T01:26:52Z"
 }
