@@ -3,37 +3,25 @@
   "changed": true,
   "entered": [
     {
-      "ticker": "ITA",
-      "weight": 0.0122,
-      "reason": "신규 산출"
-    },
-    {
-      "ticker": "SLV",
-      "weight": 0.7,
-      "reason": "신규 산출"
-    },
-    {
       "ticker": "TLT",
-      "weight": 0.0335,
+      "weight": 0.3,
       "reason": "신규 산출"
     },
     {
       "ticker": "XLE",
-      "weight": 0.2543,
+      "weight": 0.7,
       "reason": "신규 산출"
     }
   ],
   "exited": [],
   "reweighted": [],
-  "change_reason": "신규 ITA(신규 산출), SLV(신규 산출), TLT(신규 산출), XLE(신규 산출)",
+  "change_reason": "신규 TLT(신규 산출), XLE(신규 산출)",
   "positions": {
-    "SLV": 0.7,
-    "XLE": 0.2543,
-    "TLT": 0.0335,
-    "ITA": 0.0122
+    "XLE": 0.7,
+    "TLT": 0.3
   },
   "src": "ledger",
-  "ledger_as_of": "2026-09-04",
+  "ledger_as_of": "2026-09-09",
   "repro_positions": {
     "TLT": 0.5593,
     "PDBC": 0.4407
@@ -42,5 +30,5 @@
   "actions": "",
   "repro_actions": "",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-11T02:56:15Z"
+  "generated_utc": "2026-09-11T03:18:00Z"
 }
