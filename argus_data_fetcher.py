@@ -1,3 +1,124 @@
+# 🔧 v3.9.15 (2026-09-11, S290): GIT-SAFE GENERATION — symlink 폐기 + 수렴형 실파일 commit.
+#   v3.9.14 의 generation+symlink pointer 는 로컬 파일시스템에서는 원자적이었지만 배포 매체가 git/raw 인
+#   ARGUS 에서는 계약이 보존되지 않았다. git 은 symlink 를 mode 120000 + 경로 문자열 blob 으로 저장하고,
+#   raw 소비자는 CSV 가 아니라 링크 문자열을 받으며, workflow 가 generation target 을 commit 하지 않으면 clone 에서
+#   broken link 가 된다. 또한 일일 to_csv 가 symlink 를 따라 immutable generation 내부를 덮어써 manifest sha 를 깨뜨렸다.
+#   ① P0-21 GIT/RAW SEAL — 공개 6종은 항상 **regular file**. symlink 를 사용하지 않는다.
+#   ② P0-22 IMMUTABLE GENERATION — daily/backfill 은 generation 을 절대 쓰지 않고 regular public file 만 갱신한다.
+#   ③ P0-23 CONVERGENT COMMIT — generation 은 증거/복구 SSOT 로 유지하고 CURRENT_GENERATION.json 을 메타 commit point 로 사용.
+#      실파일 승격은 PENDING_GENERATION.json 을 먼저 기록한 뒤 generation 에서 멱등 복사한다. 중단되면 다음 실행 시작 시
+#      pending 을 감지해 같은 generation 으로 수렴 복구한 후 CURRENT 를 확정한다.
+#   ④ v3.9.14 잔존 symlink 를 처음 실행 시 bytes 보존 상태로 regular file 로 탈출시킨다. broken symlink 는 fail-closed.
+#   ⑤ migration generation/manifest 는 daily write 와 물리적으로 분리되어 봉인 후 sha 가 변하지 않는다.
+#   자본 엔진 로직 변경 0건.
+# 🔧 v3.9.14 (2026-09-11, S290): ATOMIC POINTER — 마이그레이션 최종 봉인.
+#   ① P0-20 LOCAL-ONLY CALENDAR — migration audit/sanitize/final gate 는 exchange_calendars:XNYS 만 사용한다.
+#      yfinance calendar fallback 은 migration 에서 금지. network guard 진입 전에도 네트워크 경로 0.
+#   ② P0-19 GENERATION + CURRENT POINTER — 여러 파일의 순차 os.replace 를 commit 으로 부르지 않는다.
+#      검증된 generation directory 를 완성한 뒤 CURRENT symlink 하나만 os.replace 하여 전체 view 를 전환한다.
+#      기존 고정 파일명은 CURRENT/<filename> 을 가리키는 정적 symlink 로 변환해 하위호환을 유지한다.
+#   ③ P1-15 REPORT PURITY — migration 검증 중 정식 calendar_integrity_report.json 을 선기록하지 않는다.
+#      _enforce_final_session_integrity(write_report=False) 후 generation 내부 report 만 commit 한다.
+#   ④ pointer bootstrap 은 기존 파일 세트를 old generation 으로 먼저 봉인한 뒤 symlink view 를 설치한다.
+#      symlink 설치 도중 실패해도 old bytes 와 동일한 generation 을 보므로 데이터 의미는 바뀌지 않는다.
+#   자본 엔진 로직 변경 0건.
+# 🔧 v3.9.13 (2026-09-11, S290): ATOMIC MIGRATION — 세 개의 봉인.
+#   v3.9.12 의 'external_network_calls = 0' 은 **여전히** 프로세스 전체의 증명이 아니었다.
+#   migration 분기가 main() 중반에 있어, 거기 닿기 전에 resolve_session_date() 가
+#   _yf_series() → yf.download() 로 Yahoo 를 호출했다.
+#   ① ENTRY SEAL — CALENDAR_MIGRATION_MODE 는 main() 최상단에서 분기해 daily/backfill
+#      session resolution 을 통째로 우회한다. run_calendar_migration() 전용 진입점.
+#   ② TRANSFORM SEAL — BEFORE·AFTER 가 normalize_frozen_view() 하나를 공유한다.
+#      v3.9.12 는 AFTER 만 apply_ffill_safety() 를 거쳤다. 이 함수는 새 행만 채우는 것이 아니라
+#      FFILL_COLS + 전 *_Close 를 **전 history 소급 보강**하므로, 기존 CSV 에 과거 NaN 이 있으면
+#      Crown Δ 에 ffill normalization effect 가 섞였다. 이제 차이는 structural calendar transform 뿐.
+#   ③ COMMIT SEAL — 전 산출물을 migration_stage/*.tmp 에 쓰고, 무결성·네트워크·파일 검증을
+#      모두 통과한 뒤 os.replace 로 원자 승격한다. v3.9.12 는 baseline 을 먼저 정식 경로에 쓰고
+#      4개 CSV 를 순차로 덮어써서 중간 실패 시 NEW/OLD 혼재가 가능했다.
+#   ④ P1-12 가드 범위를 PHASE D 까지 (guard_scope = PHASE_B_C_D). 네트워크 시도가 1건이라도
+#      기록되면 승격을 중단한다.
+#   ⑤ P1-13 _load_wsts_series() 가 parse_wsts_yoy_json() 에 실제로 위임한다 (복제 제거).
+#   ⑥ P1-14 번들 품질 게이트 — MU/HYG/LQD 유효 행수 >= SMH_BUNDLE_MIN_ROWS(400),
+#      인덱스 중복·비단조 금지. manifest.missing_dates ↔ missing_market.csv 양방향 정합 계약.
+#   자본 엔진 로직 변경 0건.
+# 🔧 v3.9.12 (2026-09-11, S290): MIGRATION SEAL — 마이그레이션을 트랜잭션으로 봉인한다.
+#   v3.9.11 의 'external_network_calls = 0' 은 거짓이었다. 가드가 _migration_only_finish 안에서만
+#   켜지는데, 결측 세션 복구(= Yahoo historical retrieval)는 그보다 **앞에서** 끝나 있었다.
+#   따라서 그 0 은 '마이그레이션 전체 무네트워크' 가 아니라 '그 함수 안에서만 0' 이었다.
+#   ① PHASE 분리 — A(PREPARE, 네트워크 허용, 별도 스크립트) / B(BASELINE REPLAY) /
+#      C(MIGRATE) / D(VERIFY). 가드는 B·C 전체를 감싼다. 결측 복구는 동결 번들에서 읽는다.
+#   ② P0-15 대칭성 — frozen dependency 를 after 에만 적용하면 Crown Δ 에 dependency refresh 가
+#      섞인다. **원 캘린더 + 동결 의존** 으로 baseline 을 먼저 만들어(migration_baseline_frozen.csv)
+#      **이행 캘린더 + 같은 동결 의존** 과 비교한다. 그래야 calendar-only Δ 다.
+#      추가로 기존 SMH_TRIFLAG 대비 dependency parity(diff_days)를 측정해 리포트에 남긴다.
+#   ③ P0-13 WSTS parser 공용화 — parse_wsts_yoy_json() 하나를 production 과 번들이 함께 쓴다.
+#      v3.9.11 번들 로더는 pd.read_json() 으로 DataFrame 을 돌려줬고, compute_smh_triflag 의
+#      float(iloc[-1]) 에서 TypeError → migration 이 예외를 삼켜 '기존 값 유지' 로 조용히 넘어갔다.
+#   ④ P0-14 WSTS 레포 루트 fallback 폐지 — 번들에 없으면 부분 번들로 보고 fail-closed.
+#      번들 생성과 마이그레이션 사이에 upstream 이 wsts 를 바꾸면 동결이 깨진다.
+#   ⑤ P1-b manifest 해시 **대조** — 기록만 하던 것을 현재 파일 해시와 비교한다. 불일치 fail-closed.
+#      원본 CSV 해시(source_csv_sha256)도 대조해 번들과 데이터의 짝을 강제한다.
+#   ⑥ P1-a yf_value_on_exact_date 가 _yf_batch(exact_date=) 를 쓰도록 통합 — 시장데이터 취득 단일 경로.
+#   자본 엔진 로직 변경 0건.
+# 🔧 v3.9.11 (2026-09-11, S290): 시간축 4계약 봉인 — 선언을 실행으로 바꾼다.
+#   SESSION CONTRACT   Date = completed XNYS session            (v3.9.9~10 에서 확립)
+#   MARKET CONTRACT    market value.Date == row.Date            🆕 단일 지점(_yf_batch)에서 강제
+#   REPAIR CONTRACT    MARKET_IMMUTABLE=exact / REVISION_SENSITIVE=PIT ffill / DERIVED=재계산
+#   MIGRATION CONTRACT network_calls = 0                        🆕 주석이 아니라 하드 가드
+#   ① _yf_batch(exact_date=) — 종전은 무조건 window 마지막 행을 채택했다. 요청 날짜에 bar 가
+#      없으면 인접일 값이 그 날짜로 stamp 된다(historical adjacent-bar misstamp). repair·backfill·
+#      daily 세 경로가 모두 이 함수를 쓰므로 여기서 Date ↔ bar identity 를 한 번만 계약한다.
+#      해당 날짜 bar 부재 시 그 심볼을 반환하지 않는다 → 기존 4단 ffill 이 'ffill' 라벨로 정직 처리.
+#   ② recompute_deterministic_derived() — DERIVED 재계산 SSOT. VIX_VIX3M_ratio · Net_Liquidity ·
+#      KIL_SUP. v3.9.10 은 ratio 를 재계산하지 않아, 복구행에서 VIX·VIX3M 은 actual 인데
+#      ratio 만 NaN 인 상태가 가능했다(FFILL_COLS 에도 없음). ffill 로 과거 derived 를 끌어오는 것은
+#      재계산이 아니라 carry 이며 계약 위반이다.
+#   ③ 🔴 v3.9.10 실행 결함 정정: `df = compute_kil_sup(df)` 는 반환이 Series 이므로 DataFrame 을
+#      통째로 덮어썼다. migration 경로가 저장까지 도달할 수 없었다. `df["KIL_SUP"] = ...` 로 교정.
+#   ④ 🔴 v3.9.10 계약 위반 정정: migration 이 compute_smh_triflag(prices=None) 를 호출해
+#      yf.download(["MU","HYG","LQD"]) 를 실제로 수행했다 — '외부 갱신 없음' 선언과 정반대.
+#      _network_guard 로 yfinance·requests·urllib 을 차단하고, SMH_TRIFLAG 는 동결된
+#      Migration Dependency Bundle(migration_inputs/)이 있을 때만 재계산한다. 없으면 재계산 생략.
+#   ⑤ migration report 확장: input/output sha256 · ghost_removed_n · missing_repaired_n ·
+#      market_exact_repair_n · pit_ffill_n · pit_unresolved_n · external_network_calls ·
+#      dependency_sha256.
+#   ⑥ seed 경로 _finalize_repair_provenance 누락 보완 (pit_ffill_pending 잔존 차단).
+#   자본 엔진 로직 변경 0건.
+# 🔧 v3.9.10 (2026-09-11, S290): 시간축 SSOT 완결 — 선언을 전 경로에서 참으로 만든다.
+#   v3.9.9 의 'completed session' 은 일일 경로에서만 성립했고 explicit backfill 은 우회했다.
+#   ① backfill completed-session 관통 — BACKFILL_DATE/START/END 전부 '이미 끝난 세션'만 통과.
+#      실측 결함: BACKFILL_DATE=미래 정상세션이 그대로 통과했다. 이제 제외 사유와 함께 걸러낸다.
+#      가격 회수는 yf_value_on_exact_date() 로 **요청 날짜의 실제 bar 만** 쓴다 —
+#      'window 안 마지막 값'을 다른 날짜로 stamp 하지 않는다.
+#   ② Repair Registry — 복구 정책을 열 이름 접미사가 아니라 열의 성질로 결정한다.
+#      MARKET_IMMUTABLE(ETF _Close + Yahoo 시장지표 12종) 은 그 날짜 actual 을 회수하고,
+#      하나라도 실패하면 fail-closed 한다. v3.9.9 는 ETF 만 회수해 WTI·VIX·DXY·TNX 를
+#      전일값으로 ffill 했고, 그러면 WTI>90 게이트·KIL_SUP·VIX·DXY·TNX 판정이 달라진다.
+#      REVISION_SENSITIVE 는 전진 ffill 만, DERIVED 는 원자료 복구 후 재계산.
+#      FFILL_COLS 에 FRED 값 열(DFII10·T10YIE·T5YIE·DGS10·T10Y3M·T10Y2Y·USD_CNY) 편입 —
+#      빠져 있던 탓에 'ffill 로 채워진다'는 표기가 거짓이 될 수 있었다.
+#      provenance 를 ffill 이후에 확정한다: market_historical / pit_ffill_repair / pit_unresolved.
+#   ③ CALENDAR_MIGRATION_ONLY — 마이그레이션은 파일 안 자료만으로 결정적 재계산 후 종료한다.
+#      v3.9.9 는 이어서 LIVE fetch·Shiller·WSTS·GPR 갱신까지 실행해 Crown 전후 차이의
+#      인과 귀속을 파괴했다.
+#   ④ 장중 daily run 은 종료하지 않고 마지막 완료 세션으로 내려간다 (멱등 · 가용성 회복).
+#   ⑤ 잘못된 BACKFILL 입력은 'today 실행'이 아니라 fail-closed.
+#   자본 엔진 로직 변경 0건.
+# 🔧 v3.9.9 (2026-09-11, S290): 시간축 SSOT 완성 — 완료 세션 보장 + PIT-safe 결측 복구.
+#   v3.9.8 까지도 '완료된 세션' 은 보장되지 않았다. is_nyse_open() 은 세션 여부만 답한다.
+#   ① completed-session SSOT — XNYS session_close 기준. 16:00 하드코딩 금지(조기폐장 실재:
+#      2026-11-27 · 2026-12-24 는 13:00 ET 마감). last_completed_us_equity_session() 신설.
+#      이 함수는 fetcher · 잔여보유일 계산기 · 브리핑 MARKET_LAG · artifact freshness 공용 SSOT 다.
+#   ② PIT-safe 결측 복구 — 과거 결측일에 fetch_today_row() 로 행 전체를 만들지 않는다.
+#      macro 는 개정되므로 현재 vintage 가 과거 행에 주입되고 rolling 으로 전파된다(오염 반경 > 1일).
+#      가격 계층만 실제 과거값으로 복구하고 macro 는 NaN → 전진 ffill 로 채운다. provenance 표기.
+#      가격 앵커 SPY_Close 미확보 시 행 생성 금지(fail-closed).
+#   ③ ECY/CAPE 의 .bfill() 제거 — 첫 Shiller 관측 이전 행에 미래값을 역주입하고 있었다.
+#   ④ fallback diagnostic-only — 삭제·결측복구·무결성 PASS·저장 전부 금지. density 90% 가드는
+#      100 영업일 중 5세션 누락(95%)을 통과시키므로 PASS 근거가 될 수 없다.
+#   ⑤ CALENDAR_MIGRATION_MODE — 역사 재계산을 일일 실행에서 분리. 미설정 시 유령/결측 발견하면
+#      보고만 하고 파일을 변경하지 않는다.
+#   자본 엔진 로직 변경 0건.
 # 🔧 v3.9.8 (2026-09-10, S290): 세션 캘린더 삭제 안전장치 — v3.9.7 감사 처방 4건.
 #   v3.9.7 의 캘린더 판정 자체는 정확하다(XNYS 회귀 7/7 통과). 위험은 그 판정을 신뢰할 수 없을 때 행을 지운다는 데 있었다.
 #   ① 삭제 권한 제한 — 유령행 삭제는 1순위 캘린더(exchange_calendars:XNYS)에서만 허용한다. fallback(yfinance SPY)은
@@ -336,7 +457,7 @@ v2.6 → v2.7 인터페이스 호환:
   · 호출: python argus_data_fetcher.py (동일)
   · 핵심: 부분 가용 컬럼 자동 백필 (cover < 50% 시 자동 재백필)
 """
-import os, sys, time, json, warnings
+import os, sys, time, json, warnings, shutil, uuid
 from datetime import datetime, date, timedelta, timezone
 
 import urllib.request
@@ -495,7 +616,13 @@ LIVE_SOURCE_COLS = [
 #   v3.5(S218)가 ETF *_Close 는 ffill 에 편입했으나 매크로 값 열은 누락했다 — 그 누락의 정정.
 #   문서화된 4단 방어('4차: ffill')를 코드가 실제로 이행하게 만드는 변경이며 신규 개념 아님.
 YAHOO_MACRO_VALUE_COLS = list(YAHOO_MACRO.values())
-FFILL_COLS = FFILL_COLS + LIVE_SOURCE_COLS + YAHOO_MACRO_VALUE_COLS
+# 🔧 v3.9.10: FRED 값 열 편입. 종전 FFILL_COLS 에는 DFII10 · T10YIE · T5YIE · DGS10 ·
+#   T10Y3M · T10Y2Y · USD_CNY 가 빠져 있었다. 그 상태에서 PIT repair 가 '나머지는 전진
+#   ffill 로 채워진다' 고 표기하면 라벨이 거짓이 된다 — 일부는 NaN 으로 남는다.
+#   REVISION_SENSITIVE 계열은 전진 ffill 만 허용되며, 채워지지 않으면 그렇게 표기해야 한다.
+FRED_VALUE_COLS = [v for v in FRED_SERIES.values()]
+FFILL_COLS = FFILL_COLS + LIVE_SOURCE_COLS + YAHOO_MACRO_VALUE_COLS + \
+             [c for c in FRED_VALUE_COLS if c not in FFILL_COLS]
 
 DEPRECATED_FRED = {"NAPM"}
 
@@ -516,6 +643,8 @@ SEMI_SIGNAL_DEF = {
 # ═══════════════════════════════════════════════════════════════════════════
 US_EQUITY_CALENDAR_NAME = "XNYS"
 SESSION_CALENDAR_REPORT_PATH = os.path.join(SCRIPT_DIR, "calendar_integrity_report.json")
+# 🔧 v3.9.9: 역사 시간축 재구축은 명시적 모드에서만. 기본값 0 (일일 실행 보호).
+CALENDAR_MIGRATION_MODE = os.environ.get("CALENDAR_MIGRATION_MODE", "0") == "1"
 _SESSION_INDEX_CACHE = {}
 
 
@@ -1168,8 +1297,132 @@ def is_nyse_open(d: date) -> bool:
     return bool(ts in sessions)
 
 
-def _calendar_integrity_snapshot(df: pd.DataFrame, stage: str) -> dict:
-    """현재 DataFrame의 세션 시간축 무결성을 측정. 데이터를 수정하지 않는다."""
+
+# ══════════════════════════════════════════════════════════════════════
+# 🕰️ v3.9.9 [SESSIONSSOT] 완료 세션 단일 원천
+#   v3.9.8 까지의 불변식 선언은 "1 row = 1 completed US equity regular session" 이었으나
+#   코드가 실제로 보장한 것은 "1 row = 1 observed trading-date bar" 뿐이었다.
+#   is_nyse_open() 은 '그 날짜가 세션인가'만 답하고 '그 세션이 끝났는가'는 답하지 않는다.
+#   장중 수동 실행이나 워크플로 시간 변경 시 Yahoo 가 당일 daily bar 를 노출하면
+#   미완료 세션 행이 CSV 에 들어간다.
+#
+#   마감 시각을 16:00 으로 하드코딩하지 않는다 — 조기폐장이 존재한다.
+#   실측(XNYS 4.13.2): 2026-11-27 · 2026-12-24 는 13:00 ET 마감이다.
+#   따라서 캘린더가 주는 session_close 를 그대로 쓴다 (DST·조기폐장·휴장 한 소스 처리).
+#
+#   🎯 이 함수는 fetcher · 잔여보유일 계산기 · 브리핑 MARKET_LAG · artifact freshness 가
+#      함께 소비해야 하는 시간축 SSOT 다. 각자 구현하면 다시 갈라진다.
+# ══════════════════════════════════════════════════════════════════════
+def xnys_session_close(session_ts):
+    """해당 세션의 실제 마감 시각(tz-aware UTC). 세션이 아니면 None."""
+    try:
+        import exchange_calendars as xcals
+        cal = xcals.get_calendar(US_EQUITY_CALENDAR_NAME)
+        ts = pd.Timestamp(session_ts).normalize()
+        if not cal.is_session(ts):
+            return None
+        return pd.Timestamp(cal.session_close(ts))
+    except Exception:
+        return None
+
+
+def is_session_completed(session_ts, now_utc=None):
+    """그 세션이 이미 마감됐는가. 판정 불가 시 None (fail-closed 용).
+
+    반환: True(마감) / False(미마감·개장전·장중) / None(캘린더 판정 불가)
+    """
+    close = xnys_session_close(session_ts)
+    if close is None:
+        return None
+    now = pd.Timestamp(now_utc) if now_utc is not None else pd.Timestamp.now(tz="UTC")
+    if now.tzinfo is None:
+        now = now.tz_localize("UTC")
+    return bool(now >= close)
+
+
+def last_completed_us_equity_session(now_utc=None, lookback_days=14):
+    """지금 시점 기준 마지막 '완료된' 정규장 세션 날짜. 판정 불가 시 None.
+
+    정상일 마감(16:00 ET) 이전이면 전 거래일, 이후면 당일을 돌려준다.
+    조기폐장일에는 그 날의 실제 마감(예: 13:00 ET)을 기준으로 한다.
+    """
+    now = pd.Timestamp(now_utc) if now_utc is not None else pd.Timestamp.now(tz="UTC")
+    if now.tzinfo is None:
+        now = now.tz_localize("UTC")
+    try:
+        import exchange_calendars as xcals
+        cal = xcals.get_calendar(US_EQUITY_CALENDAR_NAME)
+    except Exception:
+        return None
+    hi = now.tz_convert("UTC").normalize().tz_localize(None)
+    lo = hi - pd.Timedelta(days=lookback_days)
+    try:
+        sessions = cal.sessions_in_range(lo, hi)
+    except Exception:
+        return None
+    for s in reversed(list(sessions)):
+        ts = pd.Timestamp(s).normalize()
+        if is_session_completed(ts, now_utc=now):
+            return ts.date()
+    return None
+
+
+# ══════════════════════════════════════════════════════════════════════
+# 🗂️ v3.9.10 [REPAIRREG] Repair Registry — 결측 복구 정책을 열 이름 접미사가 아니라
+#    열의 성질로 결정한다.
+#
+#    v3.9.9 는 `c.endswith("_Close")` 로 '가격 계층'을 정의했다. 그러면 ETF 종가만 복구되고
+#    WTI · VIX · DXY · TNX · MOVE · VIX3M · Brent · USD_KRW 등은 NaN 이 되어 전일값으로 ffill 된다.
+#    이들은 개정되는 macro 가 아니라 **그 날짜의 실제 시장 관측값**이며 역사적으로 다시 받을 수 있다.
+#    WTI actual(결측일) ≠ WTI 전일값 이므로 WTI>90 게이트 · KIL_SUP · VIX 조건 · DXY 게이트 ·
+#    TNX 조건의 판정 자체가 달라진다.
+#
+#    3분류:
+#      MARKET_IMMUTABLE   ETF _Close + Yahoo 시장지표 → 그 날짜 actual 을 회수한다
+#      REVISION_SENSITIVE FRED/설문 계열              → 회수 금지. 직전 알려진 값만 전진 ffill
+#      DERIVED            KIL_SUP · ratio · Net_Liquidity → 원자료 복구 후 재계산
+# ══════════════════════════════════════════════════════════════════════
+def build_repair_registry():
+    """열 → (분류, 회수 심볼). ETF_TICKERS·YAHOO_MACRO 를 단일 원천으로 파생한다."""
+    market = {}
+    for t in ETF_TICKERS:
+        market[f"{t}_Close"] = t
+    for sym, col in YAHOO_MACRO.items():
+        market[col] = sym
+    return market
+
+
+MARKET_IMMUTABLE_COLS = None   # 최초 호출 시 build_repair_registry() 로 채움
+
+
+def _market_repair_map():
+    global MARKET_IMMUTABLE_COLS
+    if MARKET_IMMUTABLE_COLS is None:
+        MARKET_IMMUTABLE_COLS = build_repair_registry()
+    return MARKET_IMMUTABLE_COLS
+
+
+def yf_value_on_exact_date(symbol, d, window_days=7):
+    """그 날짜의 **실제 bar** 값만 돌려준다. 없으면 None.
+
+    🔴 'window 안 마지막 값'을 target date 값으로 간주하지 않는다. 그 습관이
+    미래/인접일 값을 다른 날짜로 stamp 하는 사고의 원인이다.
+    """
+    # 🔧 v3.9.12 P1-a: 시장데이터 취득을 _yf_batch 단일 경로로 합친다.
+    #   v3.9.11 은 daily/backfill 은 _yf_batch, repair 는 _yf_series 로 둘이었다.
+    #   둘 다 exact-date 를 지키므로 결과 결함은 없었으나 SSOT 주장과 구현이 달랐다.
+    lo = str(pd.Timestamp(d).date() - timedelta(days=window_days))
+    hi = str(pd.Timestamp(d).date() + timedelta(days=2))
+    got = _yf_batch([symbol], lo, hi, exact_date=d)
+    v = got.get(symbol)
+    return float(v) if v is not None and np.isfinite(v) else None
+
+def _calendar_integrity_snapshot(df: pd.DataFrame, stage: str, *, primary_only=False) -> dict:
+    """현재 DataFrame의 세션 시간축 무결성을 측정. 데이터를 수정하지 않는다.
+
+    primary_only=True 이면 exchange_calendars:XNYS 만 허용한다.
+    migration 에서는 Yahoo calendar fallback 자체를 금지해 process-level network=0 계약을 지킨다.
+    """
     if df is None or len(df) == 0:
         # 🔧 v3.9.8: 카운터 키를 반드시 채운다. v3.9.7 은 이 분기에서 ghost_n/missing_n/
         #   duplicate_n/nat_dates 를 만들지 않아, 빈 df 가 들어오면 fail-closed 대신
@@ -1185,7 +1438,11 @@ def _calendar_integrity_snapshot(df: pd.DataFrame, stage: str) -> dict:
     idx = _norm_session_index(idx_raw)
     if len(idx) == 0:
         raise RuntimeError("calendar audit: 유효 Date index 0건")
-    expected, source = get_us_equity_regular_sessions(idx.min(), idx.max(), return_source=True)
+    if primary_only:
+        expected = _sessions_exchange_calendars(idx.min(), idx.max())
+        source = f"exchange_calendars:{US_EQUITY_CALENDAR_NAME}"
+    else:
+        expected, source = get_us_equity_regular_sessions(idx.min(), idx.max(), return_source=True)
 
     normalized_all = pd.DatetimeIndex(pd.to_datetime(df.index, errors="coerce"))
     if normalized_all.tz is not None:
@@ -1213,18 +1470,31 @@ def _calendar_integrity_snapshot(df: pd.DataFrame, stage: str) -> dict:
 
 
 def _write_calendar_integrity_report(report: dict):
-    """캘린더 감사 결과를 원자적으로 기록."""
+    """캘린더 감사 결과를 regular file 로 원자 기록.
+
+    🔧 v3.9.15: public artifact 는 git/raw 계약 때문에 symlink 를 금지한다. tmp regular file 을
+    같은 디렉터리에서 fsync 후 os.replace 한다.
+    """
     payload = dict(report)
     payload["generated_utc"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    tmp = SESSION_CALENDAR_REPORT_PATH + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
-    os.replace(tmp, SESSION_CALENDAR_REPORT_PATH)
+    dst = SESSION_CALENDAR_REPORT_PATH
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    tmp = dst + f".tmp.{os.getpid()}.{uuid.uuid4().hex[:8]}"
+    try:
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, dst)
+        _fsync_dir(os.path.dirname(dst) or ".")
+    finally:
+        if os.path.lexists(tmp):
+            os.remove(tmp)
 
 
-def _sanitize_non_session_rows(df: pd.DataFrame, stage="pre_fetch"):
+def _sanitize_non_session_rows(df: pd.DataFrame, stage="pre_fetch", *, primary_only=False):
     """구버전에서 남은 비세션/중복 행을 제거. 신규 생성 차단과 별개인 1회성 자기치유 레인."""
-    snap = _calendar_integrity_snapshot(df, stage)
+    snap = _calendar_integrity_snapshot(df, stage, primary_only=primary_only)
     if snap.get("nat_dates", 0):
         raise RuntimeError(f"Date index NaT {snap['nat_dates']}건 — 자동복구 금지")
 
@@ -1258,7 +1528,7 @@ def _sanitize_non_session_rows(df: pd.DataFrame, stage="pre_fetch"):
     return work, snap
 
 
-def _repair_missing_session_rows(df: pd.DataFrame, missing_dates):
+def _repair_missing_session_rows(df: pd.DataFrame, missing_dates, bundle=None):
     """정규장 결측을 기존 historical backfill 경로로 복구.
 
     가격 앵커 SPY_Close를 실제로 확보하지 못한 날짜는 행을 만들지 않고 fail-closed한다.
@@ -1266,26 +1536,813 @@ def _repair_missing_session_rows(df: pd.DataFrame, missing_dates):
     """
     if not missing_dates:
         return df, []
+
+    # 🔴 v3.9.9 [PIT] 계층 분리. v3.9.7~8 은 fetch_today_row(과거일) 로 **행 전체**를 만들었다.
+    #   가격은 그 날짜의 확정값이지만 macro 는 그렇지 않다 — PMI · UMCSENT · SAHMCURRENT ·
+    #   GPR 계열 · 다수 FRED 시리즈는 개정된다. 지금 호출하면 **현재 vintage** 가 들어간다.
+    #   즉 2026-05 행에 2026-09 정보가 삽입된다. 그 행 하나로 끝나지 않고
+    #   ROC · MA · momentum · KIL_SUP · rolling percentile 로 전파된다 —
+    #   PIT 오염 반경은 1일이 아니다.
+    #
+    #   처방: 가격 계층만 실제 과거값으로 복구하고, macro 는 비워 둔다.
+    #   비워 둔 자리는 이후 apply_ffill_safety 의 **전진 ffill** 이 직전 세션의 값으로 채운다 —
+    #   전진 ffill 은 그 시점에 이미 알려져 있던 값만 쓰므로 PIT 안전하다.
+    #   가격 앵커(SPY_Close) 조차 확보 못 하면 행을 만들지 않고 fail-closed 한다.
     repaired = []
     work = df.copy()
+    _mkt = _market_repair_map()
+    _frozen = None if bundle is None else bundle.get("missing_market")
     for ds in missing_dates:
         d = pd.Timestamp(ds).date()
-        print(f"  🩹 v3.9.7 결측 정규장 세션 자동복구: {d}")
-        row = fetch_today_row(target_date=d, is_backfill=True)
-        spy = row.get("SPY_Close")
-        if spy is None or pd.isna(spy):
-            raise RuntimeError(f"{d} SPY_Close 확보 실패 — 결측 세션 행 생성 금지")
-        rdf = pd.DataFrame([row]).set_index("Date")
-        rdf.index = pd.to_datetime(rdf.index).normalize()
+        _via = "동결 번들" if _frozen is not None else "네트워크 회수"
+        print(f"  🩹 v3.9.12 결측 세션 PIT-safe 복구: {d} ({_via})")
+        _px, _miss = {}, []
+        for _col, _sym in _mkt.items():
+            if _col not in work.columns:
+                continue
+            if _frozen is not None:
+                # 🔴 v3.9.12 P0-12: 마이그레이션 중에는 네트워크를 쓰지 않는다.
+                #   결측 복구 자체가 Yahoo historical retrieval 이므로, 가드를 나중에 켜면
+                #   'migration 전체 네트워크 0' 은 성립하지 않는다. 값은 미리 동결해 둔다.
+                _ts = pd.Timestamp(d)
+                _v = None
+                if _ts in _frozen.index and _col in _frozen.columns:
+                    _raw = _frozen.at[_ts, _col]
+                    if pd.notna(_raw):
+                        _v = float(_raw)
+            else:
+                _v = yf_value_on_exact_date(_sym, d)
+            if _v is None:
+                _miss.append(_col)
+            else:
+                _px[_col] = _v
+        if "SPY_Close" not in _px:
+            raise RuntimeError(
+                f"{d} SPY_Close 과거값 확보 실패 — 결측 세션 행 생성 금지 (fail-closed). "
+                "가격 앵커 없이 시간축을 메우지 않는다.")
+        # 🔴 MARKET_IMMUTABLE 은 전일값으로 대체하지 않는다. 그 날짜 actual 이 아니면
+        #    게이트 판정(WTI>90 · VIX · DXY · TNX)이 달라지므로 fail-closed 한다.
+        if _miss:
+            raise RuntimeError(
+                f"{d} 시장관측값 {len(_miss)}열 {'동결 번들에 없음' if _frozen is not None else '회수 실패'}"
+                f": {_miss[:12]} — MARKET_IMMUTABLE 은 전일값 대체를 허용하지 않는다 (fail-closed)."
+                + (" 번들을 다시 생성할 것 (PHASE A)." if _frozen is not None else ""))
+        row = {c: np.nan for c in work.columns}
+        row.update(_px)
+        # provenance — 회수한 것과 이후 전진 ffill 로 채울 것을 구분해 표기한다
+        for _sc in [c for c in work.columns if c.endswith("_source")]:
+            _base = _sc[:-len("_source")]
+            row[_sc] = "market_historical" if _base in _px else "pit_ffill_pending"
+        rdf = pd.DataFrame([row], index=[pd.Timestamp(d)])
+        rdf.index.name = "Date"
         work = pd.concat([work[work.index != pd.Timestamp(d)], rdf]).sort_index()
         repaired.append(str(d))
+        print(f"     MARKET_IMMUTABLE {len(_px)}열 actual 회수 · "
+              f"나머지 {len(work.columns)-len(_px)}열 전진 ffill 대기")
     work.index.name = "Date"
     return work, repaired
 
 
-def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, repaired_dates=None):
+
+def _finalize_repair_provenance(df, repaired_dates):
+    """ffill 이후, 실제로 채워졌는지 보고 provenance 를 정직하게 확정한다.
+
+    pit_ffill_pending → 값이 있으면 pit_ffill_repair / 여전히 NaN 이면 pit_unresolved.
+    '채워졌다'고 라벨만 붙이고 값이 비어 있는 구조적 거짓을 만들지 않는다.
+    """
+    if not repaired_dates:
+        return df
+    idx = [pd.Timestamp(x) for x in repaired_dates]
+    scols = [c for c in df.columns if c.endswith("_source")]
+    unresolved = {}
+    for d in idx:
+        if d not in df.index:
+            continue
+        for sc in scols:
+            if str(df.at[d, sc]) != "pit_ffill_pending":
+                continue
+            base = sc[:-len("_source")]
+            ok = base in df.columns and pd.notna(df.at[d, base])
+            df.at[d, sc] = "pit_ffill_repair" if ok else "pit_unresolved"
+            if not ok:
+                unresolved.setdefault(str(d.date()), []).append(base)
+    if unresolved:
+        print(f"  🟡 v3.9.10 복구행 미해결 열: {unresolved}")
+        print("     (직전 알려진 값이 없어 전진 ffill 로 채울 수 없었다 — 현재 vintage 주입 금지 원칙 유지)")
+    return df
+
+
+
+# ══════════════════════════════════════════════════════════════════════
+# ♻️ v3.9.11 [DERIVED SSOT] 결정적 파생 재계산 단일 함수
+#    원자료가 바뀌면 파생도 다시 만들어야 한다. ffill 로 과거 derived 값을 끌어오는 것은
+#    '재계산'이 아니라 'carry' 이며 설계 계약과 다르다.
+#    실례: 결측 세션 복구 행은 VIX · VIX3M 이 그 날짜 actual 인데
+#          VIX_VIX3M_ratio 는 NaN 으로 남고 FFILL_COLS 에도 없어 영영 비어 있었다.
+# ══════════════════════════════════════════════════════════════════════
+def recompute_deterministic_derived(df):
+    """파일 안 자료만으로 결정적으로 재계산 가능한 파생을 다시 만든다. 네트워크 0."""
+    done = []
+    if "VIX" in df.columns and "VIX3M" in df.columns:
+        _v = pd.to_numeric(df["VIX"], errors="coerce")
+        _v3 = pd.to_numeric(df["VIX3M"], errors="coerce")
+        df["VIX_VIX3M_ratio"] = _v / _v3.replace(0, np.nan)
+        done.append("VIX_VIX3M_ratio")
+    if all(c in df.columns for c in ("WALCL", "WTREGEN", "RRPONTSYD")):
+        # 🌟 RRP 십억$ → 백만$ (×1e3) — BT v5 정본 규약
+        df["Net_Liquidity"] = (pd.to_numeric(df["WALCL"], errors="coerce").ffill()
+                               - pd.to_numeric(df["WTREGEN"], errors="coerce").ffill()
+                               - pd.to_numeric(df["RRPONTSYD"], errors="coerce").ffill() * 1e3)
+        done.append("Net_Liquidity")
+    try:
+        df["KIL_SUP"] = compute_kil_sup(df)     # 🔴 반환은 Series — df 에 대입하지 않는다
+        done.append("KIL_SUP")
+    except Exception as e:
+        print(f"  ⚠️ KIL_SUP 재계산 실패({type(e).__name__}: {e}) — 기존 값 유지")
+    print(f"  ♻️ v3.9.11 결정적 파생 재계산: {', '.join(done) if done else '없음'}")
+    return df
+
+
+# ══════════════════════════════════════════════════════════════════════
+# 🚫 v3.9.11 [MIGRATION CONTRACT] 네트워크 하드 가드
+#    "외부 갱신을 섞지 않는다" 를 주석이 아니라 실행으로 보장한다.
+#    v3.9.10 은 그렇게 선언해 놓고 compute_smh_triflag(prices=None) 경로에서
+#    yf.download(["MU","HYG","LQD"]) 를 실제로 호출했다 — 선언과 구현의 괴리.
+#    호출 시도가 있으면 조용히 통과시키지 않고 즉시 예외로 드러낸다.
+# ══════════════════════════════════════════════════════════════════════
+class NetworkBlocked(RuntimeError):
+    pass
+
+
+class _network_guard:
+    """with 블록 안에서 yfinance · requests · urllib 호출을 차단한다."""
+
+    def __init__(self, label="migration"):
+        self.label = label
+        self._saved = []
+        self.attempts = []
+
+    def _deny(self, name):
+        def _f(*a, **k):
+            self.attempts.append(name)
+            raise NetworkBlocked(
+                f"{self.label} 중 네트워크 호출 차단: {name} — "
+                "마이그레이션은 파일 안 자료만 사용한다 (인과 귀속 보존)")
+        return _f
+
+    def __enter__(self):
+        import urllib.request as _ur
+        targets = [(yf, "download"), (requests, "get"), (requests, "post"),
+                   (_ur, "urlopen")]
+        for obj, attr in targets:
+            if hasattr(obj, attr):
+                self._saved.append((obj, attr, getattr(obj, attr)))
+                setattr(obj, attr, self._deny(f"{getattr(obj, '__name__', obj)}.{attr}"))
+        return self
+
+    def __exit__(self, *exc):
+        for obj, attr, orig in self._saved:
+            setattr(obj, attr, orig)
+        return False
+
+
+MIGRATION_BUNDLE_DIR = os.path.join(SCRIPT_DIR, "migration_inputs")
+
+
+def load_migration_bundle():
+    """🗃️ v3.9.12 Migration Dependency Bundle — 마이그레이션 입력 동결본 (전량 필수).
+
+    migration_inputs/
+      ├─ manifest.json        source_sha256 · source_csv_sha256 · observed_through
+      ├─ smh_prices.csv       (Date, MU, HYG, LQD)
+      ├─ wsts_yoy.json        🔴 필수 — 레포 루트 fallback 금지
+      └─ missing_market.csv   결측 세션 × MARKET_IMMUTABLE 동결값 (있으면 네트워크 없이 복구)
+
+    v3.9.11 대비 변경 3건
+      🔴 P0-13 wsts 는 parse_wsts_yoy_json() 으로 읽는다 (production 과 동일 parser).
+      🔴 P0-14 wsts 부재 시 레포 루트로 내려가지 않는다. 없으면 번들 자체를 불완전으로 본다 —
+              10:00 에 번들을 만들고 10:05 에 upstream 이 wsts 를 바꾸면 Crown Δ 에
+              dependency change 가 섞인다.
+      🔴 P1-b  manifest 의 sha256 과 **현재 파일 해시를 대조**한다. 불일치 = fail-closed.
+              기록만 하고 검증하지 않으면 동결이 아니다.
+
+    반환: {"ok": bool, "reason": str, "prices", "wsts", "missing_market",
+           "manifest", "sha256", "source_csv_sha256"}
+    """
+    import hashlib as _hl
+    out = {"ok": False, "reason": "", "prices": None, "wsts": None,
+           "missing_market": None, "manifest": None, "sha256": {},
+           "source_csv_sha256": None}
+    if not os.path.isdir(MIGRATION_BUNDLE_DIR):
+        out["reason"] = f"번들 폴더 없음 ({MIGRATION_BUNDLE_DIR})"
+        return out
+
+    mf_path = os.path.join(MIGRATION_BUNDLE_DIR, "manifest.json")
+    if not os.path.exists(mf_path):
+        out["reason"] = "manifest.json 없음"
+        return out
+    try:
+        manifest = json.load(open(mf_path, encoding="utf-8"))
+    except Exception as e:
+        out["reason"] = f"manifest 파싱 실패 ({type(e).__name__})"
+        return out
+    out["manifest"] = manifest
+    out["source_csv_sha256"] = manifest.get("source_csv_sha256")
+
+    required = ["smh_prices.csv", "wsts_yoy.json"]
+    optional = ["missing_market.csv"]
+    declared = manifest.get("source_sha256", {}) or {}
+
+    for name in required + optional:
+        p = os.path.join(MIGRATION_BUNDLE_DIR, name)
+        if not os.path.exists(p):
+            if name in required:
+                out["reason"] = f"{name} 없음 — 부분 번들 금지 (레포 루트 fallback 금지)"
+                return out
+            continue
+        cur = _hl.sha256(open(p, "rb").read()).hexdigest()
+        out["sha256"][name] = cur[:16]
+        want = declared.get(name)
+        if want and want != cur:
+            out["reason"] = (f"{name} 해시 불일치 — manifest {str(want)[:12]}… "
+                             f"실제 {cur[:12]}… (동결 파괴, fail-closed)")
+            return out
+        if not want:
+            out["reason"] = f"{name} 해시가 manifest 에 선언되지 않음 (동결 미성립)"
+            return out
+
+    try:
+        px = pd.read_csv(os.path.join(MIGRATION_BUNDLE_DIR, "smh_prices.csv"),
+                         index_col=0, parse_dates=True)
+    except Exception as e:
+        out["reason"] = f"smh_prices.csv 파싱 실패 ({type(e).__name__})"
+        return out
+    if not all(c in px.columns for c in ("MU", "HYG", "LQD")):
+        out["reason"] = "smh_prices.csv 에 MU/HYG/LQD 중 누락"
+        return out
+    # 🔧 v3.9.13 P1-14: 컬럼 존재만으로는 부족하다.
+    #   MU 는 유효 1000행인데 LQD 가 전부 NaN 이어도 종전 검사는 '완전한 번들' 로 통과했고,
+    #   그 경우 SMH_TRIFLAG 가 조용히 거의 전부 0 이 된다.
+    #   알고리즘이 요구하는 최소 관측량을 상수로 선언하고 실제 유효 행수를 본다.
+    _idx = pd.DatetimeIndex(pd.to_datetime(px.index))
+    if _idx.has_duplicates:
+        out["reason"] = "smh_prices.csv 인덱스 중복"
+        return out
+    if not _idx.is_monotonic_increasing:
+        out["reason"] = "smh_prices.csv 인덱스 비단조"
+        return out
+    for _s in ("MU", "HYG", "LQD"):
+        _n = int(pd.to_numeric(px[_s], errors="coerce").notna().sum())
+        if _n < SMH_BUNDLE_MIN_ROWS:
+            out["reason"] = (f"smh_prices.csv {_s} 유효 {_n}행 < 최소 {SMH_BUNDLE_MIN_ROWS}행 "
+                             "(126일 momentum + 189일 rolling warm-up 미달)")
+            return out
+    out["prices"] = px
+
+    try:
+        ws = parse_wsts_yoy_json(os.path.join(MIGRATION_BUNDLE_DIR, "wsts_yoy.json"))
+    except Exception as e:
+        out["reason"] = f"wsts_yoy.json 파싱 실패 ({type(e).__name__})"
+        return out
+    if ws is None or len(ws) == 0:
+        out["reason"] = "wsts_yoy.json 시리즈 0건"
+        return out
+    out["wsts"] = ws
+
+    # 🔧 v3.9.13 P1-14: manifest.missing_dates 와 missing_market.csv 를 **양방향** 계약으로 묶는다.
+    #   종전에는 unconditional optional 이라, 결측이 있는데 파일이 없으면 트랜잭션 한복판에서야
+    #   실패했다. 번들 적재 단계에서 거부하는 것이 맞다.
+    mm_path = os.path.join(MIGRATION_BUNDLE_DIR, "missing_market.csv")
+    _declared_missing = [str(x)[:10] for x in (manifest.get("missing_dates") or [])]
+    if _declared_missing and not os.path.exists(mm_path):
+        out["reason"] = (f"manifest 가 결측 {len(_declared_missing)}건을 선언했는데 "
+                         "missing_market.csv 가 없다 (번들 불완전)")
+        return out
+    if not _declared_missing and os.path.exists(mm_path):
+        out["reason"] = "manifest 는 결측 0건인데 missing_market.csv 가 존재한다 (번들 불일치)"
+        return out
+    if os.path.exists(mm_path):
+        try:
+            mm = pd.read_csv(mm_path, index_col=0, parse_dates=True)
+            mm.index = pd.DatetimeIndex(mm.index).normalize()
+        except Exception as e:
+            out["reason"] = f"missing_market.csv 파싱 실패 ({type(e).__name__})"
+            return out
+        _have = sorted({str(x.date()) for x in mm.index})
+        if _have != sorted(set(_declared_missing)):
+            out["reason"] = (f"missing_market.csv 날짜 불일치 — manifest {sorted(set(_declared_missing))[:6]} "
+                             f"대 파일 {_have[:6]}")
+            return out
+        out["missing_market"] = mm
+
+    out["ok"] = True
+    return out
+
+
+MIGRATION_BASELINE_PATH = os.path.join(SCRIPT_DIR, "migration_baseline_frozen.csv")
+
+
+MIGRATION_STAGE_DIR = os.path.join(SCRIPT_DIR, "migration_stage")
+# 🔧 v3.9.15: Git-safe generation evidence + regular-file public views.
+MIGRATION_GENERATIONS_DIR = os.path.join(SCRIPT_DIR, "migration_generations")
+MIGRATION_CURRENT_META_PATH = os.path.join(SCRIPT_DIR, "CURRENT_GENERATION.json")
+MIGRATION_PENDING_META_PATH = os.path.join(SCRIPT_DIR, "PENDING_GENERATION.json")
+# v3.9.14 legacy pointer. 새 버전에서는 사용하지 않으며 존재해도 public artifact 와 분리한다.
+MIGRATION_LEGACY_CURRENT_LINK = os.path.join(SCRIPT_DIR, "migration_current")
+MIGRATION_PUBLIC_PATHS = {
+    "argus_data.csv": OUTPUT_PATH,
+    "argus_data_daily.csv": OUTPUT_DAILY_PATH,
+    "argus_data_weekly.csv": OUTPUT_WEEKLY_PATH,
+    "argus_data_monthly.csv": OUTPUT_MONTHLY_PATH,
+    "migration_baseline_frozen.csv": MIGRATION_BASELINE_PATH,
+    "calendar_integrity_report.json": SESSION_CALENDAR_REPORT_PATH,
+}
+MIGRATION_VIEW_NAMES = list(MIGRATION_PUBLIC_PATHS.keys())
+
+
+def _sha256_file(path):
+    import hashlib as _hl
+    with open(path, "rb") as f:
+        return _hl.sha256(f.read()).hexdigest()
+
+
+def _fsync_dir(path):
+    """POSIX directory metadata 를 가능한 범위에서 flush. 지원하지 않으면 fail-safe skip."""
+    try:
+        fd = os.open(path, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    except Exception:
+        pass
+
+
+def _write_json_fsync(path, payload):
+    """JSON regular file 을 tmp→replace 로 원자 갱신."""
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    tmp = path + f".tmp.{os.getpid()}.{uuid.uuid4().hex[:8]}"
+    try:
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+        _fsync_dir(os.path.dirname(path) or ".")
+    finally:
+        if os.path.lexists(tmp):
+            os.remove(tmp)
+
+
+def _read_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _de_symlink_public_artifacts():
+    """v3.9.14 symlink 공개파일을 bytes 보존 regular file 로 1회 변환한다.
+
+    git/raw 계약상 공개 6종에 symlink 를 허용하지 않는다. 정상 symlink 는 target bytes 를 같은 경로의
+    regular tmp 로 복사한 뒤 os.replace 로 링크 자체를 교체한다. target 이 없는 broken symlink 는
+    복구 근거가 없으므로 fail-closed 한다.
+    """
+    converted = []
+    for name, path in MIGRATION_PUBLIC_PATHS.items():
+        if not os.path.islink(path):
+            continue
+        target = os.path.realpath(path)
+        if not os.path.isfile(target):
+            raise RuntimeError(
+                f"GIT-SAFE 전환 실패: {name} broken symlink → {target}. "
+                "v3.9.14 generation 또는 이전 regular file 을 복원한 뒤 재실행할 것")
+        before_sha = _sha256_file(target)
+        tmp = path + f".desymlink.{os.getpid()}.{uuid.uuid4().hex[:8]}"
+        try:
+            shutil.copy2(target, tmp, follow_symlinks=True)
+            if _sha256_file(tmp) != before_sha:
+                raise RuntimeError(f"GIT-SAFE 전환 sha 불일치: {name}")
+            os.replace(tmp, path)  # symlink 자체를 regular file 로 교체
+            _fsync_dir(os.path.dirname(path) or ".")
+        finally:
+            if os.path.lexists(tmp):
+                os.remove(tmp)
+        if os.path.islink(path) or _sha256_file(path) != before_sha:
+            raise RuntimeError(f"GIT-SAFE 전환 검증 실패: {name}")
+        converted.append(name)
+    if converted:
+        print(f"  🔧 v3.9.15 symlink→regular file 전환 {len(converted)}건: {converted}")
+    return converted
+
+
+def _generation_manifest(gen_dir):
+    path = os.path.join(gen_dir, "generation_manifest.json")
+    if not os.path.isfile(path):
+        raise RuntimeError(f"generation manifest 없음: {path}")
+    m = _read_json(path)
+    hashes = m.get("files_sha256") or {}
+    if not hashes:
+        raise RuntimeError("generation manifest files_sha256 비어 있음")
+    return m, hashes
+
+
+def _verify_generation(gen_dir, expected_hashes=None):
+    """generation 내부 regular bytes 와 manifest sha 를 모두 검증."""
+    m, hashes = _generation_manifest(gen_dir)
+    if expected_hashes is not None:
+        for name, want in expected_hashes.items():
+            if hashes.get(name) != want:
+                raise RuntimeError(f"generation expected sha 불일치: {name}")
+    for name in MIGRATION_VIEW_NAMES:
+        p = os.path.join(gen_dir, name)
+        want = hashes.get(name)
+        if not want or not os.path.isfile(p):
+            raise RuntimeError(f"generation 불완전: {name}")
+        got = _sha256_file(p)
+        if got != want:
+            raise RuntimeError(f"generation sha 불일치: {name} {got[:12]} != {want[:12]}")
+    return m, hashes
+
+
+def _atomic_copy_regular(src, dst, expected_sha):
+    """generation file → public regular file. 중단돼도 다음 실행에서 같은 결과로 수렴 가능."""
+    if _sha256_file(src) != expected_sha:
+        raise RuntimeError(f"복사 원본 sha 불일치: {src}")
+    os.makedirs(os.path.dirname(dst) or ".", exist_ok=True)
+    tmp = dst + f".next.{os.getpid()}.{uuid.uuid4().hex[:8]}"
+    try:
+        shutil.copy2(src, tmp, follow_symlinks=True)
+        if _sha256_file(tmp) != expected_sha:
+            raise RuntimeError(f"public tmp sha 불일치: {os.path.basename(dst)}")
+        # dst 가 v3.9.14 symlink 여도 os.replace 는 target 이 아니라 symlink 자체를 교체한다.
+        os.replace(tmp, dst)
+        _fsync_dir(os.path.dirname(dst) or ".")
+    finally:
+        if os.path.lexists(tmp):
+            os.remove(tmp)
+    if os.path.islink(dst) or _sha256_file(dst) != expected_sha:
+        raise RuntimeError(f"public regular-file 승격 검증 실패: {os.path.basename(dst)}")
+
+
+def _current_generation_payload(gen_id, hashes, *, state="committed", extra=None):
+    payload = {
+        "version": FETCHER_VER,
+        "generation_id": gen_id,
+        "state": state,
+        "generation_relpath": os.path.relpath(os.path.join(MIGRATION_GENERATIONS_DIR, gen_id), SCRIPT_DIR),
+        "files_sha256": hashes,
+        "updated_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "public_files_are_regular": True,
+    }
+    if extra:
+        payload.update(extra)
+    return payload
+
+
+def _converge_generation_to_public(gen_id, hashes, *, fault_after=None):
+    """한 generation 을 공개 regular files 로 멱등 수렴시킨다."""
+    gen_dir = os.path.join(MIGRATION_GENERATIONS_DIR, gen_id)
+    _verify_generation(gen_dir, hashes)
+    done = 0
+    for name, dst in MIGRATION_PUBLIC_PATHS.items():
+        src = os.path.join(gen_dir, name)
+        want = hashes[name]
+        # 이미 같은 bytes 면 건드리지 않는다.
+        if os.path.isfile(dst) and not os.path.islink(dst):
+            try:
+                if _sha256_file(dst) == want:
+                    done += 1
+                    if fault_after is not None and done >= fault_after:
+                        raise RuntimeError(f"TEST_FAULT_AFTER_{done}")
+                    continue
+            except OSError:
+                pass
+        _atomic_copy_regular(src, dst, want)
+        done += 1
+        if fault_after is not None and done >= fault_after:
+            raise RuntimeError(f"TEST_FAULT_AFTER_{done}")
+    # 최종 전수검증
+    for name, dst in MIGRATION_PUBLIC_PATHS.items():
+        if os.path.islink(dst) or not os.path.isfile(dst) or _sha256_file(dst) != hashes[name]:
+            raise RuntimeError(f"public convergence 최종검증 실패: {name}")
+    return done
+
+
+def _recover_pending_generation():
+    """중단된 commit 이 있으면 daily/network 경로 진입 전에 동일 generation 으로 수렴 복구."""
+    if not os.path.exists(MIGRATION_PENDING_META_PATH):
+        return False
+    pending = _read_json(MIGRATION_PENDING_META_PATH)
+    gen_id = pending.get("generation_id")
+    hashes = pending.get("files_sha256") or {}
+    if not gen_id or not hashes:
+        raise RuntimeError("PENDING_GENERATION.json 불완전 — 자동 진행 금지")
+    print(f"  ♻️ v3.9.15 pending generation 복구: {gen_id}")
+    _converge_generation_to_public(gen_id, hashes)
+    current = _current_generation_payload(
+        gen_id, hashes, state="committed",
+        extra={"recovered_from_pending": True, "pending_created_utc": pending.get("created_utc")})
+    _write_json_fsync(MIGRATION_CURRENT_META_PATH, current)
+    os.remove(MIGRATION_PENDING_META_PATH)
+    _fsync_dir(SCRIPT_DIR)
+    print("     ✅ public files 수렴 + CURRENT_GENERATION.json 확정")
+    return True
+
+
+def _build_generation_from_stage(stage_files, report_payload):
+    """검증된 staging 산출물을 immutable generation 으로 봉인하고 경로/sha 를 반환."""
+    master_sha = _sha256_file(_stage_path("argus_data.csv"))
+    gen_id = f"mig_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}_{master_sha[:12]}"
+    final_dir = os.path.join(MIGRATION_GENERATIONS_DIR, gen_id)
+    tmp_dir = final_dir + f".tmp.{os.getpid()}.{uuid.uuid4().hex[:8]}"
+    if os.path.lexists(final_dir):
+        raise RuntimeError(f"generation 충돌: {final_dir}")
+    os.makedirs(MIGRATION_GENERATIONS_DIR, exist_ok=True)
+    os.makedirs(tmp_dir, exist_ok=False)
+    hashes = {}
+    try:
+        for name in stage_files:
+            src = _stage_path(name)
+            dst = os.path.join(tmp_dir, name)
+            shutil.copy2(src, dst)
+            hashes[name] = _sha256_file(dst)
+        report_path = os.path.join(tmp_dir, "calendar_integrity_report.json")
+        rp = dict(report_payload)
+        rp["generation_id"] = gen_id
+        rp["commit_seal"] = "immutable generation + pending convergence + CURRENT_GENERATION.json"
+        rp["generated_utc"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        _write_json_fsync(report_path, rp)
+        hashes["calendar_integrity_report.json"] = _sha256_file(report_path)
+        _write_json_fsync(os.path.join(tmp_dir, "generation_manifest.json"), {
+            "version": FETCHER_VER,
+            "kind": "calendar_migration",
+            "generation_id": gen_id,
+            "files_sha256": hashes,
+            "generated_utc": rp["generated_utc"],
+            "immutable_contract": "daily/backfill must never write under migration_generations/",
+        })
+        _fsync_dir(tmp_dir)
+        os.replace(tmp_dir, final_dir)
+        _fsync_dir(MIGRATION_GENERATIONS_DIR)
+        _verify_generation(final_dir, hashes)
+        return gen_id, final_dir, hashes
+    finally:
+        if os.path.isdir(tmp_dir):
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+def _commit_generation_convergent(gen_id, gen_dir, hashes):
+    """Git-safe commit: pending 기록 → public regular files 수렴 → CURRENT 메타 확정 → pending 제거.
+
+    public files 의 다중 replace 자체는 원자적이지 않지만, pending 이 commit 의도를 보존한다.
+    프로세스가 중간 종료되면 다음 실행 첫 단계에서 같은 immutable generation 으로 수렴한다.
+    """
+    _verify_generation(gen_dir, hashes)
+    pending = {
+        "version": FETCHER_VER,
+        "state": "pending",
+        "generation_id": gen_id,
+        "generation_relpath": os.path.relpath(gen_dir, SCRIPT_DIR),
+        "files_sha256": hashes,
+        "created_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    _write_json_fsync(MIGRATION_PENDING_META_PATH, pending)
+
+    # 테스트 전용 fault injection. production 미설정.
+    _fault_raw = os.environ.get("ARGUS_MIGRATION_FAULT_AFTER_N", "").strip()
+    _fault_after = int(_fault_raw) if _fault_raw.isdigit() and int(_fault_raw) > 0 else None
+    _converge_generation_to_public(gen_id, hashes, fault_after=_fault_after)
+
+    current = _current_generation_payload(
+        gen_id, hashes, state="committed",
+        extra={"commit_contract": "regular files + convergent pending recovery"})
+    _write_json_fsync(MIGRATION_CURRENT_META_PATH, current)
+    if os.path.exists(MIGRATION_PENDING_META_PATH):
+        os.remove(MIGRATION_PENDING_META_PATH)
+        _fsync_dir(SCRIPT_DIR)
+    return current
+
+
+def _assert_generation_immutable(gen_id, hashes):
+    """봉인 직후/테스트 후 generation bytes 가 manifest 와 동일한지 확인."""
+    gen_dir = os.path.join(MIGRATION_GENERATIONS_DIR, gen_id)
+    _verify_generation(gen_dir, hashes)
+    return True
+
+def normalize_frozen_view(df, bundle, label):
+    """🔒 v3.9.13 [TRANSFORM SEAL] BEFORE·AFTER 에 **동일하게** 적용하는 정규화.
+
+    🔴 v3.9.12 결함: AFTER 만 apply_ffill_safety() 를 거쳤다. 이 함수는 새로 삽입한 행만
+    채우는 것이 아니라 FFILL_COLS + 모든 *_Close 를 **전 history 소급 보강**한다.
+    기존 dirty CSV 에 과거 NaN 이 하나라도 있으면
+        BEFORE = NaN 유지 / AFTER = ffill 정규화
+    가 되어 Crown Δ 에 ffill normalization effect 가 섞인다.
+    이제 두 경로가 같은 함수를 지나고, 차이는 **structural calendar transform 뿐**이다.
+    """
+    df = apply_ffill_safety(df)
+    df = recompute_deterministic_derived(df)
+    df["SMH_TRIFLAG"] = compute_smh_triflag(df, prices=bundle["prices"],
+                                            wsts_series=bundle["wsts"])
+    print(f"  ♻️ {label}: ffill + 결정적 파생 + SMH_TRIFLAG (동결 의존)")
+    return df
+
+
+def _stage_path(name):
+    return os.path.join(MIGRATION_STAGE_DIR, name + ".tmp")
+
+
+def _migration_transaction(df_original, bundle):
+    """🔒 v3.9.13 [ATOMICMIGRATION] PHASE B·C·D — 가드 안에서, staging 에만 쓴다.
+
+    세 봉인
+      TRANSFORM SEAL  BEFORE·AFTER 가 normalize_frozen_view() 하나를 공유한다.
+      COMMIT SEAL     모든 산출물을 migration_stage/*.tmp 에 먼저 쓰고, 전 검증 통과 후
+                      os.replace 로 한꺼번에 승격한다. v3.9.12 는 PHASE B 에서 baseline 을
+                      바로 정식 파일명으로 쓰고 PHASE C 에서 4개 CSV 를 순차로 덮어써서,
+                      중간 실패 시 NEW/OLD 가 섞인 상태가 가능했다.
+      가드 범위       PHASE B·C·D 전체 (v3.9.12 는 D 가 가드 밖이었다).
+    """
+    import hashlib as _hl
+    print("🔒 v3.9.15 MIGRATION TRANSACTION — local-only calendar · network hard-off · git-safe convergent commit")
+    _in_sha = _hl.sha256(open(OUTPUT_PATH, "rb").read()).hexdigest() \
+        if os.path.exists(OUTPUT_PATH) else None
+    if bundle.get("source_csv_sha256") and _in_sha and bundle["source_csv_sha256"] != _in_sha:
+        raise SystemExit(
+            "🔴 v3.9.13 번들이 가리키는 원본 CSV 와 현재 CSV 가 다르다 — "
+            f"manifest {str(bundle['source_csv_sha256'])[:12]}… 현재 {_in_sha[:12]}…. "
+            "번들을 다시 생성할 것 (PHASE A).")
+
+    if os.path.isdir(MIGRATION_STAGE_DIR):
+        for _f in os.listdir(MIGRATION_STAGE_DIR):
+            os.remove(os.path.join(MIGRATION_STAGE_DIR, _f))
+    os.makedirs(MIGRATION_STAGE_DIR, exist_ok=True)
+
+    guard = _network_guard("MIGRATION_TRANSACTION")
+    parity = {"checked": False}
+    with guard:
+        # ── PHASE B — BASELINE REPLAY (원 캘린더 + 동결 의존 + 동일 정규화) ──
+        print("📐 PHASE B — BASELINE REPLAY (원 캘린더 · 동결 의존)")
+        base = df_original.copy()
+        _prev_tri = base["SMH_TRIFLAG"].copy() if "SMH_TRIFLAG" in base.columns else None
+        base = normalize_frozen_view(base, bundle, "baseline")
+        if _prev_tri is not None:
+            _a = _prev_tri.reindex(base.index).fillna(0).astype(float)
+            _b = base["SMH_TRIFLAG"].reindex(base.index).fillna(0).astype(float)
+            _diff = int((_a != _b).sum())
+            parity = {"checked": True, "smh_triflag_diff_days": _diff, "rows": int(len(base))}
+            print(f"  🔍 dependency parity: 기존 SMH_TRIFLAG 대비 불일치 {_diff}일 / {len(base)}일")
+            if _diff:
+                print("     🟠 Crown before 는 반드시 migration_baseline_frozen.csv 로 돌린다.")
+        base.to_csv(_stage_path("migration_baseline_frozen.csv"))
+
+        # ── PHASE C — MIGRATE (structural transform + 동일 정규화) ──
+        print("🧹 PHASE C — MIGRATE (유령 제거 · 결측 복구 · 동일 정규화)")
+        df, pre_snapshot = _sanitize_non_session_rows(df_original.copy(), stage="migration", primary_only=True)
+        repaired = []
+        _missing = _calendar_integrity_snapshot(df, "migration_after_ghost", primary_only=True).get("missing_dates", [])
+        if _missing:
+            print(f"  🚨 정규장 결측 {len(_missing)}건: {_missing}")
+            df, repaired = _repair_missing_session_rows(df, _missing, bundle=bundle)
+        df = normalize_frozen_view(df, bundle, "migrated")
+        if repaired:
+            df = _finalize_repair_provenance(df, repaired)
+
+        _final = _enforce_final_session_integrity(
+            df, pre_snapshot=pre_snapshot, repaired_dates=repaired,
+            primary_only=True, write_report=False)
+        df_daily, df_weekly, df_monthly = _split_by_frequency(df)
+        df_daily.to_csv(_stage_path("argus_data_daily.csv"))
+        df_weekly.to_csv(_stage_path("argus_data_weekly.csv"))
+        df_monthly.to_csv(_stage_path("argus_data_monthly.csv"))
+        df.to_csv(_stage_path("argus_data.csv"))
+
+        # ── PHASE D — VERIFY (가드 안에서 수행) ──
+        print("✅ PHASE D — VERIFY (staging 검증)")
+        _stage_files = {
+            "migration_baseline_frozen.csv": MIGRATION_BASELINE_PATH,
+            "argus_data_daily.csv": OUTPUT_DAILY_PATH,
+            "argus_data_weekly.csv": OUTPUT_WEEKLY_PATH,
+            "argus_data_monthly.csv": OUTPUT_MONTHLY_PATH,
+            "argus_data.csv": OUTPUT_PATH,
+        }
+        _stage_sha = {}
+        for _name in _stage_files:
+            _p = _stage_path(_name)
+            if not os.path.exists(_p) or os.path.getsize(_p) == 0:
+                raise SystemExit(f"🔴 v3.9.13 staging 산출물 누락/공백: {_name} — 승격 중단")
+            _stage_sha[_name] = _hl.sha256(open(_p, "rb").read()).hexdigest()
+        _bad = final_bad = (_final or {}).get("ghost_n", 0) + (_final or {}).get("missing_n", 0) \
+            + (_final or {}).get("duplicate_n", 0)
+        if _bad:
+            raise SystemExit(f"🔴 v3.9.13 무결성 미충족 (bad={_bad}) — 승격 중단")
+        if guard.attempts:
+            raise SystemExit(
+                f"🔴 v3.9.13 트랜잭션 중 네트워크 호출 시도 {len(guard.attempts)}건 "
+                f"{guard.attempts[:3]} — 승격 중단 (동결 파괴)")
+
+        # ── COMMIT SEAL — 전 검증 통과 후에만 원자 승격 ──
+        _scols = [c for c in df.columns if c.endswith("_source")]
+        _cnt = lambda tag: int(sum((df[c] == tag).sum() for c in _scols)) if _scols else 0
+        report = {
+            "version": FETCHER_VER, "mode": "atomic_migration_transaction",
+            "invariant": "1 row = 1 completed US equity regular session",
+            "input_sha256": _in_sha,
+            "output_sha256": _stage_sha["argus_data.csv"],
+            "baseline_frozen_sha256": _stage_sha["migration_baseline_frozen.csv"],
+            "staged_sha256": {k: v[:16] for k, v in _stage_sha.items()},
+            "calendar_source": (_final or {}).get("calendar_source"),
+            "ghost_removed_n": int((pre_snapshot or {}).get("ghost_n", 0)),
+            "missing_repaired_n": len(repaired),
+            "missing_repair_source": "frozen_bundle" if bundle.get("missing_market") is not None
+                                     else "none_needed",
+            "market_exact_repair_n": _cnt("market_historical"),
+            "pit_ffill_n": _cnt("pit_ffill_repair"),
+            "pit_unresolved_n": _cnt("pit_unresolved"),
+            "external_network_calls": len(guard.attempts),
+            "network_attempts": guard.attempts,
+            "guard_scope": "PHASE_B_C_D",
+            "transform_seal": "normalize_frozen_view (BEFORE·AFTER 동일)",
+            "commit_seal": "immutable generation + convergent regular-file commit + CURRENT_GENERATION.json",
+            "dependency_sha256": bundle["sha256"],
+            "dependency_parity": parity,
+            "rows": int(len(df)), "final": _final,
+        }
+        with open(_stage_path("calendar_integrity_report.json"), "w", encoding="utf-8") as f:
+            _r = dict(report)
+            _r["generated_utc"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            json.dump(_r, f, ensure_ascii=False, indent=2)
+
+        # 🔧 v3.9.15 COMMIT SEAL: symlink 폐기. immutable generation 을 만든 뒤
+        # PENDING_GENERATION.json 으로 의도를 먼저 기록하고 public **regular files** 를 멱등 수렴시킨다.
+        # 마지막에 CURRENT_GENERATION.json 을 원자 교체한다. 중간 중단은 다음 실행 시작 시 자동 복구된다.
+        print("📦 COMMIT SEAL — immutable generation → pending → regular files 수렴 → CURRENT meta")
+        _gen_names = list(_stage_files.keys())
+        _gen_id, _gen_dir, _gen_hashes = _build_generation_from_stage(_gen_names, report)
+        for _name in _gen_names:
+            if _gen_hashes.get(_name) != _stage_sha.get(_name):
+                raise SystemExit(f"🔴 v3.9.15 generation sha 불일치: {_name} — commit 중단")
+        _current = _commit_generation_convergent(_gen_id, _gen_dir, _gen_hashes)
+        _assert_generation_immutable(_gen_id, _gen_hashes)
+        for _name, _view in MIGRATION_PUBLIC_PATHS.items():
+            if os.path.islink(_view):
+                raise SystemExit(f"🔴 v3.9.15 public artifact 가 symlink: {_name}")
+            if _sha256_file(_view) != _gen_hashes[_name]:
+                raise SystemExit(f"🔴 v3.9.15 public artifact sha 불일치: {_name}")
+        print(f"   ✅ CURRENT_GENERATION = {_gen_id} · public regular files {len(MIGRATION_PUBLIC_PATHS)}종")
+        report["generation_id"] = _gen_id
+        report["generation_path"] = _gen_dir
+        report["commit_seal"] = "immutable generation + convergent regular-file commit + CURRENT_GENERATION.json"
+
+    print(f"  external_network_calls = {len(guard.attempts)}  (가드 범위: PHASE B·C·D 전체)")
+    print(f"  input {str(_in_sha)[:16]}… → output {report['output_sha256'][:16]}…")
+    print(f"  ghost 제거 {report['ghost_removed_n']} · 결측 복구 {report['missing_repaired_n']} "
+          f"({report['missing_repair_source']})")
+    print("  🎯 Crown 대조: BEFORE = migration_baseline_frozen.csv / AFTER = argus_data.csv")
+    print("  🎯 다음: CALENDAR_MIGRATION_MODE 해제 → Crown before/after → baseline 봉인")
+    return df
+
+
+def run_calendar_migration():
+    """🚪 v3.9.13 [ENTRY SEAL] 마이그레이션 전용 진입점.
+
+    🔴 v3.9.12 결함: migration 분기가 main() 중반에 있어, 거기 닿기 전에
+    resolve_session_date() → _yf_series() → yf.download() 이 이미 실행됐다.
+    따라서 external_network_calls = 0 은 여전히 프로세스 전체의 증명이 아니었다.
+    이 함수는 **daily/backfill session resolution 을 통째로 우회**한다 —
+    첫 network-capable 코드보다 먼저 분기한다.
+    """
+    print("🚪 v3.9.15 ENTRY SEAL — 마이그레이션 전용 경로 (session resolution/fallback 우회)")
+    if not os.path.exists(OUTPUT_PATH):
+        print(f"🔴 원본 CSV 없음: {OUTPUT_PATH} — 마이그레이션 대상 없음")
+        return
+    bundle = load_migration_bundle()
+    if not bundle["ok"]:
+        print("🔴 v3.9.13 마이그레이션 중단 — 의존 번들 불완전")
+        print(f"   사유: {bundle['reason']}")
+        print("   처방: python make_migration_bundle.py 로 번들을 생성/재생성할 것 (PHASE A)")
+        print("   이번 실행은 파일을 변경하지 않는다.")
+        _write_calendar_integrity_report({
+            "version": FETCHER_VER, "mode": "migration_bundle_incomplete",
+            "reason": bundle["reason"], "final": None,
+        })
+        return
+    # v3.9.15: v3.9.14 잔존 symlink 를 먼저 regular file 로 전환하고, 중단된 commit 을 복구한다.
+    # pending 이 있으면 broken legacy symlink 도 generation regular file 로 직접 덮어 복구할 수 있으므로
+    # 수렴 복구를 먼저 시도한다. pending 이 없을 때만 잔존 v3.9.14 symlink 를 bytes 보존 전환한다.
+    _recover_pending_generation()
+    _de_symlink_public_artifacts()
+    df = pd.read_csv(OUTPUT_PATH, index_col=0, parse_dates=True)
+    df.index.name = "Date"
+    df = df.sort_index()
+    _audit = _calendar_integrity_snapshot(df, "entry_seal_audit", primary_only=True)
+    print(f"  입력 {len(df)}행 · 유령 {_audit['ghost_n']} · 결측 {_audit['missing_n']} "
+          f"· 중복 {_audit['duplicate_n']} ({_audit['calendar_source']})")
+    _migration_transaction(df, bundle)
+
+
+def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, repaired_dates=None,
+                                     primary_only=False, write_report=True):
     """저장 직전 강제 게이트. ghost/missing/duplicate가 하나라도 남으면 저장 차단."""
-    final = _calendar_integrity_snapshot(df, "pre_save_final")
+    final = _calendar_integrity_snapshot(df, "pre_save_final", primary_only=primary_only)
     report = {
         "version": FETCHER_VER,
         "invariant": "1 row = 1 completed US equity regular session",
@@ -1293,7 +2350,18 @@ def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, rep
         "repaired_missing_dates": list(repaired_dates or []),
         "final": final,
     }
-    _write_calendar_integrity_report(report)
+    if write_report:
+        _write_calendar_integrity_report(report)
+    # 🔴 v3.9.9 fallback 은 PASS 를 인증할 수 없다.
+    #   density >= 90% 가드는 심한 장애만 잡는다. 100 영업일에서 5세션이 누락돼도 95% 다.
+    #   그 상태의 missing_n = 0 은 "yfinance 가 관측한 캘린더 안에서 0" 일 뿐,
+    #   "실제 XNYS 세션 기준 0" 을 증명하지 못한다. 증명할 수 없으면 인증하지 않는다.
+    _srcname = str(final.get("calendar_source") or "")
+    if final.get("rows") and not _srcname.startswith("exchange_calendars:"):
+        raise SystemExit(
+            "🔴 v3.9.9 SESSION INTEGRITY — 저장 차단: 캘린더 소스가 1순위가 아니다"
+            f"({_srcname or '없음'}). fallback 은 진단 전용이며 무결성 PASS 를 인증하지 못한다. "
+            "처방: requirements 에 exchange-calendars 를 고정 버전으로 추가 후 재실행.")
     bad = final["ghost_n"] + final["missing_n"] + final["duplicate_n"] + final.get("nat_dates", 0)
     if bad:
         raise SystemExit(
@@ -1307,15 +2375,37 @@ def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, rep
     return final
 
 
-def _yf_batch(symbols: list, start: str, end: str) -> dict:
-    """yfinance 배치 → {symbol: latest_close}. 실패 시 빈 dict."""
+def _yf_batch(symbols: list, start: str, end: str, exact_date=None) -> dict:
+    """yfinance 배치 → {symbol: close}.
+
+    🔴 v3.9.11 [MARKET CONTRACT] exact_date 를 주면 **그 날짜의 실제 bar** 만 채택한다.
+       종전은 무조건 window 의 마지막 행(`close.iloc[-1]`)을 썼다. 그러면 요청 날짜에
+       bar 가 없을 때 인접일 값이 요청 날짜로 stamp 된다 —
+       target 2026-05-20 · Yahoo 에 5/20 없음 · 5/19 존재 → 5/19 값이 Date=5/20 으로 기록.
+       미래 날짜 오염은 v3.9.10 이 막았지만 historical adjacent-bar misstamp 는 남아 있었다.
+       이 함수가 repair · backfill · daily 세 경로의 **유일한 시장데이터 취득 지점**이므로
+       여기서 Date ↔ bar identity 를 한 번만 계약한다.
+       해당 날짜 bar 가 없으면 그 심볼은 반환하지 않는다 → 기존 4단 ffill 방어가
+       'ffill' 라벨과 함께 정직하게 처리한다.
+    """
     try:
         raw = yf.download(symbols, start=start, end=end,
                           auto_adjust=True, progress=False)
         if raw.empty:
             return {}
         close = raw["Close"] if isinstance(raw.columns, pd.MultiIndex) else raw
-        last  = close.iloc[-1]
+        if exact_date is not None:
+            _want = pd.Timestamp(exact_date).normalize()
+            _idx = pd.DatetimeIndex(pd.to_datetime(close.index))
+            if _idx.tz is not None:
+                _idx = _idx.tz_localize(None)
+            _hit = close[_idx.normalize() == _want]
+            if len(_hit) == 0:
+                print(f"    ⏭️ {symbols[:2]}... {_want.date()} bar 없음 — 인접일 대체 금지")
+                return {}
+            last = _hit.iloc[-1]
+        else:
+            last = close.iloc[-1]
         return {sym: float(last[sym])
                 for sym in symbols
                 if sym in last.index and not pd.isna(last[sym])}
@@ -1728,8 +2818,8 @@ def fetch_today_row(target_date=None, is_backfill=None) -> dict:
     s     = str(today - timedelta(days=5))
     e     = str(today + timedelta(days=1))
 
-    # ① ETF 배치
-    etf_data = _yf_batch(ETF_TICKERS, s, e)
+    # ① ETF 배치 — 🔴 v3.9.11 MARKET CONTRACT: 요청 세션의 실제 bar 만 채택
+    etf_data = _yf_batch(ETF_TICKERS, s, e, exact_date=today)
     for tk, val in etf_data.items():
         row[f"{tk}_Close"] = val
     print(f"    ETF: {len(etf_data)}/{len(ETF_TICKERS)}종 수집")
@@ -1739,7 +2829,7 @@ def fetch_today_row(target_date=None, is_backfill=None) -> dict:
     print("    매크로 개별 수집...")
     ok_macro = 0
     for sym, col in YAHOO_MACRO.items():
-        data = _yf_batch([sym], s, e)
+        data = _yf_batch([sym], s, e, exact_date=today)   # 🔴 v3.9.11 MARKET CONTRACT
         if sym in data:
             row[col] = data[sym]
             row[f"{col}_source"] = "yahoo_live"  # 🌟 v2.12
@@ -2184,26 +3274,46 @@ def _resolve_target_dates():
     bf_start = os.getenv("BACKFILL_START", "").strip()
     bf_end   = os.getenv("BACKFILL_END", "").strip()
 
+    # 🔴 v3.9.10: backfill 도 completed-session SSOT 를 통과해야 한다.
+    #   v3.9.9 는 '정규장인가' 만 보고 '이미 끝난 세션인가' 는 보지 않았다.
+    #   실측: BACKFILL_DATE=2026-09-14 (미래 정상 세션) → ([2026-09-14], True) 로 통과했다.
+    #   그 뒤 fetch 는 window 안 마지막 bar 를 그 날짜로 stamp 할 수 있다.
+    _last_done = last_completed_us_equity_session()
+
+    def _filter_completed(days, label):
+        if _last_done is None:
+            print("  🔴 v3.9.10 완료 세션 판정 불가 (XNYS 캘린더 부재) — backfill 거부 (fail-closed)")
+            return []
+        ok, bad = [], []
+        for d in days:
+            if not is_nyse_open(d):
+                bad.append((d, "비세션"))
+            elif d > _last_done:
+                bad.append((d, f"미완료/미래 (마지막 완료 {_last_done})"))
+            else:
+                ok.append(d)
+        for d, why in bad:
+            print(f"  ⏭️ v3.9.10 {label} {d} 제외 — {why}")
+        return ok
+
     if bf_date:
         d = _parse_date(bf_date)
         if d is None:
-            print(f"  🚨 BACKFILL_DATE 파싱 실패: '{bf_date}' (YYYY-MM-DD 필요) → today 대체")
-            return [date.today()], False
-        if not is_nyse_open(d):
-            print(f"  ⏭️ BACKFILL_DATE {d} = 미국 주식 비세션 — 행 생성 금지")
+            # 🔴 v3.9.10 P1-2: 운영자 오타가 '정상 daily fetch' 로 바뀌면 안 된다.
+            print(f"  🚨 BACKFILL_DATE 파싱 실패: '{bf_date}' (YYYY-MM-DD 필요) — fail-closed")
             return [], True
-        return [d], True
+        return _filter_completed([d], "BACKFILL_DATE"), True
 
     if bf_start and bf_end:
         ds, de = _parse_date(bf_start), _parse_date(bf_end)
         if ds is None or de is None:
-            print(f"  🚨 BACKFILL_START/END 파싱 실패 (YYYY-MM-DD 필요) → today 대체")
-            return [date.today()], False
+            print("  🚨 BACKFILL_START/END 파싱 실패 (YYYY-MM-DD 필요) — fail-closed")
+            return [], True
         if ds > de:
             ds, de = de, ds
         sessions, source = get_us_equity_regular_sessions(ds, de, return_source=True)
-        days = [x.date() for x in sessions]
-        print(f"  📅 v3.9.7 BACKFILL 세션 해석: {len(days)}개 ({source})")
+        days = _filter_completed([x.date() for x in sessions], "BACKFILL 범위")
+        print(f"  📅 v3.9.10 BACKFILL 세션 해석: {len(days)}개 완료 세션 ({source})")
         return days, True
 
     return [date.today()], False
@@ -2215,6 +3325,11 @@ def _resolve_target_dates():
 #   정의 = REG-S242_3 canonical 자구. 산출 책임 = 데이터 층 (엔진은 컬럼 소비만, fail-safe 0)
 # ═══════════════════════════════════════════════════════════════════════════
 WSTS_YOY_JSON_PATH = "wsts_yoy.json"   # 레포 루트, 월 1회 갱신: {"series":[{"asof":"YYYY-MM-DD","yoy":-0.05}, ...]}
+# 🆕 v3.9.13 P1-14: 마이그레이션 번들의 SMH 가격 최소 유효 관측량.
+#   근거: m126 = pct_change(126) → rolling(189).min() 이 성립하려면 126+189 = 315 거래일이
+#   최소이고, 이벤트 창(63) · dedupe(176 달력일) 여유를 더해 상수로 고정한다.
+#   이 값 미만이면 SMH_TRIFLAG 가 '계산됐지만 거의 전부 0' 이 되어 조용히 신호가 사라진다.
+SMH_BUNDLE_MIN_ROWS = 400
 SMH_TRI_WIN_DAYS   = 63                # 이벤트 후 발화 창 (거래일)
 SMH_TRI_DEDUP_DAYS = 176               # 이벤트 dedupe 간격 (126×1.4)
 SMH_TRI_C8_LEAD    = 189               # C8 선행 동반 허용 (달력일)
@@ -2225,23 +3340,43 @@ WSTS_HIST_PAGE_URL = "https://www.wsts.org/67/Historical-Billings-Report"  # 최
 WSTS_HTTP_UA       = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"}  # 격언 #107
 WSTS_KEEP_MONTHS   = 180               # json 보존 개월 (15년 = triflag 5년 조회 + 여유)
 
+def parse_wsts_yoy_json(path):
+    """🆕 v3.9.12 [P0-13] wsts_yoy.json → PIT(+45일) 반영 일자 인덱스 **Series**.
+
+    🔴 production 로더와 마이그레이션 번들 로더가 반드시 **같은 parser** 를 써야 한다.
+    v3.9.11 번들 로더는 pd.read_json() 으로 읽어 DataFrame 을 돌려줬다. compute_smh_triflag 는
+    `float(_cut.iloc[-1])` 을 하므로 S2 이벤트가 발생하는 순간 TypeError 가 나고,
+    migration 은 그 예외를 삼켜 '재계산 실패 — 기존 값 유지' 로 넘어간다.
+    즉 마이그레이션은 성공한 것처럼 보이는데 SMH_TRIFLAG 만 조용히 재계산되지 않는다.
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        j = json.load(f)
+    entries = j.get("series", [j] if "asof" in j else [])
+    rows = []
+    for e in entries:
+        asof = pd.Timestamp(e["asof"])
+        rows.append((asof + pd.Timedelta(days=WSTS_PIT_LAG_DAYS), float(e["yoy"]), asof))
+    if not rows:
+        return None
+    rows.sort()
+    return pd.Series([r[1] for r in rows], index=[r[0] for r in rows], dtype=float)
+
+
 def _load_wsts_series():
-    """wsts_yoy.json → PIT(+45일) 반영 일자 인덱스 시리즈. 부재/오류 → None (fail-safe)."""
+    """wsts_yoy.json → PIT 반영 시리즈. 부재/오류 → None (fail-safe).
+
+    🔧 v3.9.13 P1-13: parse_wsts_yoy_json() 에 **실제로 위임**한다.
+    v3.9.12 는 공용 parser 를 만들어 놓고 여기서 같은 로직을 다시 구현했다 —
+    복제 구현이 갈라지는 문제를 이미 한 번 잡은 사이클에서 같은 형태를 남겨 두면 안 된다.
+    """
     try:
-        with open(WSTS_YOY_JSON_PATH, "r", encoding="utf-8") as f:
-            j = json.load(f)
-        entries = j.get("series", [j] if "asof" in j else [])
-        rows = []
-        for e in entries:
-            asof = pd.Timestamp(e["asof"])
-            rows.append((asof + pd.Timedelta(days=WSTS_PIT_LAG_DAYS), float(e["yoy"]), asof))
-        if not rows:
+        s = parse_wsts_yoy_json(WSTS_YOY_JSON_PATH)
+        if s is None or len(s) == 0:
             return None
-        rows.sort()
-        newest_asof = max(r[2] for r in rows)
+        newest_asof = (s.index.max() - pd.Timedelta(days=WSTS_PIT_LAG_DAYS)).normalize()
         if (pd.Timestamp.now().normalize() - newest_asof).days > WSTS_STALE_DAYS:
             print(f"  ⚠️ wsts_yoy.json stale (최신 asof {newest_asof.date()}) — 커버 범위 밖 이벤트 불발 처리")
-        return pd.Series([r[1] for r in rows], index=[r[0] for r in rows])
+        return s
     except Exception:
         return None
 
@@ -2430,6 +3565,17 @@ def compute_smh_triflag(df, prices=None, wsts_series=None):
 def main():
     t0 = time.time()
     print(f"🦅 ARGUS DATA FETCHER {FETCHER_VER} — {datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')}")
+    # 🔧 v3.9.15 GIT-SAFE SEAL — daily/backfill 이 v3.9.14 symlink 를 따라 generation 을
+    # 덮어쓰기 전에 regular file 로 탈출시키고, 이전 commit 이 중단됐으면 먼저 수렴 복구한다.
+    _recover_pending_generation()
+    _de_symlink_public_artifacts()
+    # 🚪 v3.9.13 ENTRY SEAL — 어떤 network-capable 코드보다 **먼저** 분기한다.
+    #   resolve_session_date() 는 Yahoo 를 호출하므로 그 뒤에서 분기하면
+    #   '마이그레이션 무네트워크' 가 성립하지 않는다 (v3.9.12 P0-16).
+    if CALENDAR_MIGRATION_MODE:
+        run_calendar_migration()
+        print(f"\n✅ 마이그레이션 종료 ({time.time()-t0:.1f}s)")
+        return
     print(f"   FRED_API_KEY: {'✅ 설정됨' if FRED_API_KEY else '🚨 부재'}")
     print(f"   BT_LONG_PATH: {'✅ 가용' if os.path.exists(BT_LONG_PATH) else '⚠️ 부재 (DBnomics 실패 시 fallback 불가)'}")
     print(f"   PMI source:   🌟 4중 방어 (Tradingeconomics 1차 + USSLIND proxy 2차 + BT_LONG 3차 + ffill 4차, v2.9)")
@@ -2462,6 +3608,26 @@ def main():
         if not is_nyse_open(_sess):
             print(f"⏭️ {_sess} NYSE 휴장 판정 — fetch 생략")
             return
+        # 🔧 v3.9.9 completed-session 강제. 불변식이 '완료된 세션'이므로
+        #   미마감 세션 bar 는 행으로 만들지 않는다 (장중 실행 carry row 차단).
+        _done = is_session_completed(_sess)
+        _last_done = last_completed_us_equity_session()
+        if _done is None or _last_done is None:
+            print("🔴 v3.9.9 완료 세션 판정 불가 (XNYS 캘린더 부재) — fetch 생략 (행 날조 금지)")
+            print("   처방: requirements 에 exchange-calendars 를 고정 버전으로 추가 후 재실행.")
+            return
+        if not _done:
+            # 🔧 v3.9.10 P1-1: 종료하지 않고 마지막 완료 세션으로 내려간다.
+            #   오염 차단이 목적이지 가용성 포기가 목적이 아니다. 같은 세션을 다시 처리해도
+            #   기존 행 보존 병합이 있으므로 멱등이다.
+            _cl = xnys_session_close(_sess)
+            print(f"  🕰️ v3.9.10 {_sess} 세션 미마감 (마감 {_cl}) → "
+                  f"마지막 완료 세션 {_last_done} 로 대체 처리")
+            _sess = _last_done
+        if pd.Timestamp(_sess).date() > _last_done:
+            print(f"🔴 v3.9.9 {_sess} 가 마지막 완료 세션 {_last_done} 보다 미래 — fetch 생략")
+            return
+        print(f"  🕰️ v3.9.9 완료 세션 확인: {_sess} (마감 {xnys_session_close(_sess)})")
         if _sess != today:
             print(f"  🕯️ v3.9 세션일 stamp: UTC today={today} → 마지막 거래일={_sess} (carry row 차단)")
         target_dates = [_sess]
@@ -2480,6 +3646,9 @@ def main():
             print(f"  🚨 v3.9.8 시드 정규장 결측 {len(_seed_missing)}건: {_seed_missing}")
             df, _calendar_repaired_dates = _repair_missing_session_rows(df, _seed_missing)
             df = apply_ffill_safety(df)
+            # 🔧 v3.9.11 P1: 시드 경로에도 provenance 확정을 적용한다.
+            #   누락 시 새 시드의 _source 에 pit_ffill_pending 이 그대로 남아 계약 위반이 된다.
+            df = _finalize_repair_provenance(df, _calendar_repaired_dates)
         # 시드는 SEED_DAYS 전체 history 포함 → backfill 날짜도 커버 (별도 fetch 불요)
     else:
         df    = pd.read_csv(OUTPUT_PATH, index_col=0, parse_dates=True)
@@ -2499,15 +3668,38 @@ def main():
 
         # 🔧 v3.9.7 (S290): 기존 세션 시간축 자기치유 + 결측 정규장 세션 자동복구.
         #   반드시 rolling/backfill/feature 계산보다 먼저 수행해 행 기반 lookback 오염을 차단한다.
+        # 🔧 v3.9.9 CALENDAR_MIGRATION_MODE — 역사 재계산을 일일 실행에서 분리한다.
+        #   첫 유령행 이후의 모든 rolling 값이 달라지므로, 이 작업은 일일 fetch 가
+        #   조용히 수행할 일이 아니다. 명시적 모드에서 한 번 수행하고 baseline 을 봉인한다.
+        _pre_audit = _calendar_integrity_snapshot(df, "pre_migration_audit")
+        _needs_mig = bool(_pre_audit["ghost_n"] or _pre_audit["missing_n"] or _pre_audit["duplicate_n"])
+        if _needs_mig and not CALENDAR_MIGRATION_MODE:
+            print("🟠 v3.9.9 시간축 마이그레이션 필요 — 일일 실행에서는 수행하지 않는다.")
+            print(f"   유령 {_pre_audit['ghost_n']}건 · 결측 {_pre_audit['missing_n']}건 "
+                  f"· 중복 {_pre_audit['duplicate_n']}건 (소스 {_pre_audit['calendar_source']})")
+            print(f"   유령: {_pre_audit['ghost_dates']}")
+            print(f"   결측: {_pre_audit['missing_dates']}")
+            print("   사유: 첫 유령행 이후 전 구간의 rolling lookback 이 달라진다. "
+                  "일일 파이프라인이 조용히 역사를 다시 쓰지 않게 한다.")
+            print("   처방: CALENDAR_MIGRATION_MODE=1 로 1회 실행 → clean baseline 봉인 "
+                  "→ Crown 재현 전후 대조 → 이후 일일 실행 재개.")
+            print("   이번 실행은 파일을 변경하지 않는다.")
+            _write_calendar_integrity_report({
+                "version": FETCHER_VER, "mode": "migration_required",
+                "invariant": "1 row = 1 completed US equity regular session",
+                "pre_repair": _pre_audit, "final": None,
+            })
+            return
         df, _calendar_pre_snapshot = _sanitize_non_session_rows(df, stage="loaded_before_fetch")
         _calendar_repaired_dates = []
         _missing_pre = _calendar_integrity_snapshot(df, "after_ghost_cleanup").get("missing_dates", [])
         if _missing_pre:
             print(f"  🚨 v3.9.7 정규장 결측 {len(_missing_pre)}건 발견: {_missing_pre}")
             df, _calendar_repaired_dates = _repair_missing_session_rows(df, _missing_pre)
-            # 복구 row의 저빈도/부분 fetch 결측은 기존 ffill 정책으로 보강
+            # 복구 row의 REVISION_SENSITIVE 열은 전진 ffill 로만 보강한다 (미래값 주입 금지)
             df = apply_ffill_safety(df)
-            print(f"  🩹 v3.9.7 결측 세션 복구 완료 {len(_calendar_repaired_dates)}건")
+            df = _finalize_repair_provenance(df, _calendar_repaired_dates)
+            print(f"  🩹 v3.9.10 결측 세션 복구 완료 {len(_calendar_repaired_dates)}건")
 
         # 🌟 v3.2 (S197): target_dates 루프 (기본=오늘 1개 / backfill=N개)
         for _tgt in target_dates:
@@ -2697,7 +3889,10 @@ def main():
             shiller_df = _fetch_shiller_ecy_cape()
             if not shiller_df.empty:
                 # 월별 → 일별 ffill
-                ecy_daily = shiller_df.reindex(df.index, method='ffill').ffill().bfill()
+                # 🔴 v3.9.9 [PIT] .bfill() 제거. 종전은 첫 Shiller 관측 이전 행에
+                #   **미래 CAPE/ECY 값을 역주입**했다. 관측 이전 구간은 그 시점에
+                #   알 수 없었던 값이므로 NaN 으로 남긴다 (전진 ffill 만 허용).
+                ecy_daily = shiller_df.reindex(df.index, method='ffill').ffill()
                 df['ECY'] = ecy_daily['ECY']
                 df['CAPE'] = ecy_daily['CAPE']
                 df['ECY_source'] = 'shiller_yale'
