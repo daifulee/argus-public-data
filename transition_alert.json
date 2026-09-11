@@ -4,7 +4,7 @@
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
-  "ledger_as_of": "2026-09-09",
+  "ledger_as_of": "2026-09-10",
   "prev": {
     "TLT": 0.3,
     "XLE": 0.7
@@ -98,17 +98,6 @@
         "delta_value": null
       },
       {
-        "ticker": "ITA",
-        "action": "SELL_ALL",
-        "shares": 298.0,
-        "current_weight": null,
-        "target_weight": 0.0,
-        "delta_weight": null,
-        "current_value": 65059.36218261719,
-        "target_value": null,
-        "delta_value": null
-      },
-      {
         "ticker": "SLV",
         "action": "SELL_ALL",
         "shares": 4391.0,
@@ -116,6 +105,17 @@
         "target_weight": 0.0,
         "delta_weight": null,
         "current_value": 252482.5,
+        "target_value": null,
+        "delta_value": null
+      },
+      {
+        "ticker": "ITA",
+        "action": "SELL_ALL",
+        "shares": 298.0,
+        "current_weight": null,
+        "target_weight": 0.0,
+        "delta_weight": null,
+        "current_value": 65059.36218261719,
         "target_value": null,
         "delta_value": null
       }
@@ -129,6 +129,6 @@
   },
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-11T04:13:55",
+  "generated_at": "2026-09-11T04:59:32",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
