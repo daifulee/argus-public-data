@@ -2498,22 +2498,30 @@ SESSION_REF_TICKERS = ["SPY", "QQQ", "GLD"]   # 순차 시도 (단일 티커 장
 
 
 def resolve_session_date(ref_tickers=None, lookback_days=10):
-    """가격 원천의 마지막 완료 거래일(date) 반환. 전 후보 실패 시 None."""
+    """마지막 완료 세션의 실제 가격이 확인된 날짜만 반환한다."""
+    expected = last_completed_us_equity_session()
+    if expected is None:
+        print("세션 확인 불가: 완료 거래일 계산 실패")
+        return None
     refs = ref_tickers or SESSION_REF_TICKERS
-    _today = date.today()
-    _s = str(_today - timedelta(days=lookback_days))
-    _e = str(_today + timedelta(days=1))
+    start = str(expected - timedelta(days=lookback_days))
+    end = str(expected + timedelta(days=1))
     for tk in refs:
         try:
-            ser = _yf_series(tk, _s, _e)
-        except Exception:
-            continue
-        if ser is None or len(ser) == 0:
-            continue
-        d = ser.index[-1].date()
-        if d > _today:          # 미래일 = 원천 이상치 → 다음 후보
-            continue
-        return d
+            ser = _yf_series(tk, start, end)
+            if ser is None or len(ser) == 0:
+                continue
+            # 최신 행 번호 대신 기대 날짜의 실제 양수 가격을 검사한다.
+            # 오래된 첫 종목이 뒤의 정상 종목 확인을 막지 않는다.
+            for stamp, value in ser.items():
+                if pd.Timestamp(stamp).date() != expected:
+                    continue
+                price = float(value)
+                if pd.notna(price) and 0 < price < float("inf"):
+                    return expected
+        except Exception as exc:
+            print(f"기준 종목 확인 실패: {tk} ({type(exc).__name__})")
+    print(f"완료 세션 가격 미확보: expected={expected} — 이전 날짜로 대체하지 않음")
     return None
 
 
@@ -3651,8 +3659,7 @@ def main():
         # 🆕 v3.9 (S279): Date 원천 = 가격 원천의 마지막 거래일 (UTC 캘린더 아님)
         _sess = resolve_session_date()
         if _sess is None:
-            print(f"🔴 세션일 해석 실패 (가격 원천 무응답) — fetch 생략 (행 날조 금지)")
-            return
+            raise SystemExit("완료 세션 가격 미확보 — 데이터 수집 중단")
         if not is_nyse_open(_sess):
             print(f"⏭️ {_sess} NYSE 휴장 판정 — fetch 생략")
             return
