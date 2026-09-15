@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-10",
+  "date": "2026-09-14",
   "changed": false,
   "entered": [],
   "exited": [],
@@ -12,14 +12,12 @@
   "src": "ledger",
   "ledger_as_of": "2026-09-10",
   "repro_positions": {
-    "SLV": 0.4851,
-    "ITA": 0.2692,
-    "TLT": 0.168,
-    "XLE": 0.0777
+    "TLT": 0.6837,
+    "XLE": 0.3163
   },
   "exposure": 1.0,
   "actions": "",
-  "repro_actions": "SELL PDBC (WTI>100) ; BUY SLV (SC13.5|S) ; BUY ITA (SC4.0|A) ; BUY XLE (SC3.9|B)",
+  "repro_actions": "",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-11T06:37:50Z"
+  "generated_utc": "2026-09-15T02:58:09Z"
 }
