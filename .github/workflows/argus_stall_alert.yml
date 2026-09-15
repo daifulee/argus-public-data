@@ -1,31 +1,5 @@
-# ════════════════════════════════════════════════════════════════════
-# 🦅 ARGUS Stall Alert — 데이터 정체·실패 감지 → Discord 알림 + 자동 재실행
-# ════════════════════════════════════════════════════════════════════
-# 목적(원인 불문 안전망): latest.json Date 가 과도하게 stale 하거나 Data Update 가
-#   실패하면 당일 Discord 로 통보 + Data Update 자동 재실행. 6일 침묵 → 당일 통보 전환.
-#
-# 트리거 3종:
-#   ① schedule 11:30 KST 평일 — primary(07:17)+retry(08:17) 이후 신선도 점검
-#   ② workflow_run (Data Update 완료) — 실패(conclusion=failure) 감지
-#   ③ workflow_dispatch — 수동 점검
-#
-# 판정: latest.json Date 와 오늘(KST) 사이 경과 영업일(Mon-Fri) 계산.
-#   정상 = 데이터가 직전 거래일(≈영업일 1일 지연). 경과 영업일 ≥ STALE_MAX_BDAYS(2) → stale.
-#
-# 🆕 v2 (S277, 2026-07-21): briefing.html 신선도 감시 추가 — 사각지대 제거
-#   원인(S277 실측): 본 워치독은 latest.json(=데이터)만 감시 → briefing.html 이 며칠 stale 이어도
-#     알림이 없었음(07-17 기준 며칠 고정 무통보). deploy-brief-html cron 순서 역전이 원인이었으나,
-#     원인 불문 briefing 재빌드 정지를 잡는 독립 감시가 부재했던 것이 근본 사각지대.
-#   처방: checkout 로컬 briefing.html 의 '🕐 생성 YYYY-MM-DD HH:MM KST' 스탬프(빌드 시각) 파싱
-#     → 경과 영업일 ≥ STALE_MAX_BDAYS(2) 시 alert. deploy-brief-html 은 타 레포(argus-briefing)
-#     워크플로라 GITHUB_TOKEN 으로 자동 재실행 불가 → briefing 정체는 '알림만'(수동 재실행 권장 문구).
-#   격언 #107(UA) 정합.
-#
-# 🔑 선행 1회: Settings > Secrets and variables > Actions > New repository secret
-#     이름  DISCORD_WEBHOOK   값  Discord 채널 웹훅 URL (https://discord.com/api/webhooks/...)
-#   ※ 미설정 시 알림 skip(경고만). 자동 재실행은 GITHUB_TOKEN 으로 동작.
-# ════════════════════════════════════════════════════════════════════
-
+# 감시 작업은 알림만 수행한다. 데이터 재수집은 Data Update의 정규 일정이 담당한다.
+# 재실행이 다시 감시를 부르는 순환을 구조적으로 제거한다.
 name: 🚨 ARGUS Stall Alert
 
 on:
@@ -38,7 +12,7 @@ on:
 
 permissions:
   contents: read
-  actions: write                     # 자동 재실행(gh workflow run) 용
+  actions: read                      # 실행 상태 조회만 허용
 
 concurrency:
   group: argus-stall-alert
@@ -53,18 +27,17 @@ jobs:
       DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
       TRIGGER: ${{ github.event_name }}
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions
+      RUN_URL: ${{ github.event.workflow_run.html_url || format('{0}/{1}/actions', github.server_url, github.repository) }}
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: 🔎 신선도·실패 판정 + 알림 + 자동 재실행
+      - name: 🔎 신선도·실패 판정 + 알림
         run: |
           python - <<'PY'
-          import json, os, re, subprocess, urllib.request
+          import json, os, re, urllib.request
           from datetime import date, datetime, timezone, timedelta
 
           KST = timezone(timedelta(hours=9))
@@ -115,8 +88,8 @@ jobs:
 
           # ── 알림 사유 결정 ──
           reasons = []
-          if trigger == "workflow_run" and run_conclusion == "failure":
-              reasons.append("❌ Data Update 실행 **실패**")
+          if trigger == "workflow_run" and run_conclusion in ("failure", "cancelled", "timed_out", "action_required", "startup_failure"):
+              reasons.append(f"❌ Data Update 실행 미완료: {run_conclusion}")
           if err:
               reasons.append(f"🚨 {err}")
           elif gap_bdays is not None and gap_bdays >= max_bdays:
@@ -144,7 +117,7 @@ jobs:
                          f"{alert}\n"
                          f"트리거: `{trigger}` · 레포: `argus-public-data`\n"
                          f"Actions: {run_url}\n"
-                         "→ Data Update 자동 재실행 시도함.")
+                         "→ 자동 재실행하지 않음. 해당 수집 실행의 최초 오류를 확인하세요.")
               body = json.dumps({"content": content}).encode("utf-8")
               req = urllib.request.Request(hook, data=body,
                                            headers={"Content-Type": "application/json"})
@@ -152,24 +125,9 @@ jobs:
                   urllib.request.urlopen(req, timeout=20)
                   print("✅ Discord 알림 전송")
               except Exception as e:
-                  print(f"⚠️ Discord 전송 실패: {e}")
+                  print(f"⚠️ Discord 전송 실패: {type(e).__name__}")
           else:
               print("⚠️ DISCORD_WEBHOOK 미설정 — 알림 skip")
 
-          # ── 자동 재실행 (데이터 정체/실패 시 Data Update 재트리거) ──
-          #   🆕 v2: briefing 정체는 타 레포(argus-briefing) 워크플로라 GITHUB_TOKEN 트리거 불가
-          #          → briefing 단독 사유일 때는 재실행 생략(알림만). 데이터 사유가 있을 때만 재실행.
-          data_reason = (trigger == "workflow_run" and run_conclusion == "failure") \
-                        or bool(err) \
-                        or (gap_bdays is not None and gap_bdays >= max_bdays)
-          if data_reason:
-              try:
-                  subprocess.run(
-                      ["gh", "workflow", "run", "🦅 ARGUS Data Update"],
-                      check=True)
-                  print("🔁 Data Update 자동 재실행 트리거 완료")
-              except Exception as e:
-                  print(f"⚠️ 자동 재실행 실패: {e}")
-          else:
-              print("ℹ️ briefing 단독 정체 — 타 레포 워크플로라 자동 재실행 생략(수동 재실행 권장)")
+          print("ℹ️ 감시 전용 — 데이터 작업 재실행 없음")
           PY
