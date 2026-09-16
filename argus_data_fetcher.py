@@ -1,3 +1,20 @@
+# 🔧 v3.9.17 (2026-09-17, S291): SESSION-RESOLVE SELF-HEAL — 하드 중단 → 자가 백필.
+#   사건: 2026-09-15 정규 실행부터 09-16 수동 백필까지 데이터 레인이 2일 정지했다.
+#   원인(REG-S291_1): 커밋 e142e32 가 세션일 해석 실패 시 `return`(종료코드 0 · 다음 실행에서
+#   자연 복구)을 `raise SystemExit`(종료코드 1 · 스텝 실패)으로 바꿨고, 1분 뒤 e416a10 이
+#   Stall Alert 의 자동 재실행을 제거했다. 두 변경이 겹쳐 일시적 원천 미스 1회가 정지로 굳었다.
+#   또한 `_yf_series` 가 빈 결과를 무로그로 삼켜 사후 진단 자체가 불가능했다.
+#   처방 3구획:
+#     ① _yf_series — 예외/무데이터/전량NaN 세 경로를 구분해 심볼·구간·행수와 함께 항상 로그.
+#        인덱스 날짜를 US_EQUITY_TZ(ET)로 확정 후 normalize (날짜 밀림 경로 구조적 제거).
+#     ② resolve_session_date — 엄격성(expected 날짜 실제 양수 가격 요구)은 유지. 후보별
+#        행수·최신 stamp·일치 여부를 출력하고, 원천 일시 지연에 한정 재시도를 둔다
+#        (SESSION_RESOLVE_ATTEMPTS=3 · SESSION_RESOLVE_BACKOFF_S=20, env 조정 가능).
+#     ③ main — SystemExit 제거. _missing_completed_sessions() 로 저장본 최종 Date 이후
+#        완료 세션을 계산해 결측이 있으면 백필 모드 자동 진입(1회 상한 10세션, 오래된 쪽부터),
+#        결측이 없으면 정상 종료(종료코드 0). argus_stall_alert.yml 은 변경하지 않는다 —
+#        감시가 재실행을 부르는 순환은 되살리지 않고, 복구를 파이프라인 안에 둔다.
+#   자본 엔진 로직 변경 0건. 데이터 스키마 변경 0건.
 # 🔧 v3.9.16 (2026-09-11, S290): VIX3M EXACT-DATE SOURCE FALLBACK — Yahoo hole 차단.
 #   PHASE A 실환경에서 2026-07-28 ^VIX3M Yahoo exact-date bar 가 누락되어 MARKET_IMMUTABLE
 #   36열 중 35열만 동결되고 migration bundle 이 fail-closed 됐다. 전일값 대체는 금지다.
