@@ -1,10 +1,10 @@
 {
   "schema": "transition_alert/1.2",
-  "date": "2026-09-14",
+  "date": "2026-09-16",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
-  "ledger_as_of": "2026-09-10",
+  "ledger_as_of": "2026-09-14",
   "prev": {
     "TLT": 0.3,
     "XLE": 0.7
@@ -14,7 +14,14 @@
     "TLT": 0.3,
     "XLE": 0.7
   },
-  "gate_exits": [],
+  "gate_exits": [
+    {
+      "ticker": "TLT",
+      "type": "HALF",
+      "reason": "TLT_DXY",
+      "weight": 0.15
+    }
+  ],
   "entries": [],
   "reweights": [],
   "position_state": {
@@ -24,8 +31,8 @@
       "entry_score": 2.6,
       "entry_threshold": 2.5,
       "target_days": 126,
-      "held_days": 27,
-      "weight_factor": 1.0,
+      "held_days": 29,
+      "weight_factor": 0.5,
       "level": "C",
       "weight": 0.3,
       "score_recovered": false
@@ -36,7 +43,7 @@
       "entry_score": 3.9,
       "entry_threshold": 2.5,
       "target_days": 63,
-      "held_days": 8,
+      "held_days": 10,
       "weight_factor": 1.0,
       "level": "B",
       "weight": 0.7,
@@ -44,25 +51,25 @@
     }
   },
   "turnover": 0.0,
-  "engine_actionable": false,
+  "engine_actionable": true,
   "brokerage": {
     "schema": "brokerage_transition/1.1",
     "available": true,
     "as_of_statement": "2026-09-09",
-    "market_as_of": "2026-09-14",
+    "market_as_of": "2026-09-16",
     "positions": {
       "SLV": {
         "shares": 4391.0,
-        "price": 56.84000015258789,
-        "value": 249584.44067001343
+        "price": 57.04999923706055,
+        "value": 250506.54664993286
       },
       "ITA": {
         "shares": 298.0,
-        "price": 216.7700042724609,
-        "value": 64597.46127319335
+        "price": 215.2700042724609,
+        "value": 64150.46127319335
       }
     },
-    "positions_value": 314181.9019432068,
+    "positions_value": 314657.0079231262,
     "cash_amount": null,
     "nav": null,
     "exact_weighting": false,
@@ -70,10 +77,10 @@
     "current_weights": {},
     "cash_weight": null,
     "target_weights": {
-      "TLT": 0.30000000000000004,
+      "TLT": 0.29999999999999993,
       "XLE": 0.7
     },
-    "target_cash_weight": 0.0,
+    "target_cash_weight": 1.1102230246251565e-16,
     "orders": [
       {
         "ticker": "XLE",
@@ -91,20 +98,9 @@
         "action": "NEW_BUY",
         "shares": 0.0,
         "current_weight": null,
-        "target_weight": 0.30000000000000004,
+        "target_weight": 0.29999999999999993,
         "delta_weight": null,
         "current_value": null,
-        "target_value": null,
-        "delta_value": null
-      },
-      {
-        "ticker": "ITA",
-        "action": "SELL_ALL",
-        "shares": 298.0,
-        "current_weight": null,
-        "target_weight": 0.0,
-        "delta_weight": null,
-        "current_value": 64597.46127319335,
         "target_value": null,
         "delta_value": null
       },
@@ -115,7 +111,18 @@
         "current_weight": null,
         "target_weight": 0.0,
         "delta_weight": null,
-        "current_value": 249584.44067001343,
+        "current_value": 250506.54664993286,
+        "target_value": null,
+        "delta_value": null
+      },
+      {
+        "ticker": "ITA",
+        "action": "SELL_ALL",
+        "shares": 298.0,
+        "current_weight": null,
+        "target_weight": 0.0,
+        "delta_weight": null,
+        "current_value": 64150.46127319335,
         "target_value": null,
         "delta_value": null
       }
@@ -129,6 +136,6 @@
   },
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-15T02:58:44",
+  "generated_at": "2026-09-16T21:45:34",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
