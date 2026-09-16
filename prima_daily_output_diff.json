@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-14",
+  "date": "2026-09-16",
   "changed": false,
   "entered": [],
   "exited": [],
@@ -10,14 +10,14 @@
     "TLT": 0.3
   },
   "src": "ledger",
-  "ledger_as_of": "2026-09-10",
+  "ledger_as_of": "2026-09-14",
   "repro_positions": {
-    "TLT": 0.6837,
-    "XLE": 0.3163
+    "XLE": 0.7,
+    "TLT": 0.3
   },
   "exposure": 1.0,
   "actions": "",
-  "repro_actions": "",
+  "repro_actions": "HALF_SELL TLT (TLT_DXY)",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-15T02:58:09Z"
+  "generated_utc": "2026-09-16T21:44:59Z"
 }
