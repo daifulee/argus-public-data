@@ -649,6 +649,9 @@ SEMI_SIGNAL_DEF = {
 #   - 두 소스 모두 실패: fail-closed (행 날조/휴일 행 생성 금지)
 # ═══════════════════════════════════════════════════════════════════════════
 US_EQUITY_CALENDAR_NAME = "XNYS"
+# 🆕 v3.9.17 (S291): 일봉의 세션 날짜는 거래소 현지(ET) 날짜다. UTC 벽시계 변환으로
+#   날짜가 밀리는 경로를 구조적으로 제거하기 위해 단일 상수로 고정한다.
+US_EQUITY_TZ = "America/New_York"
 SESSION_CALENDAR_REPORT_PATH = os.path.join(SCRIPT_DIR, "calendar_integrity_report.json")
 # 🔧 v3.9.9: 역사 시간축 재구축은 명시적 모드에서만. 기본값 0 (일일 실행 보호).
 CALENDAR_MIGRATION_MODE = os.environ.get("CALENDAR_MIGRATION_MODE", "0") == "1"
@@ -2462,16 +2465,31 @@ def _yf_batch(symbols: list, start: str, end: str, exact_date=None) -> dict:
         return {}
 
 
-def _yf_series(symbol: str, start: str, end: str) -> pd.Series:
+def _yf_series(symbol: str, start: str, end: str, *, quiet: bool = False) -> pd.Series:
     """단일 티커 히스토리 → Series.
     🔧 v3.8 (S후속): yfinance 1.x 는 단일 티커도 MultiIndex 컬럼((Price,Ticker))으로 반환 →
         raw["Close"] 가 DataFrame 이 되어 이후 float(series.iloc[-1]) 크래시 유발
         (백필/저커버 VIX3M 경로 exit 1). MultiIndex 평탄화 + 1D 강제로 Series 보장(근본 처방).
+
+    🔧 v3.9.17 (S291) — REG-S291_1 결함 1·2 처방
+        ① 빈 반환을 무로그로 삼키지 않는다. 2026-09-15 정지 사건에서, 실패한 실행이
+           원천으로부터 무엇을 받았는지 사후에 알 방법이 아예 없었다. 진단 불가 자체가 결함이다.
+           이제 '예외' · '무데이터' · '전량 NaN' 세 경로를 구분해 항상 남긴다.
+        ② 인덱스 날짜를 거래소 시간대(ET)로 확정한다. 기존 `tz_localize(None)` 은
+           tz-aware 인덱스를 UTC 벽시계로 변환하므로, 일봉 stamp 가 00:00 ET 가 아닌
+           경우 날짜가 밀릴 여지가 있었다. 일봉의 세션 날짜는 ET 날짜다.
+           ⚠️ 실측 단서: 가짜 yf.download 주입 시험(naive / ET 00:00 / UTC 20:00)에서
+              기존본과 산출본의 반환 날짜는 **전부 동일**했다. 즉 이 항목은 관측된 버그의
+              수정이 아니라 날짜 밀림 경로를 구조적으로 제거하는 방어다. 과대주장 금지.
+              시험 환경 pandas 3.0.2 · yfinance 1.7.0 (requirements 는 pandas>=2.0 미고정).
     """
     try:
         raw = yf.download(symbol, start=start, end=end,
                           auto_adjust=True, progress=False)
         if raw is None or len(raw) == 0:
+            if not quiet:
+                print(f"    ⚠️  _yf_series 무데이터: {symbol} [{start}~{end}] "
+                      f"rows=0 · 예외 없음 (원천 미노출 또는 일시 차단)")
             return pd.Series(dtype=float)
         # yfinance 1.x MultiIndex 컬럼 평탄화 (top level = Price 필드)
         if isinstance(raw.columns, pd.MultiIndex):
@@ -2481,10 +2499,18 @@ def _yf_series(symbol: str, start: str, end: str) -> pd.Series:
         if isinstance(s, pd.DataFrame):   # 중복 라벨 방어 → 첫 열
             s = s.iloc[:, 0]
         s = s.dropna()
-        s.index = pd.to_datetime(s.index).tz_localize(None)
+        idx = pd.to_datetime(s.index)
+        if getattr(idx, "tz", None) is not None:
+            idx = idx.tz_convert(US_EQUITY_TZ).tz_localize(None)
+        s.index = idx.normalize()
+        if len(s) == 0 and not quiet:
+            print(f"    ⚠️  _yf_series 전량 NaN: {symbol} [{start}~{end}] "
+                  f"원행={len(raw)} → 유효 0")
         return s
     except Exception as e:
-        print(f"    ⚠️  {symbol}: {e}")
+        if not quiet:
+            print(f"    ⚠️  _yf_series 예외: {symbol} [{start}~{end}] "
+                  f"{type(e).__name__}: {e}")
         return pd.Series(dtype=float)
 
 
@@ -2495,34 +2521,110 @@ def _yf_series(symbol: str, start: str, end: str) -> pd.Series:
 #   fail-safe: 전 후보 실패 시 None → 호출부가 fetch 생략 (행 날조 금지)
 # ═══════════════════════════════════════════════════════════════════════════
 SESSION_REF_TICKERS = ["SPY", "QQQ", "GLD"]   # 순차 시도 (단일 티커 장애 방어)
+# 🆕 v3.9.17 (S291): 원천의 일시 지연·빈 응답에 대한 한정 재시도. 무한 재시도가 아니다.
+SESSION_RESOLVE_ATTEMPTS = int(os.getenv("SESSION_RESOLVE_ATTEMPTS", "3"))
+SESSION_RESOLVE_BACKOFF_S = float(os.getenv("SESSION_RESOLVE_BACKOFF_S", "20"))
 
 
-def resolve_session_date(ref_tickers=None, lookback_days=10):
-    """마지막 완료 세션의 실제 가격이 확인된 날짜만 반환한다."""
+def resolve_session_date(ref_tickers=None, lookback_days=10,
+                         attempts=None, backoff_s=None):
+    """마지막 완료 세션의 실제 가격이 확인된 날짜만 반환한다.
+
+    🔧 v3.9.17 (S291) — REG-S291_1 결함 2 처방
+
+    엄격성은 유지한다. expected 날짜의 실제 양수 가격을 요구하는 것은 라벨과 내용이
+    어긋난 carry row 를 막는 정당한 강화이며, 그 자체는 옳다. 바꾼 것은 두 가지다.
+
+      ① 후보별로 '무엇을 받았는지'(행수 · 최신 stamp · 일치 여부)를 반드시 남긴다.
+         기존 구현은 미스와 빈 응답과 예외를 모두 같은 한 줄로 뭉개 진단을 불가능하게 했다.
+      ② 일시적 원천 지연에 한정 재시도를 둔다.
+
+    재시도까지 실패하면 None 을 돌려준다. 최종 처분(백필 자동 진입 여부)은 호출부가 한다.
+    이 함수는 판단하지 않고 사실만 보고한다.
+    """
     expected = last_completed_us_equity_session()
     if expected is None:
-        print("세션 확인 불가: 완료 거래일 계산 실패")
+        print("🔴 세션 확인 불가: 완료 거래일 계산 실패 (XNYS 캘린더 부재)")
         return None
-    refs = ref_tickers or SESSION_REF_TICKERS
+    refs = list(ref_tickers or SESSION_REF_TICKERS)
+    n_try = max(1, int(SESSION_RESOLVE_ATTEMPTS if attempts is None else attempts))
+    wait = float(SESSION_RESOLVE_BACKOFF_S if backoff_s is None else backoff_s)
     start = str(expected - timedelta(days=lookback_days))
     end = str(expected + timedelta(days=1))
-    for tk in refs:
-        try:
-            ser = _yf_series(tk, start, end)
-            if ser is None or len(ser) == 0:
-                continue
-            # 최신 행 번호 대신 기대 날짜의 실제 양수 가격을 검사한다.
-            # 오래된 첫 종목이 뒤의 정상 종목 확인을 막지 않는다.
-            for stamp, value in ser.items():
-                if pd.Timestamp(stamp).date() != expected:
+    print(f"  🕰️ 세션 확인 시작: expected={expected} · 구간 [{start}~{end}] · "
+          f"후보 {refs} · 최대 {n_try}회")
+
+    for attempt in range(1, n_try + 1):
+        for tk in refs:
+            try:
+                ser = _yf_series(tk, start, end)
+                if ser is None or len(ser) == 0:
+                    print(f"  🔎 {attempt}/{n_try} {tk:5s} 행 0 — 다음 후보")
                     continue
-                price = float(value)
-                if pd.notna(price) and 0 < price < float("inf"):
+                stamps = [pd.Timestamp(s).date() for s in ser.index]
+                hit = None
+                for stamp, value in ser.items():
+                    if pd.Timestamp(stamp).date() != expected:
+                        continue
+                    price = float(value)
+                    if pd.notna(price) and 0 < price < float("inf"):
+                        hit = price
+                        break
+                print(f"  🔎 {attempt}/{n_try} {tk:5s} 행 {len(ser):3d} · "
+                      f"최신 {max(stamps)} · expected {expected} · "
+                      + (f"✅ 일치 {hit:.4f}" if hit is not None else "🔴 미일치"))
+                if hit is not None:
                     return expected
-        except Exception as exc:
-            print(f"기준 종목 확인 실패: {tk} ({type(exc).__name__})")
-    print(f"완료 세션 가격 미확보: expected={expected} — 이전 날짜로 대체하지 않음")
+            except Exception as exc:
+                print(f"  🔴 {attempt}/{n_try} {tk:5s} 예외 {type(exc).__name__}: {exc}")
+        if attempt < n_try:
+            print(f"  ⏳ 전 후보 미확보 — {wait:.0f}초 후 재시도")
+            time.sleep(wait)
+
+    print(f"🔴 완료 세션 가격 미확보: expected={expected} "
+          f"({n_try}회 시도 · 후보 {refs}) — 이전 날짜로 대체하지 않음")
     return None
+
+
+def _missing_completed_sessions(max_days=10):
+    """저장본의 마지막 Date 이후 이미 완료된 세션 목록.
+
+    🆕 v3.9.17 (S291) — REG-S291_1 결함 3 처방의 계산부
+
+    일일 경로가 세션일 해석에 실패했을 때 '하드 중단' 대신 '스스로 백필' 하기 위한 대상.
+    2026-09-16 에 Commander 가 손으로 성공시킨 BACKFILL_START/END 경로와 같은 날짜 집합을
+    파이프라인이 스스로 계산한다. 결측이 없으면 빈 목록을 돌려주며, 그때는 복구할 것이 없다.
+    """
+    last_done = last_completed_us_equity_session()
+    if last_done is None:
+        print("  🔴 자가 복구 불가: 완료 거래일 계산 실패")
+        return []
+    if not os.path.exists(OUTPUT_PATH):
+        print("  🔴 자가 복구 불가: 저장본 부재 (시드 경로가 처리한다)")
+        return []
+    try:
+        _d = pd.read_csv(OUTPUT_PATH, usecols=[0])
+        have = pd.to_datetime(_d[_d.columns[0]], errors="coerce").dropna()
+        if have.empty:
+            print("  🔴 자가 복구 불가: 저장본에 유효 Date 없음")
+            return []
+        last_have = have.max().date()
+    except Exception as exc:
+        print(f"  🔴 저장본 최종일 확인 실패: {type(exc).__name__}: {exc}")
+        return []
+    if last_have >= last_done:
+        return []
+    try:
+        sessions = get_us_equity_regular_sessions(last_have + timedelta(days=1), last_done)
+    except Exception as exc:
+        print(f"  🔴 결측 세션 계산 실패: {type(exc).__name__}: {exc}")
+        return []
+    days = [x.date() for x in sessions if x.date() <= last_done]
+    if len(days) > max_days:
+        print(f"  ⚠️ 결측 {len(days)}개 세션 — 1회 처리 상한 {max_days}개로 절단 "
+              f"(잔여는 다음 실행이 이어서 복구)")
+        days = days[:max_days]
+    return days
 
 
 def _fred_series(sid: str, start: str) -> pd.Series:
@@ -3649,17 +3751,34 @@ def main():
     today = date.today()
     _sess = None   # 🆕 v3.9: 일일 모드에서만 확정 (backfill 모드는 None 유지)
 
+    # 🔧 v3.9.17 (S291) — REG-S291_1 결함 3 처방
+    #   커밋 e142e32 는 세션일 해석 실패 시 `return`(종료코드 0 · 다음 실행에서 자연 복구)을
+    #   `raise SystemExit`(종료코드 1 · 스텝 실패)으로 바꿨고, 1분 뒤 e416a10 이 Stall Alert 의
+    #   자동 재실행을 제거했다. 두 변경이 겹쳐 일시적 원천 미스 1회가 2일 정지로 굳었다
+    #   (2026-09-15 ~ 09-16, 수동 백필로만 복구). 처방은 감시가 재실행을 부르는 순환을
+    #   되살리는 것이 아니라, 손으로 성공했던 백필 경로를 파이프라인 안으로 들이는 것이다.
+    if not is_backfill:
+        # 🆕 v3.9 (S279): Date 원천 = 가격 원천의 마지막 거래일 (UTC 캘린더 아님)
+        _sess = resolve_session_date()
+        if _sess is None:
+            _recover = _missing_completed_sessions()
+            if _recover:
+                print(f"  🛟 v3.9.17 자가 복구 — 세션일 해석 실패 → 백필 모드 자동 진입: "
+                      f"{_recover[0]} ~ {_recover[-1]} ({len(_recover)}개 세션)")
+                target_dates, is_backfill = _recover, True
+            else:
+                print("  ✅ v3.9.17 결측 완료 세션 없음 — 저장본이 이미 최신이다. "
+                      "세션일 해석 실패는 원천 일시 장애로 판단하고 정상 종료한다 (행 날조 금지).")
+                return
+
     if is_backfill:
         if not target_dates:
             print(f"  ⏭️ 지정 범위에 NYSE 개장일 없음 — 종료")
             return
         print(f"   🌟 v3.2 BACKFILL 모드 — 대상 {len(target_dates)}개장일: "
               f"{target_dates[0]} ~ {target_dates[-1]}")
+        _sess = None
     else:
-        # 🆕 v3.9 (S279): Date 원천 = 가격 원천의 마지막 거래일 (UTC 캘린더 아님)
-        _sess = resolve_session_date()
-        if _sess is None:
-            raise SystemExit("완료 세션 가격 미확보 — 데이터 수집 중단")
         if not is_nyse_open(_sess):
             print(f"⏭️ {_sess} NYSE 휴장 판정 — fetch 생략")
             return
