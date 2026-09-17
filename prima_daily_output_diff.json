@@ -10,7 +10,7 @@
     "TLT": 0.3
   },
   "src": "ledger",
-  "ledger_as_of": "2026-09-14",
+  "ledger_as_of": "2026-09-16",
   "repro_positions": {
     "XLE": 0.7,
     "TLT": 0.3
@@ -19,5 +19,5 @@
   "actions": "",
   "repro_actions": "HALF_SELL TLT (TLT_DXY)",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-16T21:44:59Z"
+  "generated_utc": "2026-09-17T01:40:39Z"
 }
