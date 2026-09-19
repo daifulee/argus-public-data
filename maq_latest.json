@@ -1,10 +1,24 @@
 {
- "date": "2026-09-17",
- "queue": 0,
- "grade": "0",
- "base_f63": -0.23,
- "strong": [],
- "super": [],
+ "date": "2026-09-18",
+ "queue": 2,
+ "grade": "2",
+ "base_f63": 3.41,
+ "strong": [
+  {
+   "ticker": "SLV",
+   "score": 12.5,
+   "ratio": 4.17
+  },
+  {
+   "ticker": "ITA",
+   "score": 4.0,
+   "ratio": 2.0
+  }
+ ],
+ "super": [
+  "ITA",
+  "SLV"
+ ],
  "held": [
   "TLT",
   "XLE"
@@ -20,5 +34,5 @@
  "crown": "#110",
  "mode": "live",
  "capital_permission": false,
- "generated_utc": "2026-09-18T03:01:40+00:00"
+ "generated_utc": "2026-09-19T01:34:05+00:00"
 }
