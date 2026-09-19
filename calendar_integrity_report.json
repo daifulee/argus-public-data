@@ -3,21 +3,6 @@
   "invariant": "1 row = 1 completed US equity regular session",
   "pre_repair": {
     "stage": "loaded_before_fetch",
-    "rows": 425,
-    "start": "2025-01-06",
-    "end": "2026-09-16",
-    "calendar_source": "exchange_calendars:XNYS",
-    "nat_dates": 0,
-    "ghost_n": 0,
-    "ghost_dates": [],
-    "missing_n": 0,
-    "missing_dates": [],
-    "duplicate_n": 0,
-    "duplicate_dates": []
-  },
-  "repaired_missing_dates": [],
-  "final": {
-    "stage": "pre_save_final",
     "rows": 426,
     "start": "2025-01-06",
     "end": "2026-09-17",
@@ -30,5 +15,20 @@
     "duplicate_n": 0,
     "duplicate_dates": []
   },
-  "generated_utc": "2026-09-18T00:24:59Z"
+  "repaired_missing_dates": [],
+  "final": {
+    "stage": "pre_save_final",
+    "rows": 427,
+    "start": "2025-01-06",
+    "end": "2026-09-18",
+    "calendar_source": "exchange_calendars:XNYS",
+    "nat_dates": 0,
+    "ghost_n": 0,
+    "ghost_dates": [],
+    "missing_n": 0,
+    "missing_dates": [],
+    "duplicate_n": 0,
+    "duplicate_dates": []
+  },
+  "generated_utc": "2026-09-19T00:24:42Z"
 }
