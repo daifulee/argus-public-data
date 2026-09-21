@@ -1,0 +1,58 @@
+{
+ "date": "2026-09-18",
+ "queue": 0,
+ "grade": "0",
+ "base_f63": -0.23,
+ "base_f63_source": "LEGACY_RESEARCH_NOT_CAUSAL_VALIDATION",
+ "schema_version": "maq_causal/1.0",
+ "schema": "maq_causal/1.0",
+ "engine_file": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
+ "output_contract_version": "causal_quantity_v1",
+ "historical_reference_only": true,
+ "causal_calibration_verified": false,
+ "readiness": {
+  "data_fresh": true,
+  "engine_valid": true,
+  "inputs_complete": false,
+  "holdings_grounded": false,
+  "signal_ready": false,
+  "action_ready": false,
+  "reasons": [
+   "MISSING_REQUIRED_INPUTS:HYG,TIP,LQD,STLFSI",
+   "BROKER_HOLDINGS_NOT_VERIFIED"
+  ],
+  "missing_inputs": [
+   "HYG",
+   "TIP",
+   "LQD",
+   "STLFSI"
+  ],
+  "input_date": "2026-09-18",
+  "engine_date": "2026-09-18",
+  "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
+  "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
+ },
+ "target_weights": {
+  "XLE": 1.0
+ },
+ "simulated_held": [
+  "XLE"
+ ],
+ "strong": [],
+ "super": [],
+ "held": [
+  "XLE"
+ ],
+ "slots_full": false,
+ "eff_slots": 1.0,
+ "pos_src": "causal_engine_target",
+ "repro_held": [
+  "XLE"
+ ],
+ "engine": "PRIMA2_v0.5.45-SHORT_HOLD_CAUSAL-CANDIDATE",
+ "crown": "#110",
+ "mode": "live",
+ "observation_only": true,
+ "capital_permission": false,
+ "generated_utc": "2026-09-21T14:36:33+00:00"
+}
