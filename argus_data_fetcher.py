@@ -1,3 +1,37 @@
+# 🔧 v3.9.18 (2026-09-19, S291): CLOSE PROVENANCE + 신선도 계약 — 결함 S291-4 처방.
+#   사건: 2026-09-17·09-18 두 세션 동안 ETF 종가 24열 전부가 09-16 값과 동일했다
+#     (XLU 는 09-15 부터 3세션). 같은 Yahoo 출처의 매크로 단일 수집은 정상 갱신됐다 —
+#     배치 경로만 죽었다. 그런데 어디에도 그 사실이 기록되지 않았다.
+#   원인: `_yf_batch(exact_date=today)` 는 해당 세션 bar 가 없으면 `{}` 를 돌려준다
+#     (v3.9.11 MARKET CONTRACT — 인접일 stamp 금지, 이 계약 자체는 옳다).
+#     그러면 `row['<TK>_Close']` 가 설정되지 않아 NaN 이 되고,
+#     `apply_ffill_safety()` 가 모든 `*_Close` 를 **무제한·무표식** ffill 한다.
+#     v3.9.11 주석은 "기존 4단 ffill 방어가 'ffill' 라벨과 함께 정직하게 처리한다"고
+#     적었으나, 그 라벨은 매크로에만 있다. ETF 가격에는 `*_Close_source` 열이
+#     **아예 존재하지 않았다**. 주석이 코드보다 앞서 나간 경우다.
+#   파급: 엔진·브리핑이 carry-forward 가격을 실측 종가와 구분할 수단이 없었다.
+#     `calendar_integrity_report.json` 은 427행·ghost 0·missing 0 으로 PASS 했다 —
+#     행 수준 무결성은 값 수준 신선도를 보증하지 않는다.
+#   처방 5구획:
+#     ① CLOSE_SOURCE_COLS 신설 — 티커별 `<TK>_Close_source` 를 실열로 만든다.
+#        값: market_batch_live / batch_miss / ffill_carry / missing / legacy_unlabeled.
+#        legacy_unlabeled 는 '값은 있으나 출처를 소급 확정할 수 없다' 는 정직한 표기이며
+#        live 로 승격하지 않는다.
+#     ② apply_ffill_safety 가 ffill 시점에 provenance 를 확정한다. 채운 자리는
+#        반드시 ffill_carry 로 표기된다 — 무표식 carry 경로를 구조적으로 제거한다.
+#     ③ _yf_batch 재시도 (ETF_BATCH_ATTEMPTS=3 · ETF_BATCH_BACKOFF_S=20, env 조정).
+#        일시적 빈 응답과 실제 bar 부재를 구분하고, 시도별로 남긴다.
+#     ④ _stale_close_sessions() 자가 복구 — carry 로 채워진 최근 세션을 일일 경로가
+#        스스로 재수집 대상에 넣는다. v3.9.17 의 _missing_completed_sessions 와 같은 철학.
+#        행 부재만 보던 자가치유를 값 정체까지 확장한다.
+#     ⑤ 신선도 계약 — _close_freshness_snapshot() 을 calendar_integrity_report 에 싣고
+#        CLOSE_FRESHNESS 열로 노출한다. **저장을 막지 않는다.** v3.9.16 하드 중단이
+#        데이터 레인을 2일 정지시킨 전례를 반복하지 않는다. 레인은 살아서 정직하게 기록하고,
+#        행동 차단은 하류 ACTION READY 게이트가 맡는다 (DIR-S290_6 정합).
+#   ⚠️ 미조사: Yahoo 배치에 09-17·09-18 bar 가 왜 없었는지는 **자료 없음**이다.
+#      GHA 로그가 없고 컨테이너에서 외부 시세 독립 대조는 프록시가 차단했다(stooq 5종 실패).
+#      원인 추정으로 주석을 메우지 않는다. 본 패치는 '원인 제거' 가 아니라
+#      '은폐 경로 제거 + 자가 복구' 다. 과대주장 금지.
 # 🔧 v3.9.17 (2026-09-17, S291): SESSION-RESOLVE SELF-HEAL — 하드 중단 → 자가 백필.
 #   사건: 2026-09-15 정규 실행부터 09-16 수동 백필까지 데이터 레인이 2일 정지했다.
 #   원인(REG-S291_1): 커밋 e142e32 가 세션일 해석 실패 시 `return`(종료코드 0 · 다음 실행에서
@@ -631,6 +665,27 @@ LIVE_SOURCE_COLS = [
     'WALCL_source', 'WTREGEN_source', 'RRPONTSYD_source',
     'ECY_source', 'CAPE_source',  # 🌟 v3.1 (S141)
 ]
+
+# 🔧 v3.9.18 (S291) — 결함 S291-4 처방 ①: ETF 종가 provenance 열.
+#   종전 LIVE_SOURCE_COLS 는 매크로만 덮었다. ETF 가격은 ffill 되면서도 아무 표식이
+#   남지 않아 실측 종가와 carry-forward 가 구분 불가능했다.
+#   ⚠️ CLOSE_SOURCE_COLS 는 FFILL_COLS 에 **넣지 않는다.** 라벨을 ffill 하면
+#      '어제 라벨을 오늘 값에 붙이는' 바로 그 거짓이 재생산된다. 라벨은 매 실행 재확정한다.
+CLOSE_SOURCE_COLS = [f"{_t}_Close_source" for _t in ETF_TICKERS]
+
+# provenance 어휘 — 이 5개 외의 값을 쓰지 않는다.
+CLOSE_SRC_LIVE = 'market_batch_live'   # 이번 실행에서 요청 세션 bar 를 실제로 받았다
+CLOSE_SRC_MISS = 'batch_miss'          # 배치가 그 티커를 돌려주지 않았다 (bar 부재/부분 실패)
+CLOSE_SRC_CARRY = 'ffill_carry'        # 직전 유효 종가를 끌어왔다 — 실측값 아님
+CLOSE_SRC_NONE = 'missing'             # ffill 로도 채우지 못했다
+CLOSE_SRC_LEGACY = 'legacy_unlabeled'  # v3.9.18 이전 행 — 출처 소급 확정 불가
+
+# 신선도 계약 상수 (운영 가드이며 BT 판정 임계가 아니다 — Commander 승인 대상 표기)
+CLOSE_STALE_WARN_SESSIONS = int(os.getenv("CLOSE_STALE_WARN_SESSIONS", "1"))
+CLOSE_STALE_CRIT_SESSIONS = int(os.getenv("CLOSE_STALE_CRIT_SESSIONS", "2"))
+CLOSE_STALE_REPAIR_MAX = int(os.getenv("CLOSE_STALE_REPAIR_MAX", "5"))
+ETF_BATCH_ATTEMPTS = int(os.getenv("ETF_BATCH_ATTEMPTS", "3"))
+ETF_BATCH_BACKOFF_S = int(os.getenv("ETF_BATCH_BACKOFF_S", "20"))
 
 # 🌟 v2.12: LIVE_SOURCE_COLS 모두 ffill (source는 매일 갱신되지만 결측 시 어제 source 보존)
 # 🔧 v3.9.5 (S290, REG-S290_1): Yahoo 매크로 '값' 열 ffill 보호 편입.
@@ -2417,6 +2472,9 @@ def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, rep
         "pre_repair": pre_snapshot,
         "repaired_missing_dates": list(repaired_dates or []),
         "final": final,
+        # 🔧 v3.9.18 (S291) 처방 ⑤: 행 무결성 PASS 가 값 신선도를 보증하지 않는다.
+        #   결함 S291-4 는 ghost 0 · missing 0 상태에서 발생했다. 같은 보고서에 함께 싣는다.
+        "close_freshness": _close_freshness_snapshot(df),
     }
     if write_report:
         _write_calendar_integrity_report(report)
@@ -2443,7 +2501,7 @@ def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, rep
     return final
 
 
-def _yf_batch(symbols: list, start: str, end: str, exact_date=None) -> dict:
+def _yf_batch_once(symbols: list, start: str, end: str, exact_date=None) -> dict:
     """yfinance 배치 → {symbol: close}.
 
     🔴 v3.9.11 [MARKET CONTRACT] exact_date 를 주면 **그 날짜의 실제 bar** 만 채택한다.
@@ -2480,6 +2538,35 @@ def _yf_batch(symbols: list, start: str, end: str, exact_date=None) -> dict:
     except Exception as e:
         print(f"    ⚠️  배치 {symbols[:2]}...: {e}")
         return {}
+
+
+def _yf_batch(symbols: list, start: str, end: str, exact_date=None) -> dict:
+    """🔧 v3.9.18 (S291) 처방 ③ — 배치 재시도 래퍼.
+
+    결함 S291-4 에서 ETF 배치가 두 세션 연속 빈 결과를 냈는데, 단발 호출이라
+    '일시적 빈 응답' 과 '실제 bar 부재' 를 구분할 근거가 하나도 남지 않았다.
+    v3.9.17 이 세션 해석에 넣은 재시도(SESSION_RESOLVE_ATTEMPTS)와 같은 처방을
+    시장데이터 취득 지점에도 둔다. 시도별 수확량을 항상 남긴다.
+
+    ⚠️ 재시도는 Yahoo 에 bar 가 실제로 없을 때는 아무것도 바꾸지 못한다.
+       그 경우를 '해결' 한다고 주장하지 않는다 — 구분 가능하게 만들 뿐이다.
+    """
+    _best = {}
+    for _i in range(1, max(1, ETF_BATCH_ATTEMPTS) + 1):
+        _got = _yf_batch_once(symbols, start, end, exact_date=exact_date)
+        if len(_got) > len(_best):
+            _best = _got
+        if len(_got) == len(symbols):
+            if _i > 1:
+                print(f"    ✅ 배치 재시도 {_i}/{ETF_BATCH_ATTEMPTS} 전량 수집")
+            return _got
+        print(f"    🔎 배치 시도 {_i}/{ETF_BATCH_ATTEMPTS}: {len(_got)}/{len(symbols)}종")
+        if _i < ETF_BATCH_ATTEMPTS:
+            time.sleep(ETF_BATCH_BACKOFF_S)
+    if not _best:
+        print(f"    🔴 v3.9.18 배치 전량 실패 — {ETF_BATCH_ATTEMPTS}회 시도 후 0/{len(symbols)}종. "
+              f"해당 세션 종가는 carry 표기로 기록된다 (실측값 아님).")
+    return _best
 
 
 def _yf_series(symbol: str, start: str, end: str, *, quiet: bool = False) -> pd.Series:
@@ -2601,6 +2688,119 @@ def resolve_session_date(ref_tickers=None, lookback_days=10,
     print(f"🔴 완료 세션 가격 미확보: expected={expected} "
           f"({n_try}회 시도 · 후보 {refs}) — 이전 날짜로 대체하지 않음")
     return None
+
+
+def _close_freshness_snapshot(df, lookback=10):
+    """🔧 v3.9.18 (S291) 처방 ⑤ — 값 수준 신선도 계측.
+
+    행 수준 무결성(ghost/missing/duplicate)은 값이 살아 있는지 말해주지 않는다.
+    결함 S291-4 는 427행 · ghost 0 · missing 0 으로 PASS 한 상태에서 발생했다.
+    여기서는 최근 lookback 세션에 한해 티커별 연속 carry 세션 수를 센다.
+
+    status:
+      fresh          최신 세션 전 티커가 market_batch_live
+      carry          일부/전부가 carry 이나 경고 한도 이내
+      stale_critical 연속 carry 가 임계 이상 — 하류 ACTION 게이트가 차단해야 한다
+    ⚠️ 이 함수는 저장을 막지 않는다. 판단 재료를 정직하게 만들 뿐이다.
+    """
+    out = {"lookback": int(lookback), "status": "unknown", "last_session": None,
+           "live_n": 0, "carry_n": 0, "miss_n": 0, "legacy_n": 0,
+           "max_consecutive_carry": 0, "carry_tickers": [], "tickers": len(ETF_TICKERS)}
+    try:
+        if df is None or len(df) == 0:
+            return out
+        tail = df.tail(max(2, int(lookback)))
+        out["last_session"] = str(tail.index[-1].date())
+        for tk in ETF_TICKERS:
+            scol = f"{tk}_Close_source"
+            if scol not in tail.columns:
+                continue
+            _last = str(tail[scol].iloc[-1])
+            if _last == CLOSE_SRC_LIVE:
+                out["live_n"] += 1
+            elif _last == CLOSE_SRC_CARRY:
+                out["carry_n"] += 1
+            elif _last == CLOSE_SRC_NONE or _last == CLOSE_SRC_MISS:
+                out["miss_n"] += 1
+            else:
+                out["legacy_n"] += 1
+            # 뒤에서부터 연속 carry 세션 수
+            _n = 0
+            for _v in reversed(list(tail[scol].astype(str))):
+                if _v == CLOSE_SRC_CARRY:
+                    _n += 1
+                else:
+                    break
+            if _n:
+                out["carry_tickers"].append(f"{tk}:{_n}")
+                out["max_consecutive_carry"] = max(out["max_consecutive_carry"], _n)
+        _m = out["max_consecutive_carry"]
+        if _m >= CLOSE_STALE_CRIT_SESSIONS:
+            out["status"] = "stale_critical"
+        elif _m >= CLOSE_STALE_WARN_SESSIONS or out["carry_n"] or out["miss_n"]:
+            out["status"] = "carry"
+        elif out["live_n"]:
+            out["status"] = "fresh"
+        else:
+            out["status"] = "unlabeled_history"
+    except Exception as exc:
+        out["error"] = f"{type(exc).__name__}: {exc}"
+    return out
+
+
+def _stale_close_sessions(max_days=None):
+    """🔧 v3.9.18 (S291) 처방 ④ — carry 로 채워진 최근 세션을 스스로 재수집 대상에 넣는다.
+
+    v3.9.17 의 _missing_completed_sessions 는 **행 부재** 만 봤다. 결함 S291-4 는
+    행은 있고 값만 가짜였으므로 그 자가치유에 걸리지 않았다. 같은 철학을 값 정체로 확장한다.
+
+    provenance 열이 있는 행은 라벨로 판정한다. v3.9.18 이전 행은 라벨이 없으므로
+    '직전 세션과 종가 8종 이상이 소수점까지 동일' 이라는 휴리스틱으로 의심 행을 찾는다.
+    ⚠️ 휴리스틱은 추정이다 — 그렇게 찾은 날짜는 '재수집 시도' 대상일 뿐, 가짜로 확정하지 않는다.
+    """
+    if max_days is None:
+        max_days = CLOSE_STALE_REPAIR_MAX
+    if not os.path.exists(OUTPUT_PATH):
+        return []
+    try:
+        d = pd.read_csv(OUTPUT_PATH, index_col=0, parse_dates=True).sort_index()
+    except Exception as exc:
+        print(f"  ⚠️ 정체 세션 계산 생략 — {type(exc).__name__}: {exc}")
+        return []
+    if len(d) < 2:
+        return []
+    tail = d.tail(max(2, int(max_days) + 1))
+    bad = []
+    for i in range(1, len(tail)):
+        ts = tail.index[i]
+        labeled, carry = 0, 0
+        for tk in ETF_TICKERS:
+            scol = f"{tk}_Close_source"
+            if scol in tail.columns and pd.notna(tail[scol].iloc[i]):
+                labeled += 1
+                if str(tail[scol].iloc[i]) == CLOSE_SRC_CARRY:
+                    carry += 1
+        if labeled:
+            if carry:
+                bad.append((ts.date(), f"라벨 carry {carry}/{labeled}종"))
+            continue
+        same, both = 0, 0
+        for tk in ETF_TICKERS:
+            c = f"{tk}_Close"
+            if c not in tail.columns:
+                continue
+            a, b = tail[c].iloc[i - 1], tail[c].iloc[i]
+            if pd.notna(a) and pd.notna(b):
+                both += 1
+                if float(a) == float(b):
+                    same += 1
+        if both >= 8 and same >= 8 and same == both:
+            bad.append((ts.date(), f"휴리스틱 전종 동일 {same}/{both}종 (추정)"))
+    if bad:
+        print(f"  🟠 v3.9.18 종가 정체 의심 세션 {len(bad)}건 — 재수집 대상에 편입")
+        for _d, _why in bad:
+            print(f"     · {_d}  {_why}")
+    return [x[0] for x in bad][-int(max_days):]
 
 
 def _missing_completed_sessions(max_days=10):
@@ -2997,7 +3197,18 @@ def fetch_today_row(target_date=None, is_backfill=None) -> dict:
     etf_data = _yf_batch(ETF_TICKERS, s, e, exact_date=today)
     for tk, val in etf_data.items():
         row[f"{tk}_Close"] = val
+    # 🔧 v3.9.18 (S291) 처방 ①: 수집 성공/실패를 티커별로 즉시 기록한다.
+    #   여기서 라벨을 확정하지 않으면 apply_ffill_safety 가 legacy_unlabeled 로만 남긴다.
+    for tk in ETF_TICKERS:
+        row[f"{tk}_Close_source"] = CLOSE_SRC_LIVE if tk in etf_data else CLOSE_SRC_MISS
+    _miss = [t for t in ETF_TICKERS if t not in etf_data]
     print(f"    ETF: {len(etf_data)}/{len(ETF_TICKERS)}종 수집")
+    if _miss:
+        print(f"    🟠 v3.9.18 미수집 {len(_miss)}종: {_miss[:12]}"
+              + (" ..." if len(_miss) > 12 else ""))
+        if len(_miss) == len(ETF_TICKERS):
+            print(f"    🔴 v3.9.18 {today} 세션 ETF 전량 미수집 — "
+                  f"이 행의 종가는 전부 carry 가 된다. 실측 종가가 아니다.")
 
     # ② 매크로 — 개별
     # 🌟 v2.12 (S69 #5, Commander 본질 통찰 #13): source 컬럼 신설
@@ -3181,6 +3392,11 @@ def apply_ffill_safety(df: pd.DataFrame) -> pd.DataFrame:
     #   브리핑 $0.00 표시 차단 + 다음 실행 시 기존 NaN row도 소급 정정.
     #   격언 #75 v4 source 정합 (매크로 4단 방어 ffill 철학을 ETF 가격으로 확장).
     close_cols = [c for c in df.columns if c.endswith('_Close')]
+
+    # 🔧 v3.9.18 (S291) 처방 ②: ETF 종가는 채우기 **전에** 결측 위치를 기억하고,
+    #   채운 뒤 그 자리를 ffill_carry 로 표기한다. 무표식 carry 경로를 구조적으로 없앤다.
+    _pre_na = {c: df[c].isna().copy() for c in close_cols if c in df.columns}
+
     for col in list(FFILL_COLS) + close_cols:
         if col not in df.columns:
             continue
@@ -3189,8 +3405,32 @@ def apply_ffill_safety(df: pd.DataFrame) -> pd.DataFrame:
         after = df[col].isna().sum()
         if before > after:
             filled_count[col] = before - after
+
+    _carry_n = 0
+    for col, was_na in _pre_na.items():
+        scol = f"{col}_source"
+        # ⚠️ dtype 계약: 문자열 라벨 열이다. float64 로 생기면 pandas 3.x 가
+        #   문자열 대입을 TypeError 로 거부한다 (검증에서 실제로 잡힌 결함).
+        #   새로 만들 때도, CSV 에서 전량 NaN(float64) 으로 읽혀온 때도 object 로 고정한다.
+        if scol not in df.columns:
+            df[scol] = pd.Series([np.nan] * len(df), index=df.index, dtype=object)
+        elif df[scol].dtype != object:
+            df[scol] = df[scol].astype(object)
+        now_na = df[col].isna()
+        # ① 이번에 ffill 로 채운 자리 → carry (기존 라벨을 덮어쓴다: 값이 carry 이므로)
+        _filled = was_na & (~now_na)
+        df.loc[_filled, scol] = CLOSE_SRC_CARRY
+        _carry_n += int(_filled.sum())
+        # ② 여전히 결측
+        df.loc[now_na, scol] = CLOSE_SRC_NONE
+        # ③ 값은 있는데 라벨이 없는 과거 행 → legacy_unlabeled (live 로 승격하지 않는다)
+        _unl = (~now_na) & (~was_na) & df[scol].isna()
+        df.loc[_unl, scol] = CLOSE_SRC_LEGACY
+
     if filled_count:
         print(f"    ffill 보강: {filled_count}")
+    if _carry_n:
+        print(f"    🟠 v3.9.18 ETF 종가 carry 표기 {_carry_n}칸 → {CLOSE_SRC_CARRY}")
     return df
 
 
@@ -3822,6 +4062,16 @@ def main():
         if _sess != today:
             print(f"  🕯️ v3.9 세션일 stamp: UTC today={today} → 마지막 거래일={_sess} (carry row 차단)")
         target_dates = [_sess]
+        # 🔧 v3.9.18 (S291) 처방 ④: 종가가 carry 로 채워진 최근 세션을 스스로 다시 받는다.
+        #   v3.9.17 자가치유는 행 부재만 봤다. 결함 S291-4 는 행이 있고 값만 가짜였다.
+        try:
+            _stale = [x for x in _stale_close_sessions() if x != _sess]
+            if _stale:
+                target_dates = _stale + target_dates
+                print(f"  🩹 v3.9.18 종가 재수집 {len(_stale)}건 선행: "
+                      f"{[str(x) for x in _stale]}")
+        except Exception as _se:
+            print(f"  ⚠️ v3.9.18 정체 세션 편입 생략 — {type(_se).__name__}: {_se}")
 
     _calendar_pre_snapshot = None
     _calendar_repaired_dates = []
@@ -4234,6 +4484,32 @@ def main():
         else:
             print("  ✅ v3.9.5 무결성 게이트 통과 (라벨-값 정합 · 값 소거 0건)")
     _integrity_gate(df)
+
+    # 🔧 v3.9.18 (S291) 처방 ⑤: 신선도 경보.
+    #   🔴 **저장을 막지 않는다.** v3.9.16 의 하드 중단이 데이터 레인을 2일 정지시킨
+    #   전례(REG-S291_1)를 반복하지 않는다. 레인은 살아서 정직하게 기록하고,
+    #   행동 차단은 하류 ACTION READY 게이트가 맡는다 (DIR-S290_6 정합).
+    def _close_freshness_gate(_df):
+        _fr = _close_freshness_snapshot(_df)
+        _st = _fr.get("status")
+        _mark = {"fresh": "✅", "carry": "🟠", "stale_critical": "🔴"}.get(_st, "⚪")
+        print(f"  {_mark} v3.9.18 종가 신선도 [{_st}] 최신 {_fr.get('last_session')} · "
+              f"live {_fr['live_n']} · carry {_fr['carry_n']} · miss {_fr['miss_n']} · "
+              f"legacy {_fr['legacy_n']} / {_fr['tickers']}종")
+        if _fr["max_consecutive_carry"]:
+            print(f"     최대 연속 carry {_fr['max_consecutive_carry']}세션 · "
+                  f"{_fr['carry_tickers'][:12]}")
+        if _st == "stale_critical":
+            print(f"  🔴 v3.9.18 CLOSE STALE CRITICAL — 연속 carry "
+                  f"{_fr['max_consecutive_carry']}세션 ≥ {CLOSE_STALE_CRIT_SESSIONS}. "
+                  f"이 종가는 실측값이 아니다.")
+            print(f"     저장은 진행한다(레인 생존). 하류 소비자는 이 행으로 행동하지 말 것.")
+        try:
+            _df["CLOSE_FRESHNESS"] = _st
+        except Exception:
+            pass
+        return _fr
+    _close_freshness_gate(df)
 
     print_quality(df)
     
