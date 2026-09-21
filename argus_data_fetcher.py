@@ -1,3 +1,24 @@
+# 🔧 v3.9.19 (2026-09-21, S291): RE-FETCH PIT SEMANTICS — 결함 S291-8 처방. **v3.9.18 의 자기 결함 정정.**
+#   사건: v3.9.18 의 자가 재수집(처방 ④)이 2026-09-17·09-18 을 다시 받으면서
+#     F&G 를 CNN **현재값**(2026-09-21 의 29.114286)으로 두 날짜에 똑같이 박았다.
+#     CCSA 도 현재 주간값 1,730,000 이 양일 동일하게 들어갔다. 미래정보 오염이다.
+#   원인: v3.2 는 이미 이 위험을 알고 `if is_backfill:` 분기에 방어를 두었다 —
+#     F&G 는 CNN 현재값 금지 후 `_calculate_fg_argus_proxy(row)` 로 target 날짜 VIX/OAS 에서
+#     산출하고 source 를 `argus_proxy_backfill` 로 남긴다. 실증: 2026-09-15 행은
+#     수동 백필로 들어와 그 라벨을 달고 있다.
+#     그런데 v3.9.18 은 정체 세션을 `target_dates` 앞에 끼워 넣기만 하고
+#     `is_backfill` 을 True 로 올리지 않았다. 재수집 루프가 통째로 '오늘' 의미론으로 돌았다.
+#     **방어는 있었고, 새 경로가 그 옆을 지나갔다.**
+#   처방: 백필 여부를 실행 단위가 아니라 **날짜 단위**로 판정한다.
+#     세션일(_sess) 이 아닌 모든 target 은 백필이다 — 재수집이든 지정 범위든 구분 없이.
+#     한 줄 변경이며 신규 개념 0. 가격(ETF·매크로)은 이미 `exact_date` 계약으로 정확했으므로
+#     이 변경의 대상은 '현재값' 계열(F&G·PMI)뿐이다.
+#   🔴 자본 영향: 없음. `F_G_Score`·`CCSA` 는 엔진이 읽지 않는다 (grep 0건).
+#     브리핑도 `F_G_Score` 를 소비하지 않는다. 계측·원장 위생 사안이다.
+#     다만 다음에 이 열을 소비하는 신호가 생기면 자본 사안이 된다 — 그 전에 닫는다.
+#   ⚠️ 이미 기록된 2026-09-17·09-18 의 F&G 는 이 패치가 소급 정정하지 않는다.
+#     라벨(`cnn_api`)은 거짓이 아니다 — 실제로 CNN API 에서 왔다. 다만 그 날짜의 값이 아니다.
+#     소급 정정 여부는 Commander 판단 사안으로 남긴다 (역사 재작성이므로).
 # 🔧 v3.9.18 (2026-09-19, S291): CLOSE PROVENANCE + 신선도 계약 — 결함 S291-4 처방.
 #   사건: 2026-09-17·09-18 두 세션 동안 ETF 종가 24열 전부가 09-16 값과 동일했다
 #     (XLU 는 09-15 부터 3세션). 같은 Yahoo 출처의 매크로 단일 수집은 정상 갱신됐다 —
@@ -4155,9 +4176,17 @@ def main():
                 _sel = df.loc[_tgt_ts]
                 _prev_row = _sel.iloc[-1] if isinstance(_sel, pd.DataFrame) else _sel
                 df = df[df.index != _tgt_ts]
-            _label = "백필" if is_backfill else "오늘"
+            # 🔧 v3.9.19 (S291) 결함 S291-8 처방: 백필 여부는 **날짜 단위**로 판정한다.
+            #   v3.9.18 의 정체 세션 재수집은 실행 단위 플래그가 False 인 채로 돌아
+            #   F&G 에 CNN 현재값이 들어갔다(2026-09-17·09-18 양일 29.114286 동일).
+            #   세션일이 아닌 target 은 그것이 무엇이든 과거다 — 과거를 '오늘' 로 수집하지 않는다.
+            _tgt_is_backfill = bool(is_backfill or (_sess is not None and _tgt != _sess))
+            _label = "백필" if _tgt_is_backfill else "오늘"
+            if _tgt_is_backfill and not is_backfill:
+                print(f"  🕰️ v3.9.19 재수집 {_tgt} — 세션일({_sess}) 아님 → 백필 의미론 적용 "
+                      f"(F&G 현재값 금지 · PIT 방어 경유)")
             print(f"  📡 {_label} 행 수집 ({_tgt})...")
-            new_row = fetch_today_row(target_date=_tgt, is_backfill=is_backfill)  # 🆕 v3.9 명시 전달
+            new_row = fetch_today_row(target_date=_tgt, is_backfill=_tgt_is_backfill)
             if _prev_row is not None:
                 _restored = []
                 for _c, _v in _prev_row.items():
