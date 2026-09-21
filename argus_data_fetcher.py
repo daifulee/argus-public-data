@@ -1,4 +1,4 @@
-# 운영연결 v3.9.20: HYG/TIP/LQD 정확 세션 수집·STLFSI 당시 판본·미확인 차단
+# 🔧 v3.9.21: 동일 세션 센서 재수집·당시 판본 오류 원인 보존
 # 🔧 v3.9.19 (2026-09-21, S291): RE-FETCH PIT SEMANTICS — 결함 S291-8 처방. **v3.9.18 의 자기 결함 정정.**
 #   사건: v3.9.18 의 자가 재수집(처방 ④)이 2026-09-17·09-18 을 다시 받으면서
 #     F&G 를 CNN **현재값**(2026-09-21 의 29.114286)으로 두 날짜에 똑같이 박았다.
@@ -3214,8 +3214,10 @@ def fetch_stress_asof(target_date, request_get=None):
               "STLFSI_status": "missing_vintage", "STLFSI_asof_date": day,
               "STLFSI_observation_date": None,
               "STLFSI_retrieved_at": datetime.now(timezone.utc).isoformat(),
-              "STLFSI_series_id": STRESS_SERIES_ID}
+              "STLFSI_series_id": STRESS_SERIES_ID,
+              "STLFSI_error_code": "NO_VALID_ASOF_OBSERVATION"}
     if not FRED_API_KEY:
+        result["STLFSI_error_code"] = "FRED_API_KEY_MISSING"
         return result
     get = request_get or requests.get
     try:
@@ -3234,12 +3236,13 @@ def fetch_stress_asof(target_date, request_get=None):
                     or pd.isna(end) or observed > target or not start <= target <= end):
                 continue
             result.update(STLFSI=float(value), STLFSI_source="fred_vintage_asof",
-                          STLFSI_status="verified_asof",
+                          STLFSI_status="verified_asof", STLFSI_error_code="",
                           STLFSI_observation_date=observed.strftime("%Y-%m-%d"))
             break
     except Exception:
         # 예외 문자열에는 요청 인증정보가 들어갈 수 있으므로 저장하지 않는다.
         result["STLFSI_status"] = "request_failed"
+        result["STLFSI_error_code"] = "FRED_REQUEST_FAILED"
     return result
 
 
@@ -4088,9 +4091,13 @@ def main():
                       f"{_recover[0]} ~ {_recover[-1]} ({len(_recover)}개 세션)")
                 target_dates, is_backfill = _recover, True
             else:
-                print("  ✅ v3.9.17 결측 완료 세션 없음 — 저장본이 이미 최신이다. "
-                      "세션일 해석 실패는 원천 일시 장애로 판단하고 정상 종료한다 (행 날조 금지).")
-                return
+                # 날짜 행이 있어도 새 센서 열이 없을 수 있다. 날짜만 보고 종료하지 않는다.
+                # 독립 거래소 달력이 확인한 완료 세션을 다시 수집하며 값은 정확일 관측만 허용한다.
+                _sess = last_completed_us_equity_session()
+                if _sess is None:
+                    print("  ⚠️ 완료 세션 확인 불가 — 원천 날짜를 추정하지 않고 종료")
+                    return
+                print(f"  🩹 원천 세션 조회 실패 — 거래소 확인 완료 세션 {_sess} 재수집")
 
     if is_backfill:
         if not target_dates:
