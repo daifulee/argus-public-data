@@ -1,0 +1,26 @@
+{
+  "schema": "causal_target_diff/1.0",
+  "previous_date": null,
+  "comparable": false,
+  "date": "2026-09-18",
+  "changed": false,
+  "actionable": false,
+  "src": "causal_engine_target",
+  "positions": {
+    "XLE": 1.0
+  },
+  "target_cash_weight": 0.0,
+  "simulated_positions": {
+    "XLE": 0.990560884232597
+  },
+  "simulated_cash_weight": 0.009439115767403078,
+  "observations": [],
+  "entered": [],
+  "exited": [],
+  "reweighted": [],
+  "actions": "",
+  "simulated_actions": [],
+  "change_reason": "새 계약 첫 기록 — 과거 행과 비교하지 않음",
+  "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
+  "generated_utc": "2026-09-21T09:16:57.359367+00:00"
+}
