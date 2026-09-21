@@ -1,0 +1,176 @@
+{
+  "kind": "immutable_legacy_scoreboard_archive",
+  "selection": "latest_observed_version_before_20260921_reset",
+  "source_sha256": "41bfc7dda4deff0748214867f106b894585d0e5639577eb4a246fd695b03a6ff",
+  "rows": 68,
+  "recomputed": false,
+  "new_engine_performance": false,
+  "capital_permission": false,
+  "recovery_evidence": {
+    "repository": "daifulee/argus-public-data",
+    "path": "oracle/scoreboard.csv",
+    "mode": "read_only_original_bytes",
+    "files": [
+      {
+        "commit": "d6676c4a5fc4543604060b2086a860bb645935be",
+        "committed_at": "2026-09-21T09:19:24Z",
+        "source_url": "https://raw.githubusercontent.com/daifulee/argus-public-data/d6676c4a5fc4543604060b2086a860bb645935be/oracle/scoreboard.csv",
+        "local_path": "/workspace/scratch/07d4c6dbbace/operating_integration/audit/scoreboard_recovery/scoreboard_d6676c4a5fc4543604060b2086a860bb645935be.csv",
+        "bytes": 108,
+        "sha256": "cbd10df3270249480abc1a853313193596a4ac9c0780a4dfdb217242008a0420",
+        "data_rows": 1,
+        "columns": [
+          "date",
+          "oracle_cum_ret",
+          "prima_cum_ret",
+          "spy_cum_ret",
+          "oracle_minus_prima",
+          "window_days"
+        ],
+        "first_row": {
+          "date": "2026-09-18",
+          "oracle_cum_ret": "0.0",
+          "prima_cum_ret": "0.0",
+          "spy_cum_ret": "0.0",
+          "oracle_minus_prima": "0.0",
+          "window_days": "0"
+        },
+        "last_row": {
+          "date": "2026-09-18",
+          "oracle_cum_ret": "0.0",
+          "prima_cum_ret": "0.0",
+          "spy_cum_ret": "0.0",
+          "oracle_minus_prima": "0.0",
+          "window_days": "0"
+        },
+        "retrieved_at": "2026-09-21T09:40:08.903323+00:00"
+      },
+      {
+        "commit": "80f11bc580375130210b5371c21e3d76c1202cc2",
+        "committed_at": "2026-09-21T04:06:14Z",
+        "source_url": "https://raw.githubusercontent.com/daifulee/argus-public-data/80f11bc580375130210b5371c21e3d76c1202cc2/oracle/scoreboard.csv",
+        "local_path": "/workspace/scratch/07d4c6dbbace/operating_integration/audit/scoreboard_recovery/scoreboard_80f11bc580375130210b5371c21e3d76c1202cc2.csv",
+        "bytes": 3035,
+        "sha256": "41bfc7dda4deff0748214867f106b894585d0e5639577eb4a246fd695b03a6ff",
+        "data_rows": 68,
+        "columns": [
+          "date",
+          "oracle_cum_ret",
+          "prima_cum_ret",
+          "spy_cum_ret",
+          "oracle_minus_prima",
+          "window_days"
+        ],
+        "first_row": {
+          "date": "2026-06-12",
+          "oracle_cum_ret": "0.0",
+          "prima_cum_ret": "0.0",
+          "spy_cum_ret": "0.0",
+          "oracle_minus_prima": "0.0",
+          "window_days": "0"
+        },
+        "last_row": {
+          "date": "2026-09-18",
+          "oracle_cum_ret": "0.0029",
+          "prima_cum_ret": "-0.0442",
+          "spy_cum_ret": "0.0295",
+          "oracle_minus_prima": "0.0471",
+          "window_days": "98"
+        },
+        "retrieved_at": "2026-09-21T09:40:08.903111+00:00"
+      },
+      {
+        "commit": "7092dbb34e56efae400146d90e86abfcce0aaaa8",
+        "committed_at": "2026-09-19T01:35:31Z",
+        "source_url": "https://raw.githubusercontent.com/daifulee/argus-public-data/7092dbb34e56efae400146d90e86abfcce0aaaa8/oracle/scoreboard.csv",
+        "local_path": "/workspace/scratch/07d4c6dbbace/operating_integration/audit/scoreboard_recovery/scoreboard_7092dbb34e56efae400146d90e86abfcce0aaaa8.csv",
+        "bytes": 3037,
+        "sha256": "db1e65e3568523feb82e36dd62a5f7c9e868bc2568321b75d5a5adcf7b821a48",
+        "data_rows": 68,
+        "columns": [
+          "date",
+          "oracle_cum_ret",
+          "prima_cum_ret",
+          "spy_cum_ret",
+          "oracle_minus_prima",
+          "window_days"
+        ],
+        "first_row": {
+          "date": "2026-06-12",
+          "oracle_cum_ret": "0.0",
+          "prima_cum_ret": "0.0",
+          "spy_cum_ret": "0.0",
+          "oracle_minus_prima": "0.0",
+          "window_days": "0"
+        },
+        "last_row": {
+          "date": "2026-09-18",
+          "oracle_cum_ret": "-0.0076",
+          "prima_cum_ret": "-0.0484",
+          "spy_cum_ret": "0.0192",
+          "oracle_minus_prima": "0.0407",
+          "window_days": "98"
+        },
+        "retrieved_at": "2026-09-21T09:40:08.902578+00:00"
+      }
+    ],
+    "recovery_candidates": [
+      {
+        "file": "/workspace/scratch/07d4c6dbbace/operating_integration/audit/scoreboard_recovery/scoreboard_pre_20260921.csv",
+        "source_commit": "7092dbb34e56efae400146d90e86abfcce0aaaa8",
+        "method": "exact_bytes_copy",
+        "selection": "latest_before_2026-09-21"
+      },
+      {
+        "file": "/workspace/scratch/07d4c6dbbace/operating_integration/audit/scoreboard_recovery/scoreboard_last_before_reset.csv",
+        "source_commit": "80f11bc580375130210b5371c21e3d76c1202cc2",
+        "method": "exact_bytes_copy",
+        "selection": "latest_before_bad_reset"
+      }
+    ],
+    "comparison": {
+      "same_dates": true,
+      "changed_rows": [
+        {
+          "date": "2026-09-17",
+          "before": {
+            "date": "2026-09-17",
+            "oracle_cum_ret": "-0.0076",
+            "prima_cum_ret": "-0.0484",
+            "spy_cum_ret": "0.0192",
+            "oracle_minus_prima": "0.0407",
+            "window_days": "97"
+          },
+          "after": {
+            "date": "2026-09-17",
+            "oracle_cum_ret": "0.0087",
+            "prima_cum_ret": "-0.0405",
+            "spy_cum_ret": "0.0282",
+            "oracle_minus_prima": "0.0492",
+            "window_days": "97"
+          }
+        },
+        {
+          "date": "2026-09-18",
+          "before": {
+            "date": "2026-09-18",
+            "oracle_cum_ret": "-0.0076",
+            "prima_cum_ret": "-0.0484",
+            "spy_cum_ret": "0.0192",
+            "oracle_minus_prima": "0.0407",
+            "window_days": "98"
+          },
+          "after": {
+            "date": "2026-09-18",
+            "oracle_cum_ret": "0.0029",
+            "prima_cum_ret": "-0.0442",
+            "spy_cum_ret": "0.0295",
+            "oracle_minus_prima": "0.0471",
+            "window_days": "98"
+          }
+        }
+      ]
+    },
+    "warning": "수익률 값을 재계산하거나 정정하지 않은 공개 저장소 원본 복구 자료. 두 후보의 값 차이는 별도 원인 확인 필요. 원격 수정 없음."
+  }
+}
