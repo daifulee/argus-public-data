@@ -4,7 +4,7 @@
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
   "crown": "#110",
   "src": "transition",
-  "ledger_as_of": "2026-09-16",
+  "ledger_as_of": "2026-09-18",
   "prev": {
     "TLT": 0.3,
     "XLE": 0.7
@@ -136,6 +136,6 @@
   },
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-21T04:05:12",
+  "generated_at": "2026-09-21T04:13:29",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
