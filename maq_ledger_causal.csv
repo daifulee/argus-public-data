@@ -1,0 +1,2 @@
+date,queue,grade,slots_full,strong,super,spy_close,fwd21_pct,fwd63_pct,pos_src,schema_version
+2026-09-18,0,0,False,,,761.69,,,causal_engine_target,maq_causal/1.0
