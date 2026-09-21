@@ -10,7 +10,7 @@
     "TLT": 0.3
   },
   "src": "ledger",
-  "ledger_as_of": "2026-09-16",
+  "ledger_as_of": "2026-09-18",
   "repro_positions": {
     "XLE": 1.0
   },
@@ -18,5 +18,5 @@
   "actions": "",
   "repro_actions": "",
   "engine": "PRIMA2_v0_5_43_CROWN110_XLU_SIZE16_LIVE.py",
-  "generated_utc": "2026-09-21T04:04:36Z"
+  "generated_utc": "2026-09-21T04:13:13Z"
 }
