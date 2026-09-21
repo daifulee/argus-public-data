@@ -1,3 +1,4 @@
+# 운영연결 v3.9.20: HYG/TIP/LQD 정확 세션 수집·STLFSI 당시 판본·미확인 차단
 # 🔧 v3.9.19 (2026-09-21, S291): RE-FETCH PIT SEMANTICS — 결함 S291-8 처방. **v3.9.18 의 자기 결함 정정.**
 #   사건: v3.9.18 의 자가 재수집(처방 ④)이 2026-09-17·09-18 을 다시 받으면서
 #     F&G 를 CNN **현재값**(2026-09-21 의 29.114286)으로 두 날짜에 똑같이 박았다.
@@ -563,7 +564,7 @@ OUTPUT_MONTHLY_PATH = os.path.join(SCRIPT_DIR, "argus_data_monthly.csv")
 # 컬럼 frequency 분류 (FRED_SERIES + 주간/월간 발표 정합)
 # 🌟 v3.2 (S178): OAS_HY/OAS_IG/T10Y3M은 FRED 일간 발표 → daily로 전환
 #   (기존 주간 분류는 "변동 부재 → ffill 잘못 인식"에 의한 오분류였음)
-WEEKLY_COLS = ['NFCI', 'ICSA', 'CCSA',
+WEEKLY_COLS = ['STLFSI', 'NFCI', 'ICSA', 'CCSA',
                'WALCL', 'WTREGEN', 'RRPONTSYD', 'Net_Liquidity',
                'T10Y2Y']
 MONTHLY_COLS = ['PMI', 'UMCSENT', 'SAHMCURRENT', 'F_G_Score', 'F_G_Rating', 'ECY', 'CAPE', 'SEMI_REACCEL', 'CONSUMER_ELEC']  # 🆕 [S214] 반도체 선행신호 월간군
@@ -615,6 +616,7 @@ ETF_TICKERS = [
     "GLD","SLV","COPX","NLR","QQQM","VNM","IWM","PAVE",
     "SMH","EWZ","XLE","INDA","ITA","TLT","VEA","XLF",
     "XLV","XLU","CQQQ","CIBR","SGOV","SPY","IEF",
+    "HYG", "TIP", "LQD",  # 신용·물가 센서도 정확한 거래일 종가와 출처를 함께 저장
     "PDBC",   # 🆕 [DEPLOY-S280] 21번째 종목 편입 — 상장 2014-11-07, 범용 ETF 백필로 이력 자동 확보
 ]
 
@@ -3202,6 +3204,45 @@ def build_seed() -> pd.DataFrame:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # 오늘 행 추가 (누적 모드)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# STLFSI 관측일은 발표일이 아니다. 과거 행에는 당시 공개된 판본만 넣는다.
+STRESS_SERIES_ID = "STLFSI4"
+
+def fetch_stress_asof(target_date, request_get=None):
+    """지정일 당시 조회 가능한 판본을 회수한다. 추정 발표일/최근값 소급 금지."""
+    day = pd.Timestamp(target_date).strftime("%Y-%m-%d")
+    result = {"STLFSI": float("nan"), "STLFSI_source": "missing_vintage",
+              "STLFSI_status": "missing_vintage", "STLFSI_asof_date": day,
+              "STLFSI_observation_date": None,
+              "STLFSI_retrieved_at": datetime.now(timezone.utc).isoformat(),
+              "STLFSI_series_id": STRESS_SERIES_ID}
+    if not FRED_API_KEY:
+        return result
+    get = request_get or requests.get
+    try:
+        response = get("https://api.stlouisfed.org/fred/series/observations", params={
+            "series_id": STRESS_SERIES_ID, "api_key": FRED_API_KEY,
+            "file_type": "json", "realtime_start": day, "realtime_end": day,
+            "observation_end": day, "sort_order": "desc", "limit": 12}, timeout=20)
+        response.raise_for_status()
+        for obs in response.json().get("observations", []):
+            value = pd.to_numeric(obs.get("value"), errors="coerce")
+            observed = pd.to_datetime(obs.get("date"), errors="coerce")
+            start = pd.to_datetime(obs.get("realtime_start"), errors="coerce")
+            end = pd.to_datetime(obs.get("realtime_end"), errors="coerce")
+            target = pd.Timestamp(day)
+            if (not np.isfinite(value) or pd.isna(observed) or pd.isna(start)
+                    or pd.isna(end) or observed > target or not start <= target <= end):
+                continue
+            result.update(STLFSI=float(value), STLFSI_source="fred_vintage_asof",
+                          STLFSI_status="verified_asof",
+                          STLFSI_observation_date=observed.strftime("%Y-%m-%d"))
+            break
+    except Exception:
+        # 예외 문자열에는 요청 인증정보가 들어갈 수 있으므로 저장하지 않는다.
+        result["STLFSI_status"] = "request_failed"
+    return result
+
+
 def fetch_today_row(target_date=None, is_backfill=None) -> dict:
     # 🌟 v3.2 (S197): target_date 지원 — None=오늘(기존 동작 보존), 지정=임의 날짜 backfill
     # 🆕 v3.9 (S279): is_backfill 명시 파라미터 — 세션일 stamp(전일 세션 = 정상 일일 수집)를
@@ -3315,6 +3356,8 @@ def fetch_today_row(target_date=None, is_backfill=None) -> dict:
         # 🌟 v2.12: API key 부재 시 모든 FRED source = ffill
         for sid, col in FRED_SERIES.items():
             row[f"{col}_source"] = "ffill"
+
+    row.update(fetch_stress_asof(today))
 
     # 🆕 [S214] FRED 반도체 선행신호 (today_row) — Oracle LEAD-7
     try:
@@ -4539,6 +4582,15 @@ def main():
             pass
         return _fr
     _close_freshness_gate(df)
+    # 최신 센서 판본 검증은 저장값 자체와 함께 남긴다.
+    if len(df):
+        for key, value in fetch_stress_asof(df.index[-1]).items():
+            if key not in df.columns:
+                df[key] = pd.Series(index=df.index, dtype=float if key == "STLFSI" else object)
+            elif key != "STLFSI" and df[key].dtype != object:
+                df[key] = df[key].astype(object)
+            df.loc[df.index[-1], key] = value
+
 
     print_quality(df)
     
