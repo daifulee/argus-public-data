@@ -1,5 +1,5 @@
 {
-  "version": "v3.9.18",
+  "version": "v3.9.19",
   "invariant": "1 row = 1 completed US equity regular session",
   "pre_repair": {
     "stage": "loaded_before_fetch",
@@ -42,5 +42,5 @@
     "carry_tickers": [],
     "tickers": 24
   },
-  "generated_utc": "2026-09-21T04:03:26Z"
+  "generated_utc": "2026-09-21T04:12:15Z"
 }
