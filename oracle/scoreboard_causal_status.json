@@ -1,0 +1,28 @@
+{
+  "schema": "target_shadow_scoreboard/1.0",
+  "status": "insufficient_window",
+  "performance_basis": "target_shadow",
+  "capital_permission": false,
+  "actual_account_performance": false,
+  "prima_source": "causal_engine_target",
+  "cash_return": 0.0,
+  "transaction_cost": 0.0,
+  "timing": "close_target_applies_to_next_interval",
+  "inception": "2026-09-18",
+  "latest": {
+    "date": "2026-09-18",
+    "oracle_cum_ret": 0.0,
+    "prima_cum_ret": 0.0,
+    "spy_cum_ret": 0.0,
+    "oracle_minus_prima": 0.0,
+    "window_days": 0
+  },
+  "n_rows": 1,
+  "return_intervals": 0,
+  "cycles": 0.0,
+  "cycles_remaining": 20.0,
+  "kpi_complete": false,
+  "oracle_obs": 63,
+  "prima_obs": 1,
+  "note": "첫 행의 수익률 0은 시작값이며 성과 근거가 아님"
+}
