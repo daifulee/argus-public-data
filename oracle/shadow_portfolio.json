@@ -1013,18 +1013,18 @@
   {
     "date": "2026-09-18",
     "weights": {
+      "NLR": 0.2355,
       "GLD": 0.2,
-      "NLR": 0.1895,
-      "COPX": 0.1301,
-      "PAVE": 0.117,
-      "SMH": 0.1015,
+      "COPX": 0.1293,
+      "XLU": 0.1123,
       "SGOV": 0.1,
-      "XLU": 0.0986,
-      "CIBR": 0.0633
+      "PAVE": 0.0888,
+      "CIBR": 0.0807,
+      "SLV": 0.0533
     },
     "source": "oracle_autopilot_v1.0.6",
     "n_pos": 8,
-    "logged_utc": "2026-09-21T03:53:46Z",
+    "logged_utc": "2026-09-21T04:04:37Z",
     "valid": true
   }
 ]
