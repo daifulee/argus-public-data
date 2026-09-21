@@ -60,16 +60,16 @@
     "positions": {
       "SLV": {
         "shares": 4391.0,
-        "price": 57.04999923706055,
-        "value": 250506.54664993286
+        "price": 59.93000030517578,
+        "value": 263152.63134002686
       },
       "ITA": {
         "shares": 298.0,
-        "price": 215.2700042724609,
-        "value": 64150.46127319335
+        "price": 213.83999633789065,
+        "value": 63724.31890869141
       }
     },
-    "positions_value": 314657.0079231262,
+    "positions_value": 326876.95024871826,
     "cash_amount": null,
     "nav": null,
     "exact_weighting": false,
@@ -111,7 +111,7 @@
         "current_weight": null,
         "target_weight": 0.0,
         "delta_weight": null,
-        "current_value": 64150.46127319335,
+        "current_value": 63724.31890869141,
         "target_value": null,
         "delta_value": null
       },
@@ -122,7 +122,7 @@
         "current_weight": null,
         "target_weight": 0.0,
         "delta_weight": null,
-        "current_value": 250506.54664993286,
+        "current_value": 263152.63134002686,
         "target_value": null,
         "delta_value": null
       }
@@ -136,6 +136,6 @@
   },
   "actionable": true,
   "prev_crown": null,
-  "generated_at": "2026-09-21T03:54:07",
+  "generated_at": "2026-09-21T04:05:12",
   "note": "알림 입력 전용. 신호 전달이며 자본 반영은 Commander 판단 (격언 #15). 미해소 재량 이탈이 있으면 그 종목의 지시는 Commander 결정에 종속된다."
 }
