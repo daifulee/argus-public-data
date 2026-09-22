@@ -1,12 +1,14 @@
 {
   "schema": "transition_alert/2.0",
-  "date": "2026-09-18 00:00:00",
+  "date": "2026-09-21 00:00:00",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
   "crown": "#110",
   "src": "engine_target_observation",
   "target_src": "causal_engine_target",
-  "ledger_as_of": null,
-  "prev": {},
+  "ledger_as_of": "2026-09-18",
+  "prev": {
+    "XLE": 1.0
+  },
   "target": {
     "XLE": 1.0
   },
@@ -15,7 +17,7 @@
     "XLE": {
       "entry_date": "4947",
       "entry_price": 64.65593099796496,
-      "held_days": 11,
+      "held_days": 12,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -23,15 +25,15 @@
     }
   },
   "simulated_weights": {
-    "XLE": 0.990560884232597
+    "XLE": 0.9902830673445012
   },
   "simulated_positions": {
     "XLE": {
       "entry_date": "2026-09-02",
       "entry_price": 64.65593099796496,
-      "held_days": 11,
-      "strategy_held_days": 11,
-      "actual_held_days": 11,
+      "held_days": 12,
+      "strategy_held_days": 12,
+      "actual_held_days": 12,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -43,19 +45,19 @@
   "pending_orders": null,
   "observations": [],
   "comparison_status": {
-    "valid": false,
-    "expected": "2026-09-17",
-    "as_of": null,
-    "error": "previous_session_missing"
+    "valid": true,
+    "expected": "2026-09-18",
+    "as_of": "2026-09-18",
+    "error": null
   },
-  "previous_cash": null,
+  "previous_cash": 0.0,
   "source_ledger_as_of": "2026-09-18",
   "ledger_integrity": {
     "source": "historical_engine_target",
     "as_of": "2026-09-18",
     "pending_verification": [],
     "dev_open": [],
-    "sessions": 0,
+    "sessions": 1,
     "stale": false,
     "weights_valid": true
   },
@@ -178,30 +180,6 @@
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>90",
-        "same_day_risk_exit": false,
-        "same_day_context_provided": true
-      }
-    },
-    {
-      "ticker": "PDBC",
-      "gate_blocked": true,
-      "entry_guard": {
-        "blocked": true,
-        "reasons": [
-          "WTI>100"
-        ],
-        "active_exit_type": "FULL",
-        "active_exit_reason": "WTI>100",
-        "same_day_risk_exit": false,
-        "same_day_context_provided": true
-      },
-      "reason": {
-        "blocked": true,
-        "reasons": [
-          "WTI>100"
-        ],
-        "active_exit_type": "FULL",
-        "active_exit_reason": "WTI>100",
         "same_day_risk_exit": false,
         "same_day_context_provided": true
       }
@@ -428,20 +406,20 @@
       "entry_guard": {
         "blocked": true,
         "reasons": [
-          "WTI>95.0"
+          "SLV_TNX"
         ],
-        "active_exit_type": "FULL",
-        "active_exit_reason": "WTI>95.0",
+        "active_exit_type": "HALF",
+        "active_exit_reason": "SLV_TNX",
         "same_day_risk_exit": false,
         "same_day_context_provided": true
       },
       "reason": {
         "blocked": true,
         "reasons": [
-          "WTI>95.0"
+          "SLV_TNX"
         ],
-        "active_exit_type": "FULL",
-        "active_exit_reason": "WTI>95.0",
+        "active_exit_type": "HALF",
+        "active_exit_reason": "SLV_TNX",
         "same_day_risk_exit": false,
         "same_day_context_provided": true
       }
@@ -554,22 +532,16 @@
   "readiness": {
     "data_fresh": true,
     "engine_valid": true,
-    "inputs_complete": false,
+    "inputs_complete": true,
     "holdings_grounded": false,
-    "signal_ready": false,
+    "signal_ready": true,
     "action_ready": false,
     "reasons": [
-      "MISSING_REQUIRED_INPUTS:HYG,TIP,LQD,STLFSI",
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
-    "missing_inputs": [
-      "HYG",
-      "TIP",
-      "LQD",
-      "STLFSI"
-    ],
-    "input_date": "2026-09-18",
-    "engine_date": "2026-09-18",
+    "missing_inputs": [],
+    "input_date": "2026-09-21",
+    "engine_date": "2026-09-21",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -577,6 +549,6 @@
   "action_block_reason": [
     "실계좌 또는 데이터 실행 근거 미충족"
   ],
-  "generated_at": "2026-09-21T15:35:24",
+  "generated_at": "2026-09-22T01:48:14",
   "note": "엔진 목표 관측 기록. 실행 가능한 실계좌 주문 계획 없음."
 }
