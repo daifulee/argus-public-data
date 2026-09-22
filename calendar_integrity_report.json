@@ -1,5 +1,5 @@
 {
-  "version": "v3.9.19",
+  "version": "v3.9.21",
   "invariant": "1 row = 1 completed US equity regular session",
   "pre_repair": {
     "stage": "loaded_before_fetch",
@@ -18,9 +18,9 @@
   "repaired_missing_dates": [],
   "final": {
     "stage": "pre_save_final",
-    "rows": 427,
+    "rows": 428,
     "start": "2025-01-06",
-    "end": "2026-09-18",
+    "end": "2026-09-21",
     "calendar_source": "exchange_calendars:XNYS",
     "nat_dates": 0,
     "ghost_n": 0,
@@ -32,15 +32,40 @@
   },
   "close_freshness": {
     "lookback": 10,
-    "status": "fresh",
-    "last_session": "2026-09-18",
-    "live_n": 24,
-    "carry_n": 0,
-    "miss_n": 0,
+    "status": "carry",
+    "last_session": "2026-09-21",
+    "live_n": 0,
+    "carry_n": 24,
+    "miss_n": 3,
     "legacy_n": 0,
-    "max_consecutive_carry": 0,
-    "carry_tickers": [],
-    "tickers": 24
+    "max_consecutive_carry": 1,
+    "carry_tickers": [
+      "GLD:1",
+      "SLV:1",
+      "COPX:1",
+      "NLR:1",
+      "QQQM:1",
+      "VNM:1",
+      "IWM:1",
+      "PAVE:1",
+      "SMH:1",
+      "EWZ:1",
+      "XLE:1",
+      "INDA:1",
+      "ITA:1",
+      "TLT:1",
+      "VEA:1",
+      "XLF:1",
+      "XLV:1",
+      "XLU:1",
+      "CQQQ:1",
+      "CIBR:1",
+      "SGOV:1",
+      "SPY:1",
+      "IEF:1",
+      "PDBC:1"
+    ],
+    "tickers": 27
   },
-  "generated_utc": "2026-09-21T04:12:15Z"
+  "generated_utc": "2026-09-22T00:55:09Z"
 }
