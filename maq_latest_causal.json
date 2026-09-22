@@ -1,8 +1,8 @@
 {
- "date": "2026-09-18",
- "queue": 0,
- "grade": "0",
- "base_f63": -0.23,
+ "date": "2026-09-21",
+ "queue": 2,
+ "grade": "2",
+ "base_f63": 3.41,
  "base_f63_source": "LEGACY_RESEARCH_NOT_CAUSAL_VALIDATION",
  "schema_version": "maq_causal/1.0",
  "schema": "maq_causal/1.0",
@@ -13,22 +13,16 @@
  "readiness": {
   "data_fresh": true,
   "engine_valid": true,
-  "inputs_complete": false,
+  "inputs_complete": true,
   "holdings_grounded": false,
-  "signal_ready": false,
+  "signal_ready": true,
   "action_ready": false,
   "reasons": [
-   "MISSING_REQUIRED_INPUTS:HYG,TIP,LQD,STLFSI",
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
-  "missing_inputs": [
-   "HYG",
-   "TIP",
-   "LQD",
-   "STLFSI"
-  ],
-  "input_date": "2026-09-18",
-  "engine_date": "2026-09-18",
+  "missing_inputs": [],
+  "input_date": "2026-09-21",
+  "engine_date": "2026-09-21",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
@@ -38,8 +32,22 @@
  "simulated_held": [
   "XLE"
  ],
- "strong": [],
- "super": [],
+ "strong": [
+  {
+   "ticker": "SLV",
+   "score": 12.5,
+   "ratio": 4.17
+  },
+  {
+   "ticker": "ITA",
+   "score": 4.0,
+   "ratio": 2.0
+  }
+ ],
+ "super": [
+  "ITA",
+  "SLV"
+ ],
  "held": [
   "XLE"
  ],
@@ -54,5 +62,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-09-21T15:34:29+00:00"
+ "generated_utc": "2026-09-22T01:47:19+00:00"
 }
