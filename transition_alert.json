@@ -51,13 +51,13 @@
     "error": null
   },
   "previous_cash": 0.0,
-  "source_ledger_as_of": "2026-09-18",
+  "source_ledger_as_of": "2026-09-21",
   "ledger_integrity": {
     "source": "historical_engine_target",
-    "as_of": "2026-09-18",
+    "as_of": "2026-09-21",
     "pending_verification": [],
     "dev_open": [],
-    "sessions": 1,
+    "sessions": 0,
     "stale": false,
     "weights_valid": true
   },
@@ -549,6 +549,6 @@
   "action_block_reason": [
     "실계좌 또는 데이터 실행 근거 미충족"
   ],
-  "generated_at": "2026-09-22T01:48:14",
+  "generated_at": "2026-09-22T02:46:43",
   "note": "엔진 목표 관측 기록. 실행 가능한 실계좌 주문 계획 없음."
 }
