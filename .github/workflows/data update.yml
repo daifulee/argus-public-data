@@ -28,6 +28,13 @@
 name: 🦅 ARGUS Data Update
 
 on:
+  # 수집 코드 업로드 후 실제 자료도 갱신한다. 산출물 커밋은 재실행하지 않는다.
+  push:
+    branches: ['main']
+    paths:
+      - 'argus_data_fetcher.py'
+      - 'requirements.txt'
+      - '.github/workflows/data update.yml'
   schedule:
     - cron: '17 22 * * 1-5'   # primary: 미국장 마감 후
     - cron: '17 23 * * 1-5'   # retry
