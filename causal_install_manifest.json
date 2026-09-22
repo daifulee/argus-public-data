@@ -1,0 +1,219 @@
+{
+  "format": "argus_causal_install/1.0",
+  "python_tested": "3.12.14",
+  "existing_repository_required": [
+    "argus_price_integrity_guard.py"
+  ],
+  "files": [
+    {
+      "repository": "private",
+      "path": ".github/workflows/deploy-brief-html.yml",
+      "sha256": "9ff79e84a8d296013d2638b3961596a1c954fc0f4fad2294fe500173fa067e33",
+      "bytes": 38247,
+      "lines": 644
+    },
+    {
+      "repository": "private",
+      "path": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
+      "sha256": "21fafbaf40607f1a2022457415052fad8957f6789a26b389a47743ecab8bbab0",
+      "bytes": 382930,
+      "lines": 6142
+    },
+    {
+      "repository": "private",
+      "path": "argus_artifact_freshness_check.py",
+      "sha256": "b3e576bc534cc91396a25346ad6191e83afee163e4444ff3b40c04e509958b68",
+      "bytes": 11207,
+      "lines": 261
+    },
+    {
+      "repository": "private",
+      "path": "argus_brief_docx.js",
+      "sha256": "28439058632e2ec32dc77bad4c0fcd55536c71c869b8387144753b75803c9b97",
+      "bytes": 45832,
+      "lines": 888
+    },
+    {
+      "repository": "private",
+      "path": "argus_brief_exporter.py",
+      "sha256": "183337ed52d912cad5d1c159ad7cec916eecb541a1c81c706e25da8a7b8779ed",
+      "bytes": 15151,
+      "lines": 402
+    },
+    {
+      "repository": "private",
+      "path": "argus_brief_html_v2.py",
+      "sha256": "2d5e7cfd94acf5644364e9fda580bf9817a0331b3564e3380f844c4cc3f06de7",
+      "bytes": 279295,
+      "lines": 4004
+    },
+    {
+      "repository": "private",
+      "path": "argus_brief_schema.py",
+      "sha256": "fae54501fc18c7a94b8e9b57ec3f56a34848fcd80fad27e98669e3edcc516f72",
+      "bytes": 8991,
+      "lines": 208
+    },
+    {
+      "repository": "private",
+      "path": "argus_causal_preflight.py",
+      "sha256": "6785ef7fa9bf6bbcdc55a056141a461a180f88851db82dc3f81a85293e89430c",
+      "bytes": 3535,
+      "lines": 71
+    },
+    {
+      "repository": "private",
+      "path": "argus_crown_preflight.py",
+      "sha256": "5b634a8a12931ee86f511b216c32ce3b489d4d0259b44e20b2cd43d0d997ad5f",
+      "bytes": 8952,
+      "lines": 199
+    },
+    {
+      "repository": "public",
+      "path": "argus_data_fetcher.py",
+      "sha256": "ae27f5d7cb4131e4cf2794c15b46cfa8af53cfaeacd8c33c9e524b1850cec66a",
+      "bytes": 256468,
+      "lines": 4626
+    },
+    {
+      "repository": "private",
+      "path": "argus_discord_renderer.py",
+      "sha256": "ecd452580cde23dbc28bad35528c027ed0e829b6c370b2d5a835ccfbf2e3cd75",
+      "bytes": 28985,
+      "lines": 669
+    },
+    {
+      "repository": "private",
+      "path": "argus_engine_contract.py",
+      "sha256": "762ddc02d4415070afaf1c5994ec24c478c05f56ff81a3479f0f8483fdcb5e86",
+      "bytes": 14018,
+      "lines": 278
+    },
+    {
+      "repository": "private",
+      "path": "argus_holdings_contract.py",
+      "sha256": "bc2eb8c65e47d16ac017307714ecab5a2eba3dfc7f742edd7782c7ee5c67b782",
+      "bytes": 8233,
+      "lines": 160
+    },
+    {
+      "repository": "private",
+      "path": "argus_ledger_audit.py",
+      "sha256": "d17703c7743fb322bd3d86ab5ce56ef272895d4d9a71f77941e3ef98d844e4f6",
+      "bytes": 12787,
+      "lines": 246
+    },
+    {
+      "repository": "private",
+      "path": "argus_ledger_daily_record.py",
+      "sha256": "6b07de3d3e8d95cf20e71660c30f61f5a7a92c0fdfbfa685325ef011ef6d7d63",
+      "bytes": 8035,
+      "lines": 147
+    },
+    {
+      "repository": "private",
+      "path": "argus_position_transition.py",
+      "sha256": "7356d13b2d0251e8c5014502837cdebfb7edea9b9f610a98852e3a628fb05c71",
+      "bytes": 16718,
+      "lines": 290
+    },
+    {
+      "repository": "private",
+      "path": "argus_prepare_inputs.py",
+      "sha256": "4b3ddc4ac705fa5876aab66cfddeece0617201022712d1874fd2f39a7914618e",
+      "bytes": 5049,
+      "lines": 71
+    },
+    {
+      "repository": "private",
+      "path": "argus_sahm_release_history.csv",
+      "sha256": "96d9c60d86fb4204138e43d1378bbaea873164bce113b17c957f8af928287cbf",
+      "bytes": 3811,
+      "lines": 238
+    },
+    {
+      "repository": "private",
+      "path": "argus_seed_causal_log.py",
+      "sha256": "928f142b93e1725f92febdcb887505003a492694b12df990e815778f0f2ec2f3",
+      "bytes": 1310,
+      "lines": 22
+    },
+    {
+      "repository": "private",
+      "path": "briefing_trailing_returns.py",
+      "sha256": "4b5e1592b517a3ac1a8b59236c384a310958077271ae7ae490febab750600753",
+      "bytes": 33794,
+      "lines": 615
+    },
+    {
+      "repository": "private",
+      "path": "divergence_monitor.py",
+      "sha256": "c372b4ebbcc9898cd7ccb7669ea61dfc0e9f2b75079225ffa7b6f56d268624a9",
+      "bytes": 17448,
+      "lines": 373
+    },
+    {
+      "repository": "private",
+      "path": "maq_monitor.py",
+      "sha256": "00804e1ab4a024ffccbc626f779c9b0ae046413eb2908a3dcc9c9fa35edc183c",
+      "bytes": 10777,
+      "lines": 222
+    },
+    {
+      "repository": "private",
+      "path": "oracle/scoreboard_legacy_pre_causal.csv",
+      "sha256": "41bfc7dda4deff0748214867f106b894585d0e5639577eb4a246fd695b03a6ff",
+      "bytes": 3035,
+      "lines": 69
+    },
+    {
+      "repository": "private",
+      "path": "oracle/scoreboard_legacy_pre_causal_provenance.json",
+      "sha256": "fe7a0d188834d84c0ce425068ac6d58a1b3bc364483b2a91453ea05db67accb6",
+      "bytes": 6427,
+      "lines": 176
+    },
+    {
+      "repository": "private",
+      "path": "prima_briefing.py",
+      "sha256": "30f6043f74bdcadb6a4f5c121c95b8fa490ca5b2efd7b8f822c6cd65f589a54f",
+      "bytes": 547411,
+      "lines": 10100
+    },
+    {
+      "repository": "private",
+      "path": "prima_daily_output_logger.py",
+      "sha256": "f3f9c6a7190753484d361e0e1841dbaa987b143be332b94b7533b552af9f3cf7",
+      "bytes": 8276,
+      "lines": 154
+    },
+    {
+      "repository": "private",
+      "path": "rebalance_alert.py",
+      "sha256": "f71c2035b3066ba48615bba1bb6e52c29d941e51d812864cc4ae135c6227b30e",
+      "bytes": 23785,
+      "lines": 448
+    },
+    {
+      "repository": "private",
+      "path": "requirements-causal.txt",
+      "sha256": "4358ea2d9890492e771da1915b86c97c3ab08624e58508e3bb35cb2d16dda5a0",
+      "bytes": 95,
+      "lines": 5
+    },
+    {
+      "repository": "private",
+      "path": "scoreboard_updater.py",
+      "sha256": "8a6ea70184bb208f5d0486543ecd7e7cd1023d1b32b5b1fd9b2d9d9af043cf86",
+      "bytes": 11122,
+      "lines": 266
+    },
+    {
+      "repository": "private",
+      "path": "verify_causal_installation.py",
+      "sha256": "2d0d7574c5a84afb3d0e59e7c6fb971e3d8df5e00d51cc5c1b673a4f66f5da7e",
+      "bytes": 1006,
+      "lines": 20
+    }
+  ]
+}
