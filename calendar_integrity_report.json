@@ -32,15 +32,15 @@
   },
   "close_freshness": {
     "lookback": 10,
-    "status": "carry",
+    "status": "fresh",
     "last_session": "2026-09-23",
-    "live_n": 0,
+    "live_n": 27,
     "carry_n": 0,
-    "miss_n": 27,
+    "miss_n": 0,
     "legacy_n": 0,
     "max_consecutive_carry": 0,
     "carry_tickers": [],
     "tickers": 27
   },
-  "generated_utc": "2026-09-24T01:25:18Z"
+  "generated_utc": "2026-09-24T15:28:43Z"
 }

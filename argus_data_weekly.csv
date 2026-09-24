@@ -79,4 +79,4 @@ Date,STLFSI,NFCI,ICSA,CCSA,WALCL,WTREGEN,RRPONTSYD,Net_Liquidity,T10Y2Y,STLFSI_s
 2026-09-18,,-0.56,196000.0,1730000.0,6746548.0,877028.0,0.576,5868944.0,0.25,,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live
 2026-09-21,-0.8477,-0.56,196000.0,1730000.0,6746548.0,877028.0,0.582,5868938.0,0.2,fred_vintage_asof,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live
 2026-09-22,-0.8477,-0.56,196000.0,1730000.0,6746548.0,877028.0,0.453,5869067.0,0.25,fred_vintage_asof,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live
-2026-09-23,-0.9075,-0.555,196000.0,1730000.0,6746548.0,877028.0,0.461,5869059.0,0.26,fred_vintage_asof,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live
+2026-09-23,-0.9075,-0.555,197000.0,1719000.0,6746548.0,877028.0,0.461,5869059.0,0.26,fred_vintage_asof,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live,fred_live
