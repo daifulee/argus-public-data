@@ -1,28 +1,22 @@
 {
   "schema": "target_shadow_scoreboard/1.0",
-  "status": "tracking",
+  "status": "missing_daily_targets",
   "performance_basis": "target_shadow",
   "capital_permission": false,
   "actual_account_performance": false,
-  "prima_source": "causal_engine_target",
-  "cash_return": 0.0,
-  "transaction_cost": 0.0,
-  "timing": "close_target_applies_to_next_interval",
+  "performance_available": false,
   "inception": "2026-09-18",
-  "latest": {
-    "date": "2026-09-21",
-    "oracle_cum_ret": 0.00691217,
-    "prima_cum_ret": -0.02876689,
-    "spy_cum_ret": 0.01550499,
-    "oracle_minus_prima": 0.03567905,
-    "window_days": 3
-  },
-  "n_rows": 2,
-  "return_intervals": 1,
-  "cycles": 0.2,
-  "cycles_remaining": 19.8,
+  "latest": null,
+  "n_rows": 0,
+  "return_intervals": 0,
+  "cycles": null,
+  "cycles_remaining": null,
   "kpi_complete": false,
-  "oracle_obs": 64,
-  "prima_obs": 2,
-  "note": "목표 비중 모의 비교이며 실제 계좌 성과가 아님"
+  "missing_dates": [
+    "2026-09-22"
+  ],
+  "missing_count": 1,
+  "oracle_obs": 65,
+  "prima_obs": 3,
+  "note": "일일 목표 기록 결손으로 성과 계산 보류. 과거 비중 추정 및 이월 금지"
 }
