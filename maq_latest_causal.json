@@ -1,5 +1,5 @@
 {
- "date": "2026-09-21",
+ "date": "2026-09-23",
  "queue": 2,
  "grade": "2",
  "base_f63": 3.41,
@@ -21,8 +21,8 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-09-21",
-  "engine_date": "2026-09-21",
+  "input_date": "2026-09-23",
+  "engine_date": "2026-09-23",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
@@ -34,9 +34,9 @@
  ],
  "strong": [
   {
-   "ticker": "SLV",
-   "score": 12.5,
-   "ratio": 4.17
+   "ticker": "GLD",
+   "score": 4.1,
+   "ratio": 2.05
   },
   {
    "ticker": "ITA",
@@ -46,7 +46,7 @@
  ],
  "super": [
   "ITA",
-  "SLV"
+  "GLD"
  ],
  "held": [
   "XLE"
@@ -62,5 +62,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-09-22T07:30:11+00:00"
+ "generated_utc": "2026-09-24T15:33:33+00:00"
 }
