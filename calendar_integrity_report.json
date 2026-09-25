@@ -1,5 +1,5 @@
 {
-  "version": "v3.9.21",
+  "version": "v3.9.22",
   "invariant": "1 row = 1 completed US equity regular session",
   "pre_repair": {
     "stage": "loaded_before_fetch",
@@ -32,15 +32,15 @@
   },
   "close_freshness": {
     "lookback": 10,
-    "status": "carry",
+    "status": "fresh",
     "last_session": "2026-09-24",
-    "live_n": 0,
+    "live_n": 27,
     "carry_n": 0,
-    "miss_n": 27,
+    "miss_n": 0,
     "legacy_n": 0,
     "max_consecutive_carry": 0,
     "carry_tickers": [],
     "tickers": 27
   },
-  "generated_utc": "2026-09-25T01:31:13Z"
+  "generated_utc": "2026-09-25T12:34:33Z"
 }
