@@ -1,21 +1,23 @@
 {
   "schema": "transition_alert/2.0",
-  "date": "2026-09-23 00:00:00",
+  "date": "2026-09-24 00:00:00",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
   "crown": "#110",
   "src": "engine_target_observation",
   "target_src": "causal_engine_target",
-  "ledger_as_of": null,
-  "prev": {},
-  "target": {
+  "ledger_as_of": "2026-09-23",
+  "prev": {
     "XLE": 1.0
   },
-  "cash": 0.0,
+  "target": {
+    "XLE": 0.9
+  },
+  "cash": 0.09999999999999998,
   "position_state": {
     "XLE": {
       "entry_date": "4947",
       "entry_price": 64.65593099796496,
-      "held_days": 14,
+      "held_days": 15,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -23,15 +25,15 @@
     }
   },
   "simulated_weights": {
-    "XLE": 0.9902672660770344
+    "XLE": 0.9903026784845538
   },
   "simulated_positions": {
     "XLE": {
       "entry_date": "2026-09-02",
       "entry_price": 64.65593099796496,
-      "held_days": 14,
-      "strategy_held_days": 14,
-      "actual_held_days": 14,
+      "held_days": 15,
+      "strategy_held_days": 15,
+      "actual_held_days": 15,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -40,22 +42,39 @@
       "quantity_unit": "adjusted_price_units"
     }
   },
-  "pending_orders": null,
-  "observations": [],
-  "comparison_status": {
-    "valid": false,
-    "expected": "2026-09-22",
-    "as_of": null,
-    "error": "previous_session_missing"
+  "pending_orders": {
+    "signal_index": 4962,
+    "due_index": 4963,
+    "signal_date": "2026-09-24",
+    "quantity_deltas": {
+      "XLE": -52768.609014415124
+    },
+    "unit": "adjusted_price_units",
+    "status": "SIMULATED_PENDING_NOT_SENT"
   },
-  "previous_cash": null,
+  "observations": [
+    {
+      "ticker": "XLE",
+      "previous_target": 1.0,
+      "target": 0.9,
+      "delta": -0.09999999999999998,
+      "kind": "engine_target_change"
+    }
+  ],
+  "comparison_status": {
+    "valid": true,
+    "expected": "2026-09-23",
+    "as_of": "2026-09-23",
+    "error": null
+  },
+  "previous_cash": 0.0,
   "source_ledger_as_of": "2026-09-23",
   "ledger_integrity": {
     "source": "historical_engine_target",
     "as_of": "2026-09-23",
     "pending_verification": [],
     "dev_open": [],
-    "sessions": 0,
+    "sessions": 1,
     "stale": false,
     "weights_valid": true
   },
@@ -538,8 +557,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-09-23",
-    "engine_date": "2026-09-23",
+    "input_date": "2026-09-24",
+    "engine_date": "2026-09-24",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -547,6 +566,6 @@
   "action_block_reason": [
     "실계좌 또는 데이터 실행 근거 미충족"
   ],
-  "generated_at": "2026-09-24T15:44:03",
+  "generated_at": "2026-09-25T12:54:00",
   "note": "엔진 목표 관측 기록. 실행 가능한 실계좌 주문 계획 없음."
 }
