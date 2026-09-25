@@ -1,33 +1,26 @@
 {
   "schema": "causal_target_diff/1.0",
-  "previous_date": "2026-09-23",
-  "comparable": true,
+  "previous_date": null,
+  "comparable": false,
   "date": "2026-09-24",
-  "changed": true,
+  "changed": false,
   "actionable": false,
   "src": "causal_engine_target",
   "positions": {
     "XLE": 0.9
   },
-  "target_cash_weight": 0.09999999999999998,
   "simulated_positions": {
     "XLE": 0.9903026784845538
   },
   "simulated_cash_weight": 0.009697321515446214,
-  "observations": [
-    {
-      "ticker": "XLE",
-      "previous_target": 1.0,
-      "target": 0.9,
-      "delta": -0.09999999999999998
-    }
-  ],
+  "target_cash_weight": 0.09999999999999998,
+  "observations": [],
   "entered": [],
   "exited": [],
   "reweighted": [],
   "actions": "",
   "simulated_actions": [],
-  "change_reason": "엔진 목표 변경 관측",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "generated_utc": "2026-09-25T12:51:04.889983+00:00"
+  "change_reason": "기존 동일 기록 보존 — 전일 차이는 재계산하지 않음",
+  "generated_utc": "2026-09-25T13:34:00.662528+00:00"
 }
