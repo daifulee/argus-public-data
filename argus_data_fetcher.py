@@ -1,3 +1,4 @@
+# 🔧 v3.9.22: 시장 응답 형식 정규화·시도별 성공 병합·누락 종목 개별 재수집
 # 🔧 v3.9.21: 동일 세션 센서 재수집·당시 판본 오류 원인 보존
 # 🔧 v3.9.19 (2026-09-21, S291): RE-FETCH PIT SEMANTICS — 결함 S291-8 처방. **v3.9.18 의 자기 결함 정정.**
 #   사건: v3.9.18 의 자가 재수집(처방 ④)이 2026-09-17·09-18 을 다시 받으면서
@@ -2524,72 +2525,84 @@ def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, rep
     return final
 
 
-def _yf_batch_once(symbols: list, start: str, end: str, exact_date=None) -> dict:
-    """yfinance 배치 → {symbol: close}.
+def _extract_market_closes(raw, symbols, exact_date=None):
+    """응답 열 순서와 무관하게 요청일의 유한한 종가만 반환한다."""
+    if raw is None or raw.empty:
+        return {}
+    if isinstance(raw.columns, pd.MultiIndex):
+        levels = [i for i in range(raw.columns.nlevels)
+                  if 'Close' in raw.columns.get_level_values(i)]
+        if len(levels) != 1:
+            return {}
+        close = raw.xs('Close', axis=1, level=levels[0])
+    elif len(symbols) == 1 and 'Close' in raw.columns:
+        close = raw[['Close']].rename(columns={'Close': symbols[0]})
+    else:
+        # 여러 종목 응답인데 종목 식별자가 없으면 추정하지 않는다.
+        return {}
+    idx = pd.DatetimeIndex(pd.to_datetime(close.index))
+    if idx.tz is not None:
+        idx = idx.tz_convert(US_EQUITY_TZ).tz_localize(None)
+    close = close.copy()
+    close.index = idx.normalize()
+    close = close.sort_index()
+    if exact_date is not None:
+        close = close.loc[close.index == pd.Timestamp(exact_date).normalize()]
+    if close.empty:
+        return {}
+    # 중복 세션은 어느 행이 확정본인지 알 수 없으므로 채택하지 않는다.
+    if close.index.duplicated().any():
+        return {}
+    last = close.iloc[-1]
+    result = {}
+    for sym in symbols:
+        if sym not in last.index:
+            continue
+        value = pd.to_numeric(last[sym], errors='coerce')
+        if np.isscalar(value) and np.isfinite(value):
+            result[sym] = float(value)
+    return result
 
-    🔴 v3.9.11 [MARKET CONTRACT] exact_date 를 주면 **그 날짜의 실제 bar** 만 채택한다.
-       종전은 무조건 window 의 마지막 행(`close.iloc[-1]`)을 썼다. 그러면 요청 날짜에
-       bar 가 없을 때 인접일 값이 요청 날짜로 stamp 된다 —
-       target 2026-05-20 · Yahoo 에 5/20 없음 · 5/19 존재 → 5/19 값이 Date=5/20 으로 기록.
-       미래 날짜 오염은 v3.9.10 이 막았지만 historical adjacent-bar misstamp 는 남아 있었다.
-       이 함수가 repair · backfill · daily 세 경로의 **유일한 시장데이터 취득 지점**이므로
-       여기서 Date ↔ bar identity 를 한 번만 계약한다.
-       해당 날짜 bar 가 없으면 그 심볼은 반환하지 않는다 → 기존 4단 ffill 방어가
-       'ffill' 라벨과 함께 정직하게 처리한다.
-    """
+
+def _yf_batch_once(symbols: list, start: str, end: str, exact_date=None) -> dict:
+    """가격 조정 설정을 유지하며 응답을 공통 날짜 검증기로 처리한다."""
     try:
         raw = yf.download(symbols, start=start, end=end,
-                          auto_adjust=True, progress=False)
-        if raw.empty:
-            return {}
-        close = raw["Close"] if isinstance(raw.columns, pd.MultiIndex) else raw
-        if exact_date is not None:
-            _want = pd.Timestamp(exact_date).normalize()
-            _idx = pd.DatetimeIndex(pd.to_datetime(close.index))
-            if _idx.tz is not None:
-                _idx = _idx.tz_localize(None)
-            _hit = close[_idx.normalize() == _want]
-            if len(_hit) == 0:
-                print(f"    ⏭️ {symbols[:2]}... {_want.date()} bar 없음 — 인접일 대체 금지")
-                return {}
-            last = _hit.iloc[-1]
-        else:
-            last = close.iloc[-1]
-        return {sym: float(last[sym])
-                for sym in symbols
-                if sym in last.index and not pd.isna(last[sym])}
-    except Exception as e:
-        print(f"    ⚠️  배치 {symbols[:2]}...: {e}")
+                          auto_adjust=True, progress=False, threads=False, timeout=15)
+        return _extract_market_closes(raw, symbols, exact_date)
+    except Exception as exc:
+        print(f"    ⚠️ 시장 수집 실패 {symbols[:2]}: {type(exc).__name__}")
         return {}
 
 
 def _yf_batch(symbols: list, start: str, end: str, exact_date=None) -> dict:
-    """🔧 v3.9.18 (S291) 처방 ③ — 배치 재시도 래퍼.
-
-    결함 S291-4 에서 ETF 배치가 두 세션 연속 빈 결과를 냈는데, 단발 호출이라
-    '일시적 빈 응답' 과 '실제 bar 부재' 를 구분할 근거가 하나도 남지 않았다.
-    v3.9.17 이 세션 해석에 넣은 재시도(SESSION_RESOLVE_ATTEMPTS)와 같은 처방을
-    시장데이터 취득 지점에도 둔다. 시도별 수확량을 항상 남긴다.
-
-    ⚠️ 재시도는 Yahoo 에 bar 가 실제로 없을 때는 아무것도 바꾸지 못한다.
-       그 경우를 '해결' 한다고 주장하지 않는다 — 구분 가능하게 만들 뿐이다.
-    """
-    _best = {}
-    for _i in range(1, max(1, ETF_BATCH_ATTEMPTS) + 1):
-        _got = _yf_batch_once(symbols, start, end, exact_date=exact_date)
-        if len(_got) > len(_best):
-            _best = _got
-        if len(_got) == len(symbols):
-            if _i > 1:
-                print(f"    ✅ 배치 재시도 {_i}/{ETF_BATCH_ATTEMPTS} 전량 수집")
-            return _got
-        print(f"    🔎 배치 시도 {_i}/{ETF_BATCH_ATTEMPTS}: {len(_got)}/{len(symbols)}종")
-        if _i < ETF_BATCH_ATTEMPTS:
+    """시도별 성공 종목을 합치고, 남은 종목만 개별 요청으로 복구한다."""
+    wanted = list(dict.fromkeys(symbols))
+    best = {}
+    attempts = max(1, ETF_BATCH_ATTEMPTS)
+    for attempt in range(1, attempts + 1):
+        missing = [sym for sym in wanted if sym not in best]
+        if not missing:
+            break
+        got = _yf_batch_once(missing, start, end, exact_date=exact_date)
+        best.update({sym: value for sym, value in got.items() if sym in missing})
+        print(f"    🔎 시장 수집 {attempt}/{attempts}: 누적 {len(best)}/{len(wanted)}종")
+        if len(best) == len(wanted):
+            return best
+        if attempt < attempts:
             time.sleep(ETF_BATCH_BACKOFF_S)
-    if not _best:
-        print(f"    🔴 v3.9.18 배치 전량 실패 — {ETF_BATCH_ATTEMPTS}회 시도 후 0/{len(symbols)}종. "
-              f"해당 세션 종가는 carry 표기로 기록된다 (실측값 아님).")
-    return _best
+    # 다종목 응답 경로의 장애는 반복만으로 해소되지 않을 수 있다.
+    if len(wanted) > 1:
+        for sym in wanted:
+            if sym not in best:
+                got = _yf_batch_once([sym], start, end, exact_date=exact_date)
+                if sym in got:
+                    best[sym] = got[sym]
+        print(f"    🩹 개별 재수집 후 {len(best)}/{len(wanted)}종")
+    missing = [sym for sym in wanted if sym not in best]
+    if missing:
+        print(f"    ⚠️ 요청일 종가 미확보: {missing} — 인접일 대체 없음")
+    return best
 
 
 def _yf_series(symbol: str, start: str, end: str, *, quiet: bool = False) -> pd.Series:
