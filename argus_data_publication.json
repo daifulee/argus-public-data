@@ -1,0 +1,49 @@
+{
+  "schema": "argus_data_publication/1.0",
+  "session": "2026-09-28",
+  "files_sha256": {
+    "argus_data.csv": "ba6767d1cfa2dd763c797592a54585d74c527d2f1e1299c027bc87cfddc3caf3",
+    "argus_data_daily.csv": "c3f159e567a15bd52e74f1eaa80e66635cfd1dbd894c99e3051f14a6df05e207",
+    "argus_data_weekly.csv": "7b4472d0abf53a7f893cf077fb22949e1529916e2f0aaef00ffce81be417a28b",
+    "argus_data_monthly.csv": "b02a625684fce760972416c3185e23438efd2166b4e6d4e7605c198534ba1c0d",
+    "latest.json": "1e684df1d8a29a0764aee18613d1da2f0b013c8e15b75668cfaa689bffbb3ea5"
+  },
+  "run_id": "36512753211",
+  "source_revision": "c6e2256df608357e91431c72a6dca3ca0457d11c",
+  "verified_utc": "2026-09-29T02:29:18.090464+00:00",
+  "required_close_tickers": [
+    "GLD",
+    "SLV",
+    "COPX",
+    "NLR",
+    "QQQM",
+    "VNM",
+    "IWM",
+    "PAVE",
+    "SMH",
+    "EWZ",
+    "XLE",
+    "INDA",
+    "ITA",
+    "TLT",
+    "VEA",
+    "XLF",
+    "XLV",
+    "XLU",
+    "CQQQ",
+    "CIBR",
+    "SGOV",
+    "SPY",
+    "IEF",
+    "HYG",
+    "TIP",
+    "LQD",
+    "PDBC"
+  ],
+  "supplemental_close_sources": {
+    "RSP_Close_source": {
+      "source": "ffill_carry",
+      "scope": "supplemental_not_validated"
+    }
+  }
+}
