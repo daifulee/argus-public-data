@@ -1,0 +1,22 @@
+{
+  "schema": "argus_brief_publication/1.0",
+  "session": "2026-09-28",
+  "data_commit": "efc2ae25b6a8e2255d1299acabbae33cd75073dd",
+  "data_hashes": {
+    "argus_data.csv": "2a5214dc9a921747bd7f907003c7a13e5df2819e040fedb99a82dbc00b835302",
+    "argus_data_daily.csv": "7a978e38eda46fce60651d88b14771118524860e0fa7dad4d4e31dee3bf18c6c",
+    "argus_data_weekly.csv": "7b4472d0abf53a7f893cf077fb22949e1529916e2f0aaef00ffce81be417a28b",
+    "argus_data_monthly.csv": "b02a625684fce760972416c3185e23438efd2166b4e6d4e7605c198534ba1c0d",
+    "latest.json": "6dcc2ebdd277308b0f163c15c026535fa4841d871bf828b1337f7e9ee54fab0e"
+  },
+  "html_sha256": "b578346a8e165fbc068fe8ff7ce44ee8506681c0c8c27ffb888df6003b7a620e",
+  "html_commit": "aec6df4791a0081ea0a1b353edfc3d29e7172940",
+  "maq_outcome": "success",
+  "auxiliary": {
+    "ORACLE_SHADOW_OUTCOME": "success",
+    "DIVERGENCE_CAUSAL_OUTCOME": "success",
+    "SCOREBOARD_CAUSAL_OUTCOME": "success"
+  },
+  "run_id": "36513479689",
+  "verified_utc": "2026-09-29T02:46:03.980493+00:00"
+}
