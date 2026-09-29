@@ -94,7 +94,8 @@ def verify_data(receipt, blobs, expected):
     if row.get('CLOSE_FRESHNESS') != 'fresh':
         raise DataNotReady('정확 거래일 종가가 모두 준비되지 않음')
     source_columns = {t + '_Close_source' for t in CLOSE_TICKERS}
-    source_columns.update(k for k in row if k.endswith('_Close_source'))
+    # 필수 범위는 수집기의 명시적 종목 계약과 같아야 한다.
+    # CSV에 남아 있는 부가 열을 이름만으로 필수 수집 대상으로 승격하지 않는다.
     for column in sorted(source_columns):
         if column not in row:
             raise IntegrityError('종가 출처 열 누락: ' + column)
@@ -117,6 +118,13 @@ def make_data_receipt(root, expected, run_id='', source_revision=''):
                'run_id': str(run_id), 'source_revision': source_revision,
                'verified_utc': dt.datetime.now(dt.timezone.utc).isoformat()}
     verify_data(receipt, blobs, expected)
+    _, row = csv_last(blobs['argus_data.csv'])
+    required_sources = {t + '_Close_source' for t in CLOSE_TICKERS}
+    receipt['required_close_tickers'] = list(CLOSE_TICKERS)
+    # 부가 열은 검증 범위 밖임을 명시하고 실제 출처를 보존한다. fresh로 바꾸지 않는다.
+    receipt['supplemental_close_sources'] = {
+        name: {'source': row[name], 'scope': 'supplemental_not_validated'}
+        for name in sorted(row) if name.endswith('_Close_source') and name not in required_sources}
     (root / DATA_RECEIPT).write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
     return receipt
 
