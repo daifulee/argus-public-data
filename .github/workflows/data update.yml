@@ -26,6 +26,7 @@
 # ════════════════════════════════════════════════════════════════════
 
 name: 🦅 ARGUS Data Update
+run-name: ARGUS Data ${{ inputs.pipeline_request_id || github.run_id }}
 
 on:
   # 수집 코드 업로드 후 실제 자료도 갱신한다. 산출물 커밋은 재실행하지 않는다.
@@ -33,6 +34,7 @@ on:
     branches: ['main']
     paths:
       - 'argus_data_fetcher.py'
+      - 'argus_pipeline_contract.py'
       - 'requirements.txt'
       - 'make_latest_json.py'
       - 'make_migration_bundle.py'
@@ -42,6 +44,11 @@ on:
     - cron: '17 23 * * 1-5'   # retry
   workflow_dispatch:
     inputs:
+      pipeline_request_id:
+        description: '복구기가 발급한 실행 식별자 (직접 실행 시 비워 둠)'
+        required: false
+        default: ''
+        type: string
       calendar_migration:
         description: '캘린더 마이그레이션 모드'
         required: true
@@ -104,6 +111,7 @@ jobs:
           ARGUS_WORKFLOW_SHA: ${{ github.workflow_sha }}
           ARGUS_EVENT: ${{ github.event_name }}
           ARGUS_MIGRATION: ${{ github.event.inputs.calendar_migration || 'off' }}
+          PIPELINE_REQUEST_ID: ${{ inputs.pipeline_request_id }}
           BACKFILL_FORCE: ${{ github.event.inputs.backfill_force || 'false' }}
           BACKFILL_START: ${{ github.event.inputs.backfill_start || '' }}
           BACKFILL_END: ${{ github.event.inputs.backfill_end || '' }}
@@ -117,6 +125,7 @@ jobs:
           import subprocess
           import sys
           import tempfile
+          from argus_pipeline_contract import make_data_receipt, expected_session, save_failure, HOLD_PATH, IntegrityError
           
           INSTALL = r"""
           python -m pip install --upgrade pip
@@ -259,10 +268,8 @@ jobs:
                       "calendar_migration=prepare_and_migrate 를 1회 실행할 것."
                   )
           
-              raise SystemExit(
-                  "DATA STALE — 마지막 완결 XNYS 세션과 불일치: "
-                  f"csv={data_last} expected={expected}"
-              )
+              print(f"DATA NOT READY: csv={data_last} expected={expected}")
+              raise SystemExit(75 if data_last < expected else 1)
           
           print("✅ SESSION FRESHNESS PASS")
           PY
@@ -339,6 +346,11 @@ jobs:
           def generate(work, env, mode):
               # 원격 기준이 바뀌면 의존성도 새 requirements.txt 기준으로 설치한다.
               pending_check(work)
+              hold_path = work / HOLD_PATH
+              if mode == 'off' and hold_path.exists():
+                  hold = json.loads(hold_path.read_text(encoding='utf-8'))
+                  if hold.get('active') is not False and (env.get('ARGUS_EVENT') != 'workflow_dispatch' or env.get('PIPELINE_REQUEST_ID')):
+                      raise IntegrityError('마이그레이션 검증 대기 — NORMAL 수동 실행 필요')
               shell(INSTALL, work, env)
               run_env = dict(env, BACKFILL_DATE='')
               run_env.pop('CALENDAR_MIGRATION_MODE', None)
@@ -379,11 +391,14 @@ jobs:
               git(repo, 'config', 'user.email', 'argus-bot@users.noreply.github.com')
               workflow_source = env.get('ARGUS_WORKFLOW_SHA') or 'HEAD'
               workflow_blob = git(repo, 'rev-parse', f'{workflow_source}:{WORKFLOW_PATH}')
+              contract_blob = git(repo, 'rev-parse', f'{workflow_source}:argus_pipeline_contract.py')
               attempts = 1 if mode == 'prepare_and_migrate' else max_attempts
               for attempt in range(1, attempts + 1):
                   base = refresh(repo)
                   if git(repo, 'rev-parse', f'{base}:{WORKFLOW_PATH}') != workflow_blob:
                       raise RuntimeError('실행 중 workflow 변경 감지 — 최신 workflow로 새 실행 필요')
+                  if git(repo, 'rev-parse', f'{base}:argus_pipeline_contract.py') != contract_blob:
+                      raise RuntimeError('실행 중 게시 계약 변경 — 최신 workflow로 새 실행 필요')
                   # 사용자 작업 공간을 초기화하지 않고 실행마다 독립된 작업 사본을 만든다.
                   folder = Path(tempfile.mkdtemp(prefix='argus-publish-', dir=env.get('RUNNER_TEMP')))
                   work = folder / 'work'
@@ -392,6 +407,12 @@ jobs:
                   try:
                       generate_fn(work, env, mode)
                       pending_check(work)
+                      if mode == 'off':
+                          session, _ = expected_session()
+                          make_data_receipt(work, session, env.get('GITHUB_RUN_ID', ''), base)
+                      (work / HOLD_PATH).write_text(json.dumps({
+                          'active': mode != 'off', 'mode': mode,
+                          'run_id': env.get('GITHUB_RUN_ID', '')}), encoding='utf-8')
                       required = DATA_FILES[:5]
                       optional = DATA_FILES[5:]
                       if mode == 'prepare_and_migrate':
@@ -399,11 +420,12 @@ jobs:
                                                    'migration_generations', 'migration_inputs']
                           optional = []
                       else:
-                          required = required + ['wsts_yoy.json']
+                          required = required + ['wsts_yoy.json', 'argus_data_publication.json']
                       for name in required:
                           p = work / name
                           if not p.exists() or p.is_symlink():
                               raise RuntimeError(f'게시 필수 산출물 부재 또는 symlink: {name}')
+                      required = required + [HOLD_PATH]
                       files = required + [name for name in optional if (work / name).exists()]
                       for name in files:
                           if (work / name).is_symlink():
@@ -466,8 +488,13 @@ jobs:
               try:
                   mode = validate_inputs(env)
                   result.update(publish(Path.cwd(), env, mode))
+                  result.update(status='SUCCESS', retryable=False,
+                                run_attempt=int(env.get('GITHUB_RUN_ATTEMPT', '1')))
+                  Path('argus_pipeline_result.json').write_text(
+                      json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
               except Exception as exc:
                   result['error'] = str(exc)
+                  save_failure(exc)
                   print(f'::error::{exc}', flush=True)
                   raise
               finally:
@@ -483,3 +510,12 @@ jobs:
           
           if __name__ == '__main__':
               main()
+
+      - name: 📎 수집·게시 실행 결과 보존
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: argus-pipeline-result-${{ github.run_id }}-${{ github.run_attempt }}
+          path: argus_pipeline_result.json
+          if-no-files-found: warn
+          retention-days: 30
