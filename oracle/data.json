@@ -1,6 +1,6 @@
 {
-  "date": "2026-09-25",
-  "run_at": "2026-09-29T01:20:19.869199",
+  "date": "2026-09-29",
+  "run_at": "2026-09-30T00:50:33.878474",
   "version": "1.0.6",
   "regime": {
     "regime": "EXPANSION",
@@ -21,49 +21,50 @@
     },
     "confidence": "MEDIUM",
     "trigger_fired": [
-      "🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.85%"
+      "🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.90%",
+      "레짐 그래디언트 30 (시장 경계감, 레짐 유지)"
     ],
-    "gradient_adj_note": "프리셋 기준. SGOV 10% 유지.",
+    "gradient_adj_note": "시장 변동성 상승. SGOV 15%로 소폭 확대. 공격군 65%.",
     "allocation_final": {
       "SGOV": 10,
       "GLD": 20,
       "attack_core": 70
     },
-    "briefing_line": "🟢 확장기 (EXPANSION) | 달러RP 10% · GLD 20% · 공격 70% | 그래디언트 24/100\n  발동 근거: 🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.85%\n  그래디언트 조정: 프리셋 기준. SGOV 10% 유지."
+    "briefing_line": "🟢 확장기 (EXPANSION) | 달러RP 10% · GLD 20% · 공격 70% | 그래디언트 30/100\n  발동 근거: 🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.90% / 레짐 그래디언트 30 (시장 경계감, 레짐 유지)\n  그래디언트 조정: 시장 변동성 상승. SGOV 15%로 소폭 확대. 공격군 65%."
   },
-  "gradient": 24.2,
-  "conviction": 45.0,
+  "gradient": 30.1,
+  "conviction": 41.0,
   "integrity": "26/26",
   "smoke": false,
   "allocation": {
-    "SGOV": 9.99900009999,
-    "GLD": 19.99800019998,
-    "NLR": 19.288071192880707,
-    "COPX": 12.928707129287071,
-    "PAVE": 11.77882211778822,
-    "XLU": 10.15898410158984,
-    "SMH": 9.689031096890313,
-    "CIBR": 6.15938406159384
+    "SGOV": 10.0,
+    "GLD": 20.0,
+    "COPX": 17.03,
+    "NLR": 15.78,
+    "PAVE": 12.4,
+    "SMH": 9.66,
+    "XLU": 9.6,
+    "QQQM": 5.53
   },
   "top_picks": [
     [
       "GLD",
-      0.2
-    ],
-    [
-      "NLR",
-      0.18
+      0.21
     ],
     [
       "COPX",
-      0.12
+      0.16
+    ],
+    [
+      "NLR",
+      0.15
     ],
     [
       "PAVE",
-      0.11
+      0.12
     ],
     [
-      "XLU",
+      "SMH",
       0.09
     ]
   ]
