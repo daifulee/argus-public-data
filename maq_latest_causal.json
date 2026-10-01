@@ -1,5 +1,5 @@
 {
- "date": "2026-09-28",
+ "date": "2026-09-30",
  "queue": 3,
  "grade": "3+",
  "base_f63": 5.94,
@@ -21,8 +21,8 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-09-28",
-  "engine_date": "2026-09-28",
+  "input_date": "2026-09-30",
+  "engine_date": "2026-09-30",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
@@ -67,5 +67,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-09-29T02:42:32+00:00"
+ "generated_utc": "2026-10-01T05:02:04+00:00"
 }
