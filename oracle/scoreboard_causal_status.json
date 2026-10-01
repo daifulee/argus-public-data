@@ -13,10 +13,11 @@
   "cycles_remaining": null,
   "kpi_complete": false,
   "missing_dates": [
-    "2026-09-22"
+    "2026-09-22",
+    "2026-09-29"
   ],
-  "missing_count": 1,
-  "oracle_obs": 68,
-  "prima_obs": 6,
+  "missing_count": 2,
+  "oracle_obs": 69,
+  "prima_obs": 7,
   "note": "일일 목표 기록 결손으로 성과 계산 보류. 과거 비중 추정 및 이월 금지"
 }
