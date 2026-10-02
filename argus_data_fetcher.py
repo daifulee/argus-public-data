@@ -1,4 +1,3 @@
-# 🔧 v3.9.22: 시장 응답 형식 정규화·시도별 성공 병합·누락 종목 개별 재수집
 # 🔧 v3.9.21: 동일 세션 센서 재수집·당시 판본 오류 원인 보존
 # 🔧 v3.9.19 (2026-09-21, S291): RE-FETCH PIT SEMANTICS — 결함 S291-8 처방. **v3.9.18 의 자기 결함 정정.**
 #   사건: v3.9.18 의 자가 재수집(처방 ④)이 2026-09-17·09-18 을 다시 받으면서
@@ -538,6 +537,9 @@ v2.6 → v2.7 인터페이스 호환:
   · 호출: python argus_data_fetcher.py (동일)
   · 핵심: 부분 가용 컬럼 자동 백필 (cover < 50% 시 자동 재백필)
 """
+from argus_observation_contract import (SERIES as VERIFIED_FRED_SERIES, fetch_record,
+    mask_invalid_records, protected_column, columns_for)
+
 import os, sys, time, json, warnings, shutil, uuid
 from datetime import datetime, date, timedelta, timezone
 
@@ -1797,9 +1799,9 @@ def recompute_deterministic_derived(df):
         done.append("VIX_VIX3M_ratio")
     if all(c in df.columns for c in ("WALCL", "WTREGEN", "RRPONTSYD")):
         # 🌟 RRP 십억$ → 백만$ (×1e3) — BT v5 정본 규약
-        df["Net_Liquidity"] = (pd.to_numeric(df["WALCL"], errors="coerce").ffill()
-                               - pd.to_numeric(df["WTREGEN"], errors="coerce").ffill()
-                               - pd.to_numeric(df["RRPONTSYD"], errors="coerce").ffill() * 1e3)
+        df["Net_Liquidity"] = (pd.to_numeric(df["WALCL"], errors="coerce")
+                               - pd.to_numeric(df["WTREGEN"], errors="coerce")
+                               - pd.to_numeric(df["RRPONTSYD"], errors="coerce") * 1e3)
         done.append("Net_Liquidity")
     try:
         df["KIL_SUP"] = compute_kil_sup(df)     # 🔴 반환은 Series — df 에 대입하지 않는다
@@ -2525,84 +2527,72 @@ def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, rep
     return final
 
 
-def _extract_market_closes(raw, symbols, exact_date=None):
-    """응답 열 순서와 무관하게 요청일의 유한한 종가만 반환한다."""
-    if raw is None or raw.empty:
-        return {}
-    if isinstance(raw.columns, pd.MultiIndex):
-        levels = [i for i in range(raw.columns.nlevels)
-                  if 'Close' in raw.columns.get_level_values(i)]
-        if len(levels) != 1:
-            return {}
-        close = raw.xs('Close', axis=1, level=levels[0])
-    elif len(symbols) == 1 and 'Close' in raw.columns:
-        close = raw[['Close']].rename(columns={'Close': symbols[0]})
-    else:
-        # 여러 종목 응답인데 종목 식별자가 없으면 추정하지 않는다.
-        return {}
-    idx = pd.DatetimeIndex(pd.to_datetime(close.index))
-    if idx.tz is not None:
-        idx = idx.tz_convert(US_EQUITY_TZ).tz_localize(None)
-    close = close.copy()
-    close.index = idx.normalize()
-    close = close.sort_index()
-    if exact_date is not None:
-        close = close.loc[close.index == pd.Timestamp(exact_date).normalize()]
-    if close.empty:
-        return {}
-    # 중복 세션은 어느 행이 확정본인지 알 수 없으므로 채택하지 않는다.
-    if close.index.duplicated().any():
-        return {}
-    last = close.iloc[-1]
-    result = {}
-    for sym in symbols:
-        if sym not in last.index:
-            continue
-        value = pd.to_numeric(last[sym], errors='coerce')
-        if np.isscalar(value) and np.isfinite(value):
-            result[sym] = float(value)
-    return result
-
-
 def _yf_batch_once(symbols: list, start: str, end: str, exact_date=None) -> dict:
-    """가격 조정 설정을 유지하며 응답을 공통 날짜 검증기로 처리한다."""
+    """yfinance 배치 → {symbol: close}.
+
+    🔴 v3.9.11 [MARKET CONTRACT] exact_date 를 주면 **그 날짜의 실제 bar** 만 채택한다.
+       종전은 무조건 window 의 마지막 행(`close.iloc[-1]`)을 썼다. 그러면 요청 날짜에
+       bar 가 없을 때 인접일 값이 요청 날짜로 stamp 된다 —
+       target 2026-05-20 · Yahoo 에 5/20 없음 · 5/19 존재 → 5/19 값이 Date=5/20 으로 기록.
+       미래 날짜 오염은 v3.9.10 이 막았지만 historical adjacent-bar misstamp 는 남아 있었다.
+       이 함수가 repair · backfill · daily 세 경로의 **유일한 시장데이터 취득 지점**이므로
+       여기서 Date ↔ bar identity 를 한 번만 계약한다.
+       해당 날짜 bar 가 없으면 그 심볼은 반환하지 않는다 → 기존 4단 ffill 방어가
+       'ffill' 라벨과 함께 정직하게 처리한다.
+    """
     try:
         raw = yf.download(symbols, start=start, end=end,
-                          auto_adjust=True, progress=False, threads=False, timeout=15)
-        return _extract_market_closes(raw, symbols, exact_date)
-    except Exception as exc:
-        print(f"    ⚠️ 시장 수집 실패 {symbols[:2]}: {type(exc).__name__}")
+                          auto_adjust=True, progress=False)
+        if raw.empty:
+            return {}
+        close = raw["Close"] if isinstance(raw.columns, pd.MultiIndex) else raw
+        if exact_date is not None:
+            _want = pd.Timestamp(exact_date).normalize()
+            _idx = pd.DatetimeIndex(pd.to_datetime(close.index))
+            if _idx.tz is not None:
+                _idx = _idx.tz_localize(None)
+            _hit = close[_idx.normalize() == _want]
+            if len(_hit) == 0:
+                print(f"    ⏭️ {symbols[:2]}... {_want.date()} bar 없음 — 인접일 대체 금지")
+                return {}
+            last = _hit.iloc[-1]
+        else:
+            last = close.iloc[-1]
+        return {sym: float(last[sym])
+                for sym in symbols
+                if sym in last.index and not pd.isna(last[sym])}
+    except Exception as e:
+        print(f"    ⚠️  배치 {symbols[:2]}...: {e}")
         return {}
 
 
 def _yf_batch(symbols: list, start: str, end: str, exact_date=None) -> dict:
-    """시도별 성공 종목을 합치고, 남은 종목만 개별 요청으로 복구한다."""
-    wanted = list(dict.fromkeys(symbols))
-    best = {}
-    attempts = max(1, ETF_BATCH_ATTEMPTS)
-    for attempt in range(1, attempts + 1):
-        missing = [sym for sym in wanted if sym not in best]
-        if not missing:
-            break
-        got = _yf_batch_once(missing, start, end, exact_date=exact_date)
-        best.update({sym: value for sym, value in got.items() if sym in missing})
-        print(f"    🔎 시장 수집 {attempt}/{attempts}: 누적 {len(best)}/{len(wanted)}종")
-        if len(best) == len(wanted):
-            return best
-        if attempt < attempts:
+    """🔧 v3.9.18 (S291) 처방 ③ — 배치 재시도 래퍼.
+
+    결함 S291-4 에서 ETF 배치가 두 세션 연속 빈 결과를 냈는데, 단발 호출이라
+    '일시적 빈 응답' 과 '실제 bar 부재' 를 구분할 근거가 하나도 남지 않았다.
+    v3.9.17 이 세션 해석에 넣은 재시도(SESSION_RESOLVE_ATTEMPTS)와 같은 처방을
+    시장데이터 취득 지점에도 둔다. 시도별 수확량을 항상 남긴다.
+
+    ⚠️ 재시도는 Yahoo 에 bar 가 실제로 없을 때는 아무것도 바꾸지 못한다.
+       그 경우를 '해결' 한다고 주장하지 않는다 — 구분 가능하게 만들 뿐이다.
+    """
+    _best = {}
+    for _i in range(1, max(1, ETF_BATCH_ATTEMPTS) + 1):
+        _got = _yf_batch_once(symbols, start, end, exact_date=exact_date)
+        if len(_got) > len(_best):
+            _best = _got
+        if len(_got) == len(symbols):
+            if _i > 1:
+                print(f"    ✅ 배치 재시도 {_i}/{ETF_BATCH_ATTEMPTS} 전량 수집")
+            return _got
+        print(f"    🔎 배치 시도 {_i}/{ETF_BATCH_ATTEMPTS}: {len(_got)}/{len(symbols)}종")
+        if _i < ETF_BATCH_ATTEMPTS:
             time.sleep(ETF_BATCH_BACKOFF_S)
-    # 다종목 응답 경로의 장애는 반복만으로 해소되지 않을 수 있다.
-    if len(wanted) > 1:
-        for sym in wanted:
-            if sym not in best:
-                got = _yf_batch_once([sym], start, end, exact_date=exact_date)
-                if sym in got:
-                    best[sym] = got[sym]
-        print(f"    🩹 개별 재수집 후 {len(best)}/{len(wanted)}종")
-    missing = [sym for sym in wanted if sym not in best]
-    if missing:
-        print(f"    ⚠️ 요청일 종가 미확보: {missing} — 인접일 대체 없음")
-    return best
+    if not _best:
+        print(f"    🔴 v3.9.18 배치 전량 실패 — {ETF_BATCH_ATTEMPTS}회 시도 후 0/{len(symbols)}종. "
+              f"해당 세션 종가는 carry 표기로 기록된다 (실측값 아님).")
+    return _best
 
 
 def _yf_series(symbol: str, start: str, end: str, *, quiet: bool = False) -> pd.Series:
@@ -3038,39 +3028,21 @@ def _fred_latest(sid: str) -> float | None:
 
 
 def _fred_latest_with_date(sid: str) -> tuple:
-    """🌟 v2.11 (S69 #4, Commander 본질 통찰 #11): 최신 값 + 발표 일자 반환.
-    
-    결정적 본질 (S69 #4 발견):
-      - FRED는 보통 익일 발표 (5/7 데이터를 5/8에 fetch)
-      - 발표일 미수신 시 5/7 발표 값을 5/8 row에 매핑 = 1일 시차 결함
-      - 격언 5조 ③ 결정적 위반 (데이터 위조)
-    
-    v2.11 정정:
-      - 발표일 (observation_date) 무조건 반환 의무
-      - fetch_today_row에서 발표일 ↔ today 비교 logic 정합 의무
-    
-    Returns:
-        tuple: (value: float | None, date_str: str | None)
-        date_str = FRED 발표 일자 (예: "2026-05-07")
-    
-    격언 정합:
-      - #36 #1 즉시 정정 (S69 #4 결정적 결함 발견)
-      - #75 v4 정식 입증 #5 (source ↔ 갱신 일관성)
-      - #80 양방향 (값 ↔ 발표일 양방향)
-      - 5조 ③ 데이터 위조 금지 (발표일 기준 정합)
-    """
+    """호환용 최신값·관측일 반환. 발표시점 인증이나 과거 행 보강에 사용 금지."""
     if not FRED_API_KEY or sid in DEPRECATED_FRED:
         return None, None
-    url = (f"https://api.stlouisfed.org/fred/series/observations"
-           f"?series_id={sid}&api_key={FRED_API_KEY}"
-           f"&limit=5&sort_order=desc&file_type=json")
     try:
-        for o in requests.get(url, timeout=15).json().get("observations", []):
+        response = requests.get('https://api.stlouisfed.org/fred/series/observations',
+                                params={'series_id':sid, 'api_key':FRED_API_KEY,
+                                        'limit':5, 'sort_order':'desc', 'file_type':'json'}, timeout=15)
+        response.raise_for_status()
+        for observation in response.json().get('observations', []):
             try:
-                v = float(o["value"])
-                return v, o.get("date")
-            except: continue
-    except: pass
+                value = float(observation['value'])
+                if np.isfinite(value):return value, observation.get('date')
+            except (KeyError, ValueError, TypeError):continue
+    except Exception:
+        pass
     return None, None
 
 
@@ -3164,6 +3136,7 @@ def build_seed() -> pd.DataFrame:
         series = _fred_series(sid, s)
         if not series.empty:
             df[col] = series.reindex(df.index, method="ffill")
+            df[col+"_source"] = "unverified_current_vintage_history"
             print(f"    ✅ {col} ({sid}): {df[col].notna().sum()}/{len(df)}일")
         else:
             print(f"    ❌ {col} ({sid}): NaN")
@@ -3175,13 +3148,25 @@ def build_seed() -> pd.DataFrame:
         _semi = _fetch_semi_signals(s, df.index[-1])
         for _c in ["SEMI_REACCEL", "CONSUMER_ELEC"]:
             df[_c] = _semi[_c].reindex(df.index, method="ffill")
-            df[f"{_c}_source"] = "fred_semi_live"
+            df[f"{_c}_source"] = "estimated_release_lag_current_vintage"
             print(f"    ✅ {_c}: {df[_c].notna().sum()}/{len(df)}일")
     except Exception as _e:
         print(f"    ⚠️ 반도체 선행신호 skip: {_e}")
         for _c in ["SEMI_REACCEL", "CONSUMER_ELEC"]:
             if _c not in df.columns:
                 df[_c] = float("nan")
+
+    # 마지막 행의 값과 시점 증거를 함께 수집한다. 과거 나머지 행은 인증 미완료다.
+    if len(df):
+        for _col in VERIFIED_FRED_SERIES:
+            _record = fetch_record(_col, df.index[-1], FRED_API_KEY,
+                                   cache_dir=os.path.join(SCRIPT_DIR, 'fred_vintage_cache'))
+            for _key, _value in _record.items():
+                if _key not in df:
+                    df[_key] = pd.Series(index=df.index, dtype='float64' if _key == _col or _key.endswith('_vintage_value') else 'object')
+                if _key != _col and not _key.endswith('_vintage_value'):
+                    df[_key] = df[_key].astype(object)
+                df.at[df.index[-1], _key] = _value
 
     # TNX 보완
     if "TNX" not in df.columns and "DGS10" in df.columns:
@@ -3221,42 +3206,9 @@ def build_seed() -> pd.DataFrame:
 STRESS_SERIES_ID = "STLFSI4"
 
 def fetch_stress_asof(target_date, request_get=None):
-    """지정일 당시 조회 가능한 판본을 회수한다. 추정 발표일/최근값 소급 금지."""
-    day = pd.Timestamp(target_date).strftime("%Y-%m-%d")
-    result = {"STLFSI": float("nan"), "STLFSI_source": "missing_vintage",
-              "STLFSI_status": "missing_vintage", "STLFSI_asof_date": day,
-              "STLFSI_observation_date": None,
-              "STLFSI_retrieved_at": datetime.now(timezone.utc).isoformat(),
-              "STLFSI_series_id": STRESS_SERIES_ID,
-              "STLFSI_error_code": "NO_VALID_ASOF_OBSERVATION"}
-    if not FRED_API_KEY:
-        result["STLFSI_error_code"] = "FRED_API_KEY_MISSING"
-        return result
-    get = request_get or requests.get
-    try:
-        response = get("https://api.stlouisfed.org/fred/series/observations", params={
-            "series_id": STRESS_SERIES_ID, "api_key": FRED_API_KEY,
-            "file_type": "json", "realtime_start": day, "realtime_end": day,
-            "observation_end": day, "sort_order": "desc", "limit": 12}, timeout=20)
-        response.raise_for_status()
-        for obs in response.json().get("observations", []):
-            value = pd.to_numeric(obs.get("value"), errors="coerce")
-            observed = pd.to_datetime(obs.get("date"), errors="coerce")
-            start = pd.to_datetime(obs.get("realtime_start"), errors="coerce")
-            end = pd.to_datetime(obs.get("realtime_end"), errors="coerce")
-            target = pd.Timestamp(day)
-            if (not np.isfinite(value) or pd.isna(observed) or pd.isna(start)
-                    or pd.isna(end) or observed > target or not start <= target <= end):
-                continue
-            result.update(STLFSI=float(value), STLFSI_source="fred_vintage_asof",
-                          STLFSI_status="verified_asof", STLFSI_error_code="",
-                          STLFSI_observation_date=observed.strftime("%Y-%m-%d"))
-            break
-    except Exception:
-        # 예외 문자열에는 요청 인증정보가 들어갈 수 있으므로 저장하지 않는다.
-        result["STLFSI_status"] = "request_failed"
-        result["STLFSI_error_code"] = "FRED_REQUEST_FAILED"
-    return result
+    """다른 지표와 동일한 전날 판본 계약으로 금융 스트레스를 수집한다."""
+    return fetch_record('STLFSI', target_date, FRED_API_KEY, request_get=request_get,
+                        cache_dir=os.path.join(SCRIPT_DIR, 'fred_vintage_cache'))
 
 
 def fetch_today_row(target_date=None, is_backfill=None) -> dict:
@@ -3303,77 +3255,13 @@ def fetch_today_row(target_date=None, is_backfill=None) -> dict:
             print(f"      ❌ {col}({sym}): NaN")
     print(f"    매크로: {ok_macro}/{len(YAHOO_MACRO)}종 수집")
 
-    # ③ 🌟 v2.11 (S69 #4, Commander 본질 통찰 #11): FRED 발표일 기준 매핑 (1일 시차 결함 정정)
-    # 결정적 본질 (S69 #4 발견):
-    #   - 이전 v2.10: _fred_latest 단순 호출 → 5/8 fetch 시 5/7 발표값을 5/8 row에 매핑 = 1일 시차
-    #   - LIVE 입증: T10YIE 5/7=NaN, 5/8=2.45 (실제는 5/7 발표값) = 격언 5조 ③ 위반
-    #   - csv FRED 발표일 ≠ csv row 일자 = 데이터 위조 결정적
-    #
-    # v2.11 정정:
-    #   - _fred_latest_with_date 활용 (값 + 발표일 동시 수신)
-    #   - 발표일 ≤ today 시에만 매핑 (FRED 발표일 = csv row 매핑 의무)
-    #   - 발표일 > today (미래값, 비정상) 시 매핑 차단
-    #   - 발표일 < today (과거값) 시 매핑 정합 (T10YIE 5/7 발표 → 5/8 row 매핑은 정합)
-    #
-    # 🚨 결정적 본질 분리:
-    #   - "1일 시차 결함" = today 변수 (5/8) ↔ FRED 최신 발표일 (5/7) 정합 인식
-    #   - 본 logic은 today_row가 5/8이고 FRED 5/7 값을 매핑 = 정합 (FRED는 익일 발표)
-    #   - but 어제 (5/7) row가 NaN인 결함은 별도 영역 (PUBLIC csv update logic)
-    #
-    # 🌟 v2.12 (S69 #5, Commander 본질 통찰 #13):
-    #   - source 컬럼 신설: row[f"{col}_source"] = "fred_live" (success) / "ffill" (failure)
-    #
-    # 격언 정합:
-    #   - #36 #1 즉시 정정 (T10YIE/T5YIE BEI 결정적 결함 발견)
-    #   - #75 v4 정식 입증 #5 (source ↔ 갱신 일관성)
-    #   - #80 양방향 (값 ↔ 발표일 양방향)
-    #   - #97 v2 #1 자기 audit
-    #   - 5조 ③ 데이터 위조 금지
-    if FRED_API_KEY:
-        ok_fred = 0; skipped_dep = 0
-        delayed_fred = []  # 🌟 v2.11: 1일 시차 시리즈 추적
-        for sid, col in FRED_SERIES.items():
-            if sid in DEPRECATED_FRED:
-                skipped_dep += 1
-                continue
-            if is_backfill:
-                # 🌟 v3.2: backfill 시 as-of 날짜 값 (현재 최신값 매핑 = 격언 5조 ③ 위반 차단)
-                _ser = _fred_series(sid, s)
-                _asof = _ser[_ser.index <= pd.Timestamp(today)] if not _ser.empty else _ser
-                if not _asof.empty:
-                    row[col] = float(_asof.iloc[-1])
-                    row[f"{col}_source"] = "fred_asof"
-                    ok_fred += 1
-                else:
-                    row[f"{col}_source"] = "ffill"
-                continue
-            v, fred_date = _fred_latest_with_date(sid)
-            if v is not None:
-                row[col] = v
-                # 🌟 v2.12 (S69 #5): FRED source 명시
-                row[f"{col}_source"] = "fred_live"
-                ok_fred += 1
-                # 🌟 v2.11 (S69 #4): 발표일 시차 검증 + 가시성 로그
-                if fred_date:
-                    today_str = str(today)
-                    if fred_date != today_str:
-                        # 1일 시차 = 정합 (FRED 익일 발표) but 가시성 명시
-                        delayed_fred.append((sid, fred_date))
-            else:
-                # 🌟 v2.12 (S69 #5): FRED fetch 실패 = ffill source 명시
-                row[f"{col}_source"] = "ffill"
-        print(f"    FRED: {ok_fred}/{len(FRED_SERIES)-skipped_dep}종 수집 + {skipped_dep}종 deprecated skip")
-        if delayed_fred:
-            # 🌟 v2.11 (S69 #4, Commander 본질 통찰 #11): 1일 시차 시리즈 결정적 가시성
-            print(f"    🌟 FRED 발표일 시차 ({len(delayed_fred)}종): {', '.join([f'{s}={d}' for s, d in delayed_fred[:5]])}")
-            print(f"        본질: FRED 익일 발표 정합 (today={today})")
-    else:
-        print("    ⚠️ FRED_API_KEY 부재 — FRED 컬럼 NaN 추가 (ffill 단계에서 처리)")
-        # 🌟 v2.12: API key 부재 시 모든 FRED source = ffill
-        for sid, col in FRED_SERIES.items():
-            row[f"{col}_source"] = "ffill"
+    # FRED 관측일과 가용 판본 날짜를 분리한다.
+    # 관측일을 발표일로 사용하지 않는다. 백필과 일일 수집에 같은 판본 계약 적용.
+    for _col in VERIFIED_FRED_SERIES:
+        row.update(fetch_record(_col, today, FRED_API_KEY,
+                                cache_dir=os.path.join(SCRIPT_DIR, 'fred_vintage_cache')))
+    print('    FRED: 전날 판본 계약 적용; 발표 시각은 추정하지 않음')
 
-    row.update(fetch_stress_asof(today))
 
     # 🆕 [S214] FRED 반도체 선행신호 (today_row) — Oracle LEAD-7
     try:
@@ -3382,7 +3270,7 @@ def fetch_today_row(target_date=None, is_backfill=None) -> dict:
         for _c in ["SEMI_REACCEL", "CONSUMER_ELEC"]:
             _v = _semi[_c].iloc[-1] if len(_semi) else float("nan")
             row[_c] = float(_v) if _v == _v else float("nan")
-            row[f"{_c}_source"] = "fred_semi_live" if _v == _v else "ffill"
+            row[f"{_c}_source"] = "estimated_release_lag_current_vintage" if _v == _v else "ffill"
     except Exception as _e:
         print(f"    ⚠️ 반도체 선행신호(today) skip: {_e}")
 
@@ -3511,7 +3399,7 @@ def apply_ffill_safety(df: pd.DataFrame) -> pd.DataFrame:
         print(f"    ffill 보강: {filled_count}")
     if _carry_n:
         print(f"    🟠 v3.9.18 ETF 종가 carry 표기 {_carry_n}칸 → {CLOSE_SRC_CARRY}")
-    return df
+    return mask_invalid_records(df)
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -3688,64 +3576,29 @@ def _fetch_shiller_ecy_cape() -> pd.DataFrame:
 # 격언 #75 v4 (source 일관성) + #80 양방향 + #105 + #106 정합
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 def _split_by_frequency(df):
-    """csv 재설계 v3.0 — daily/weekly/monthly 분리.
-    
-    Args:
-        df: 통합 DataFrame (Date index + 모든 컬럼 + source 컬럼)
-    
-    Returns:
-        (df_daily, df_weekly, df_monthly) 튜플
-        - df_daily   : 모든 row × 일간 컬럼 (weekly/monthly 컬럼 제외)
-        - df_weekly  : LIVE 발표일 row × 주간 컬럼 (+ source 컬럼)
-        - df_monthly : LIVE 발표일 row × 월간 컬럼 (+ source 컬럼)
-    
-    LIVE 발표일 식별:
-        source 컬럼 값이 LIVE_SRC_VALUES 중 하나인 row만 select
-        (source가 'ffill'이거나 NaN인 row 제외)
-    """
-    # ─ 1. weekly csv 빌드 ────────────────────────
-    weekly_cols_actual  = [c for c in WEEKLY_COLS if c in df.columns]
-    weekly_src_cols     = [f"{c}_source" for c in weekly_cols_actual 
-                           if f"{c}_source" in df.columns]
-    
-    if weekly_cols_actual and weekly_src_cols:
-        # 대표 source 컬럼 사용 (OAS_HY 우선 → 첫 번째 source)
-        primary_src = 'OAS_HY_source' if 'OAS_HY_source' in df.columns else weekly_src_cols[0]
-        weekly_mask = df[primary_src].isin(LIVE_SRC_VALUES)
-        weekly_export_cols = weekly_cols_actual + weekly_src_cols
-        df_weekly = df.loc[weekly_mask, weekly_export_cols].copy()
-    elif weekly_cols_actual:
-        # source 컬럼 부재 시 (legacy 호환): 모든 row 보존
-        df_weekly = df[weekly_cols_actual].copy()
-    else:
-        df_weekly = pd.DataFrame()
-    
-    # ─ 2. monthly csv 빌드 ───────────────────────
-    monthly_cols_actual = [c for c in MONTHLY_COLS if c in df.columns]
-    monthly_src_cols    = [f"{c}_source" for c in monthly_cols_actual 
-                           if f"{c}_source" in df.columns]
-    # F_G_Score는 F_G_source 사용 (특수 매핑)
-    if 'F_G_Score' in monthly_cols_actual and 'F_G_source' in df.columns and 'F_G_source' not in monthly_src_cols:
-        monthly_src_cols.append('F_G_source')
-    
-    if monthly_cols_actual and monthly_src_cols:
-        primary_src = 'PMI_source' if 'PMI_source' in df.columns else monthly_src_cols[0]
-        monthly_mask = df[primary_src].isin(LIVE_SRC_VALUES)
-        monthly_export_cols = monthly_cols_actual + monthly_src_cols
-        df_monthly = df.loc[monthly_mask, monthly_export_cols].copy()
-    elif monthly_cols_actual:
-        df_monthly = df[monthly_cols_actual].copy()
-    else:
-        df_monthly = pd.DataFrame()
-    
-    # ─ 3. daily csv 빌드 ─────────────────────────
-    # weekly/monthly 컬럼 + 그들의 source 컬럼은 제외 (중복 차단)
-    excluded_cols = set(weekly_cols_actual + weekly_src_cols 
-                        + monthly_cols_actual + monthly_src_cols)
-    daily_cols = [c for c in df.columns if c not in excluded_cols]
-    df_daily = df[daily_cols].copy()
-    
-    return df_daily, df_weekly, df_monthly
+    """주기별 값과 시점 증거를 함께 내보낸다. 행 날짜는 발표일이 아닌 가용 판본 기준일이다."""
+    def group(names):
+        values = [c for c in names if c in df]
+        metadata = [k for k in df if any(k.startswith(c + '_') for c in values)]
+        if 'F_G_Score' in values:
+            metadata += [k for k in ('F_G_source',) if k in df and k not in metadata]
+        cols = list(dict.fromkeys(values + metadata))
+        if not cols:
+            return pd.DataFrame(index=df.index[:0]), set()
+        sources = [k for k in metadata if k.endswith('_source')]
+        if sources:
+            mask = pd.Series(False, index=df.index)
+            accepted = set(LIVE_SRC_VALUES) | {'fred_prior_date_vintage'}
+            for source in sources:
+                mask |= df[source].isin(accepted)
+            out = df.loc[mask, cols].copy()
+        else:
+            out = df[cols].copy()
+        return out, set(cols)
+    weekly, weekly_cols = group(WEEKLY_COLS)
+    monthly, monthly_cols = group(MONTHLY_COLS)
+    daily = df[[c for c in df if c not in weekly_cols | monthly_cols]].copy()
+    return daily, weekly, monthly
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -4075,9 +3928,9 @@ def main():
     print(f"   BT_LONG_PATH: {'✅ 가용' if os.path.exists(BT_LONG_PATH) else '⚠️ 부재 (DBnomics 실패 시 fallback 불가)'}")
     print(f"   PMI source:   🌟 4중 방어 (Tradingeconomics 1차 + USSLIND proxy 2차 + BT_LONG 3차 + ffill 4차, v2.9)")
     print(f"   F&G source:   🌟 4중 방어 (CNN API 1차 + CNN HTML 2차 + ARGUS proxy 3차 + ffill 4차, v2.10)")
-    print(f"   FRED source:  🌟 발표일 기준 매핑 + 1일 시차 시리즈 가시성 (v2.11 S69 #4 — T10YIE/T5YIE BEI 결함 정정)")
+    print(f"   FRED source:  전날 가용 판본 + 관측일 분리; 정확한 발표 시각은 미추정")
     print(f"   LIVE source:  🌟 22개 _source 컬럼 신설 (v2.12 S69 #5 — LIVE/ffill 결정적 명시 구분)")
-    print(f"   CCSA source:  🌟 FRED API + graph CSV fallback + 부분 백필 자동 (v2.7 S68 #1)")
+    print(f"   CCSA source:  가용 판본 수집; 최신 개정 이력의 자동 과거 덮어쓰기 제거")
     print(f"   VIX3M source: 🌟 Yahoo chart API + UA header + 부분 백필 자동 (v2.7 S68 #1, term structure)")
     bf_force = os.getenv("BACKFILL_FORCE", "")
     if bf_force.lower() in ("1", "true", "yes"):
@@ -4253,7 +4106,7 @@ def main():
             if _prev_row is not None:
                 _restored = []
                 for _c, _v in _prev_row.items():
-                    if _c == "Date":
+                    if _c == "Date" or protected_column(_c):
                         continue
                     try:
                         _missing = _c not in new_row or pd.isna(new_row[_c])
@@ -4270,33 +4123,8 @@ def main():
             new_df.index = pd.to_datetime(new_df.index)
             df = pd.concat([df, new_df]).sort_index()
 
-        # 🌟 v2.11 (S69 #4, Commander 본질 통찰 #11): 어제 row FRED 자동 백필 (결정적 본질 정정)
-        # 본질: FRED 발표일이 어제인 시리즈를 어제 row에 매핑 (NaN 정정)
-        # 결정적 사례: T10YIE 5/7=NaN, 5/8 fetch 시 5/7 발표값을 5/7 row에 매핑
-        # 격언 #36 #1 + #75 v4 + #80 + 5조 ③ 정합
-        # 🌟 v3.2: 어제 row FRED 자동 백필은 기본 일일 모드만 (backfill 모드 제외)
-        if (not is_backfill) and FRED_API_KEY:
-            yesterday = today - timedelta(days=1)
-            yesterday_ts = pd.Timestamp(yesterday)
-            if yesterday_ts in df.index:
-                backfilled = []
-                for sid, col in FRED_SERIES.items():
-                    if sid in DEPRECATED_FRED:
-                        continue
-                    if col not in df.columns:
-                        continue
-                    # 어제 row에 NaN인 경우만 (격언 #105 기존 형식 보존)
-                    if pd.notna(df.loc[yesterday_ts, col]):
-                        continue
-                    # FRED 최신 발표일 ↔ 어제 일치 시 매핑
-                    v, fred_date = _fred_latest_with_date(sid)
-                    if v is not None and fred_date == str(yesterday):
-                        df.loc[yesterday_ts, col] = v
-                        backfilled.append((sid, fred_date, v))
-                if backfilled:
-                    print(f"    🌟 v2.11 어제 row 자동 백필 ({len(backfilled)}종): "
-                          f"{', '.join([f'{s}={v}' for s, _, v in backfilled[:5]])}")
-                    print(f"        본질: 어제 ({yesterday}) FRED 발표 시리즈 자동 정정 — 격언 5조 ③ 정합")
+        # 최신 조회값을 관측일이 같다는 이유로 과거 행에 소급하지 않는다.
+        # 과거 보강은 해당 날짜의 판본을 조회하는 rebuild_fred_history.py로 수행한다.
 
         # 🚨 v2.8 (Commander 명령 — "DBnomics 삭제"): PMI 컬럼 신규 생성 시 BT_LONG 단독
         if 'PMI' not in df.columns or df['PMI'].notna().sum() == 0:
@@ -4335,28 +4163,9 @@ def main():
                     df[_col] = np.nan
                     print(f"  🚨 ETF {_etf} 백필 실패 — Yahoo 이력 empty, 컬럼 NaN 생성")
 
-        ccsa_cover = df['CCSA'].notna().sum() / len(df) if 'CCSA' in df.columns else 0
-        # v2.7 결정적 트리거: 부재 OR cover < 50% OR 강제
-        if 'CCSA' not in df.columns or ccsa_cover < 0.5 or BACKFILL_FORCE:
-            reason = ("부재" if 'CCSA' not in df.columns else
-                      f"cover {ccsa_cover*100:.1f}% < 50%" if not BACKFILL_FORCE else "BACKFILL_FORCE=1")
-            print(f"  🌟 CCSA 컬럼 백필 트리거 ({reason}) — graph CSV fallback 백필...")
-            start_iso = df.index.min().strftime('%Y-%m-%d')
-            ccsa_series = _fred_series('CCSA', start_iso)  # v2.6: 자동 fallback 통합
-            if not ccsa_series.empty:
-                df['CCSA'] = ccsa_series.reindex(df.index, method='ffill')
-                valid = df['CCSA'].notna().sum()
-                latest_val = float(ccsa_series.iloc[-1])
-                latest_date = str(ccsa_series.index[-1].date())
-                print(f"    ✅ CCSA 백필 완료: {valid}/{len(df)}일 가용 ({valid/len(df)*100:.1f}%, 최신 {latest_date}={latest_val:,.0f})")
-            else:
-                print(f"    🚨 CCSA Primary + Fallback 모두 실패 — 컬럼 보존 (기존값 유지)")
-                if 'CCSA' not in df.columns:
-                    df['CCSA'] = np.nan
+        # CCSA 기존 이력은 보존한다. 최신 개정 자료를 전체 과거에 채우지 않는다.
+        # 관측일별 가용 판본 보강은 별도 복구 결과에 명시한다.
 
-        # 🌟 v2.5 (S67 #6): VIX3M 컬럼 자체 부재 시 Yahoo 백필 통합
-        # 🌟 v2.7 (S68 #1): 결정적 결함 정정 — 부분 가용 시도 자동 백필 (cover < 50%) + Yahoo User-Agent
-        # 기존 csv에 VIX3M 컬럼 없음 → 첫 실행 시 자동 전체 history 백필
         vix3m_cover = df['VIX3M'].notna().sum() / len(df) if 'VIX3M' in df.columns else 0
         if 'VIX3M' not in df.columns or vix3m_cover < 0.5 or BACKFILL_FORCE:
             reason = ("부재" if 'VIX3M' not in df.columns else
@@ -4450,12 +4259,14 @@ def main():
 
         print(f"  ✅ {len(df)}행")
 
+    df = mask_invalid_records(df)
+
     # 🌟 v3.2 (S195): Net_Liquidity 전열 재계산 — append 혼합 차단 + 과거 raw식 이력 자기치유
     #   매 실행 일괄 (VIX_VIX3M_ratio 패턴) · 구성요소별 ffill 인라인 (fds_builder NL_fixed 규약 동일)
     #   양 분기(누적/append) 합류점 배치 — 어느 경로든 정본 규약 보장
     if all(c in df.columns for c in ["WALCL", "WTREGEN", "RRPONTSYD"]):
-        df["Net_Liquidity"] = (df["WALCL"].ffill() - df["WTREGEN"].ffill()
-                               - df["RRPONTSYD"].ffill() * 1e3)
+        df["Net_Liquidity"] = (df["WALCL"] - df["WTREGEN"]
+                               - df["RRPONTSYD"] * 1e3)
         _nl_valid = df["Net_Liquidity"].notna().sum()
         print(f"  🌟 Net_Liquidity 전열 재계산 (RRP ×1e3 정본 규약, v3.2): {_nl_valid}/{len(df)}일")
 
