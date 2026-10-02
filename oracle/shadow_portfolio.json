@@ -1131,5 +1131,23 @@
     "logged_utc": "2026-10-01T05:00:10Z",
     "valid": true,
     "weight_encoding": "unrounded_fraction_v1"
+  },
+  {
+    "date": "2026-10-01",
+    "weights": {
+      "NLR": 0.22657734226577342,
+      "GLD": 0.1999800019998,
+      "COPX": 0.1310868913108689,
+      "PAVE": 0.10668933106689331,
+      "XLU": 0.1065893410658934,
+      "SGOV": 0.0999900009999,
+      "SMH": 0.0712928707129287,
+      "ITA": 0.057794220577942215
+    },
+    "source": "oracle_autopilot_v1.0.6",
+    "n_pos": 8,
+    "logged_utc": "2026-10-02T02:36:39Z",
+    "valid": true,
+    "weight_encoding": "unrounded_fraction_v1"
   }
 ]
