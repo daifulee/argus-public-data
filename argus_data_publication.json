@@ -2,15 +2,15 @@
   "schema": "argus_data_publication/1.0",
   "session": "2026-10-01",
   "files_sha256": {
-    "argus_data.csv": "db347fedcadd34b1b08863719b98b77128ff225586f3cc68686cef660bf73cc3",
-    "argus_data_daily.csv": "7bee10d22694fa221b3c98e5d6dcc84987e76ec9bd22b218dcd50740f0395d31",
-    "argus_data_weekly.csv": "08e3640e794fce6a0fb229a66bbb980249bf39ec8f2d31f1c4005b899ea969e3",
-    "argus_data_monthly.csv": "2867c6e5e96315626a770506b110939a623c54cc6f45f1f0ece0bf7e16eabe70",
-    "latest.json": "84d0f6de69626b4284e1751dc70c4d9b765d035c7f9d1cac4afa71b223e7bcbe"
+    "argus_data.csv": "d252abe24b01fc0ff5586caf779966b596a0e517b36af4cee26e387d0f329d46",
+    "argus_data_daily.csv": "b8ed48d22cca2f53111b5312fc75ba0c0a1437139b94456968e66596fe8f33e0",
+    "argus_data_weekly.csv": "e585236e7b22cc5895c3e1ce5ecc0427acfd8f51e9aa5b41693d5ebd0428621a",
+    "argus_data_monthly.csv": "d4bd2aba1a91f7dd826ca2471209c4a0e5c0cac6b0a7b02fd635a8ae4f8d8531",
+    "latest.json": "74858ed731d5ef628e3dbc60a802821d3e4ea94ecf51afbd9ae06aebdbfcef36"
   },
-  "run_id": "36975948939",
-  "source_revision": "3cd2f8ffce7d2d5a8d2205e71bd5ab10d7043edc",
-  "verified_utc": "2026-10-02T06:56:33.178933+00:00",
+  "run_id": "36976504202",
+  "source_revision": "2bf64410e42b10ce7fa0977b994c0e854a0bb657",
+  "verified_utc": "2026-10-02T07:03:27.880756+00:00",
   "required_close_tickers": [
     "GLD",
     "SLV",
