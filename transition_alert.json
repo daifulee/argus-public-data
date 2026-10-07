@@ -1,13 +1,13 @@
 {
   "schema": "transition_alert/2.0",
-  "date": "2026-10-05 00:00:00",
+  "date": "2026-10-06 00:00:00",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
   "crown": "#110",
   "src": "engine_target_observation",
   "target_src": "causal_engine_target",
-  "ledger_as_of": "2026-10-02",
+  "ledger_as_of": "2026-10-05",
   "prev": {
-    "XLE": 0.7
+    "XLE": 0.9
   },
   "target": {
     "XLE": 0.9
@@ -16,8 +16,8 @@
   "position_state": {
     "XLE": {
       "entry_date": "4947",
-      "entry_price": 64.40035587449015,
-      "held_days": 22,
+      "entry_price": 64.25646539716742,
+      "held_days": 23,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -25,53 +25,36 @@
     }
   },
   "simulated_weights": {
-    "XLE": 0.6938672910888154
+    "XLE": 0.8924345120548959
   },
   "simulated_positions": {
     "XLE": {
       "entry_date": "2026-09-02",
-      "entry_price": 64.40035587449015,
-      "held_days": 22,
-      "strategy_held_days": 22,
-      "actual_held_days": 22,
+      "entry_price": 64.25646539716742,
+      "held_days": 23,
+      "strategy_held_days": 23,
+      "actual_held_days": 23,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
       "target_days": 63,
-      "quantity": 367265.5784669218,
+      "quantity": 471608.3819148369,
       "quantity_unit": "adjusted_price_units"
     }
   },
-  "pending_orders": {
-    "signal_index": 4969,
-    "due_index": 4970,
-    "signal_date": "2026-10-05",
-    "quantity_deltas": {
-      "XLE": 104342.80344791507
-    },
-    "unit": "adjusted_price_units",
-    "status": "SIMULATED_PENDING_NOT_SENT"
-  },
-  "observations": [
-    {
-      "ticker": "XLE",
-      "previous_target": 0.7,
-      "target": 0.9,
-      "delta": 0.20000000000000007,
-      "kind": "engine_target_change"
-    }
-  ],
+  "pending_orders": null,
+  "observations": [],
   "comparison_status": {
     "valid": true,
-    "expected": "2026-10-02",
-    "as_of": "2026-10-02",
+    "expected": "2026-10-05",
+    "as_of": "2026-10-05",
     "error": null
   },
-  "previous_cash": 0.30000000000000004,
-  "source_ledger_as_of": "2026-10-02",
+  "previous_cash": 0.09999999999999998,
+  "source_ledger_as_of": "2026-10-05",
   "ledger_integrity": {
     "source": "historical_engine_target",
-    "as_of": "2026-10-02",
+    "as_of": "2026-10-05",
     "pending_verification": [],
     "dev_open": [],
     "sessions": 1,
@@ -81,6 +64,342 @@
   "gate_exits": [],
   "entries": [],
   "gate_blocked": [
+    {
+      "ticker": "XLU",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "ITA",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "COPX",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "VEA",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "IWM",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "SMH",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "XLF",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "XLV",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "PAVE",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "INDA",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "CIBR",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "QQQM",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "NLR",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "GLD",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
     {
       "ticker": "SLV",
       "gate_blocked": true,
@@ -101,6 +420,30 @@
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>80",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "EWZ",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
         "same_day_risk_exit": false,
         "same_day_context_provided": true
       }
@@ -128,6 +471,54 @@
         "same_day_risk_exit": false,
         "same_day_context_provided": true
       }
+    },
+    {
+      "ticker": "VNM",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
+    },
+    {
+      "ticker": "CQQQ",
+      "gate_blocked": true,
+      "entry_guard": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      },
+      "reason": {
+        "blocked": true,
+        "reasons": [
+          "WTI>90"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>90",
+        "same_day_risk_exit": false,
+        "same_day_context_provided": true
+      }
     }
   ],
   "reweights": [],
@@ -149,8 +540,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-10-05",
-    "engine_date": "2026-10-05",
+    "input_date": "2026-10-06",
+    "engine_date": "2026-10-06",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -158,6 +549,6 @@
   "action_block_reason": [
     "실계좌 또는 데이터 실행 근거 미충족"
   ],
-  "generated_at": "2026-10-06T03:26:41",
+  "generated_at": "2026-10-07T02:50:08",
   "note": "엔진 목표 관측 기록. 실행 가능한 실계좌 주문 계획 없음."
 }
