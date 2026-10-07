@@ -1,11 +1,11 @@
 {
   "crown": "#110",
   "engine_version": "PRIMA2_v0.5.45-SHORT_HOLD_CAUSAL-CANDIDATE",
-  "ledger_fp": "b23c4a54e628127b",
-  "ledger_as_of": "2026-10-02",
+  "ledger_fp": "dcf373bd1331833b",
+  "ledger_as_of": "2026-10-05",
   "rule_changed": false,
   "ledger_changed": true,
   "simultaneous_change": false,
-  "recorded_at": "2026-10-06T03:26:41",
+  "recorded_at": "2026-10-07T02:50:08",
   "purpose": "판본과 과거 목표 기록의 지문 관측. 최신 목표 및 실계좌 주문 판정과 분리."
 }
