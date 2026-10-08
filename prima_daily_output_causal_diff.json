@@ -1,26 +1,94 @@
 {
   "schema": "causal_target_diff/1.0",
-  "previous_date": "2026-10-05",
+  "previous_date": "2026-10-06",
   "comparable": true,
-  "date": "2026-10-06",
-  "changed": false,
+  "date": "2026-10-07",
+  "changed": true,
   "actionable": false,
   "src": "causal_engine_target",
   "positions": {
-    "XLE": 0.9
+    "XLE": 0.08030867335997426,
+    "INDA": 0.023493007284155647,
+    "GLD": 0.46241034624246696,
+    "XLU": 0.05563132885223387,
+    "ITA": 0.2781566442611693
   },
   "target_cash_weight": 0.09999999999999998,
   "simulated_positions": {
-    "XLE": 0.8924345120548959
+    "XLE": 0.8918344210783383
   },
-  "simulated_cash_weight": 0.10756548794510408,
-  "observations": [],
+  "simulated_cash_weight": 0.10816557892166169,
+  "observations": [
+    {
+      "ticker": "GLD",
+      "previous_target": 0,
+      "target": 0.46241034624246696,
+      "delta": 0.46241034624246696
+    },
+    {
+      "ticker": "INDA",
+      "previous_target": 0,
+      "target": 0.023493007284155647,
+      "delta": 0.023493007284155647
+    },
+    {
+      "ticker": "ITA",
+      "previous_target": 0,
+      "target": 0.2781566442611693,
+      "delta": 0.2781566442611693
+    },
+    {
+      "ticker": "XLE",
+      "previous_target": 0.9,
+      "target": 0.08030867335997426,
+      "delta": -0.8196913266400258
+    },
+    {
+      "ticker": "XLU",
+      "previous_target": 0,
+      "target": 0.05563132885223387,
+      "delta": 0.05563132885223387
+    }
+  ],
   "entered": [],
   "exited": [],
   "reweighted": [],
   "actions": "",
-  "simulated_actions": [],
-  "change_reason": "목표 변화 없음",
+  "simulated_actions": [
+    {
+      "date": "2026-10-07 00:00:00",
+      "action": "BUY",
+      "ticker": "INDA",
+      "reason": "SC6.1|C",
+      "pct": 100,
+      "signals": "m3_crash5|m3_neg|dxy101|vix16"
+    },
+    {
+      "date": "2026-10-07 00:00:00",
+      "action": "BUY",
+      "ticker": "GLD",
+      "reason": "SC4.4|A",
+      "pct": 100,
+      "signals": "tnx41|tnx35|dxy101|oasig089|tyx471|wti85"
+    },
+    {
+      "date": "2026-10-07 00:00:00",
+      "action": "BUY",
+      "ticker": "XLU",
+      "reason": "SC4.0|S",
+      "pct": 100,
+      "signals": "m1_drop3|m1_neg|tnx4|tyx471"
+    },
+    {
+      "date": "2026-10-07 00:00:00",
+      "action": "BUY",
+      "ticker": "ITA",
+      "reason": "SC4.0|A",
+      "pct": 100,
+      "signals": "tnx4|m1_drop3|wti85|tyx471"
+    }
+  ],
+  "change_reason": "엔진 목표 변경 관측",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "generated_utc": "2026-10-07T02:45:30.427789+00:00"
+  "generated_utc": "2026-10-08T02:59:08.331582+00:00"
 }
