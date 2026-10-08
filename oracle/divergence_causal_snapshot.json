@@ -1,33 +1,37 @@
 {
   "schema_version": "causal_divergence/1.0",
-  "as_of": "2026-10-06",
+  "as_of": "2026-10-07",
   "current": {
-    "prima": "XLE",
-    "oracle": "NLR+GLD+COPX+SGOV+PAVE+XLU+ITA+SLV",
-    "common": "(none)",
-    "prima_only": "XLE",
-    "oracle_only": "COPX+GLD+ITA+NLR+PAVE+SGOV+SLV+XLU",
-    "jaccard": 0.0,
+    "prima": "GLD+ITA+XLE+XLU+INDA",
+    "oracle": "NLR+GLD+COPX+PAVE+SGOV+XLU+SMH+XLE",
+    "common": "GLD+XLE+XLU",
+    "prima_only": "INDA+ITA",
+    "oracle_only": "COPX+NLR+PAVE+SGOV+SMH",
+    "jaccard": 0.3,
     "material": true
   },
   "prima_target_weights": {
-    "XLE": 0.9
+    "XLE": 0.08030867335997426,
+    "INDA": 0.023493007284155647,
+    "GLD": 0.46241034624246696,
+    "XLU": 0.05563132885223387,
+    "ITA": 0.2781566442611693
   },
   "prima_cash_weight": 0.09999999999999998,
   "oracle_weights": {
-    "NLR": 0.25,
-    "GLD": 0.20002000200019998,
-    "COPX": 0.124012401240124,
-    "SGOV": 0.10763576357635764,
-    "PAVE": 0.0976097609760976,
-    "XLU": 0.0955095509550955,
-    "ITA": 0.0702070207020702,
-    "SLV": 0.055005500550055
+    "NLR": 0.21657834216578345,
+    "GLD": 0.1999800019998,
+    "COPX": 0.15128487151284872,
+    "PAVE": 0.111988801119888,
+    "SGOV": 0.0999900009999,
+    "XLU": 0.091990800919908,
+    "SMH": 0.0651934806519348,
+    "XLE": 0.062993700629937
   },
-  "oracle_cash_weight": 1.1102230246251565e-16,
+  "oracle_cash_weight": 0.0,
   "prima_src": "causal_engine_target",
   "prima_engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "oracle_date": "2026-10-06",
+  "oracle_date": "2026-10-07",
   "oracle_src": "shadow_json",
   "readiness": {
     "data_fresh": true,
@@ -40,8 +44,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-10-06",
-    "engine_date": "2026-10-06",
+    "input_date": "2026-10-07",
+    "engine_date": "2026-10-07",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -52,5 +56,5 @@
     "count": 0,
     "policy": "read_only"
   },
-  "logged_utc": "2026-10-07T02:47:03.220621+00:00"
+  "logged_utc": "2026-10-08T03:00:04.445395+00:00"
 }
