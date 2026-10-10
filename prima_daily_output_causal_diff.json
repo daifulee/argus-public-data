@@ -1,90 +1,33 @@
 {
   "schema": "causal_target_diff/1.0",
-  "previous_date": "2026-10-07",
+  "previous_date": "2026-10-08",
   "comparable": true,
-  "date": "2026-10-08",
+  "date": "2026-10-09",
   "changed": true,
   "actionable": false,
   "src": "causal_engine_target",
   "positions": {
-    "XLE": 0.9
+    "XLE": 1.0
   },
-  "target_cash_weight": 0.09999999999999998,
+  "target_cash_weight": 0.0,
   "simulated_positions": {
-    "XLE": 0.07988278961317916,
-    "GLD": 0.4499599604024396,
-    "INDA": 0.02242431675108357,
-    "ITA": 0.2703978492497058,
-    "XLU": 0.05363722283921365
+    "XLE": 0.881470431187737
   },
-  "simulated_cash_weight": 0.12369786114437836,
+  "simulated_cash_weight": 0.11852956881226306,
   "observations": [
     {
-      "ticker": "GLD",
-      "previous_target": 0.4624,
-      "target": 0,
-      "delta": -0.4624
-    },
-    {
-      "ticker": "INDA",
-      "previous_target": 0.0235,
-      "target": 0,
-      "delta": -0.0235
-    },
-    {
-      "ticker": "ITA",
-      "previous_target": 0.2782,
-      "target": 0,
-      "delta": -0.2782
-    },
-    {
       "ticker": "XLE",
-      "previous_target": 0.0803,
-      "target": 0.9,
-      "delta": 0.8197
-    },
-    {
-      "ticker": "XLU",
-      "previous_target": 0.0556,
-      "target": 0,
-      "delta": -0.0556
+      "previous_target": 0.9,
+      "target": 1.0,
+      "delta": 0.09999999999999998
     }
   ],
   "entered": [],
   "exited": [],
   "reweighted": [],
   "actions": "",
-  "simulated_actions": [
-    {
-      "date": "2026-10-08 00:00:00",
-      "action": "SELL",
-      "ticker": "GLD",
-      "reason": "WTI>90",
-      "pct": 100
-    },
-    {
-      "date": "2026-10-08 00:00:00",
-      "action": "SELL",
-      "ticker": "INDA",
-      "reason": "WTI>90",
-      "pct": 100
-    },
-    {
-      "date": "2026-10-08 00:00:00",
-      "action": "SELL",
-      "ticker": "ITA",
-      "reason": "WTI>90",
-      "pct": 100
-    },
-    {
-      "date": "2026-10-08 00:00:00",
-      "action": "SELL",
-      "ticker": "XLU",
-      "reason": "WTI>90",
-      "pct": 100
-    }
-  ],
+  "simulated_actions": [],
   "change_reason": "엔진 목표 변경 관측",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "generated_utc": "2026-10-09T03:06:59.645540+00:00"
+  "generated_utc": "2026-10-10T02:49:59.515514+00:00"
 }
