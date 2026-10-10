@@ -12,3 +12,4 @@ date,queue,grade,slots_full,strong,super,spy_close,fwd21_pct,fwd63_pct,pos_src,s
 2026-10-06,3,3+,False,GLD:4.1|ITA:4.0|QQQM:3.5,ITA|GLD,779.09,,,causal_engine_target,maq_causal/1.0
 2026-10-07,0,0,True,,,777.22,,,causal_engine_target,maq_causal/1.0
 2026-10-08,2,2,False,GLD:4.1|ITA:4.0,ITA|GLD,773.93,,,causal_engine_target,maq_causal/1.0
+2026-10-09,3,3+,False,GLD:4.1|ITA:4.0|QQQM:3.5,ITA|GLD,778.57,,,causal_engine_target,maq_causal/1.0
