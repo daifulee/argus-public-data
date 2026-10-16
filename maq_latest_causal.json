@@ -1,5 +1,5 @@
 {
- "date": "2026-10-14",
+ "date": "2026-10-15",
  "queue": 3,
  "grade": "3+",
  "base_f63": 5.94,
@@ -21,13 +21,13 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-10-14",
-  "engine_date": "2026-10-14",
+  "input_date": "2026-10-15",
+  "engine_date": "2026-10-15",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
  "target_weights": {
-  "XLE": 1.0
+  "XLE": 0.9
  },
  "simulated_held": [
   "XLE"
@@ -67,5 +67,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-10-15T02:03:47+00:00"
+ "generated_utc": "2026-10-16T01:44:00+00:00"
 }
