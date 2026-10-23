@@ -1,5 +1,5 @@
 {
- "date": "2026-10-15",
+ "date": "2026-10-22",
  "queue": 3,
  "grade": "3+",
  "base_f63": 5.94,
@@ -21,22 +21,22 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-10-15",
-  "engine_date": "2026-10-15",
+  "input_date": "2026-10-22",
+  "engine_date": "2026-10-22",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
  "target_weights": {
-  "XLE": 0.9
+  "XLE": 0.7
  },
  "simulated_held": [
   "XLE"
  ],
  "strong": [
   {
-   "ticker": "GLD",
-   "score": 4.1,
-   "ratio": 2.05
+   "ticker": "PAVE",
+   "score": 9.7,
+   "ratio": 2.42
   },
   {
    "ticker": "ITA",
@@ -44,14 +44,14 @@
    "ratio": 2.0
   },
   {
-   "ticker": "PAVE",
-   "score": 6.7,
-   "ratio": 1.68
+   "ticker": "SLV",
+   "score": 5.0,
+   "ratio": 1.67
   }
  ],
  "super": [
   "ITA",
-  "GLD"
+  "PAVE"
  ],
  "held": [
   "XLE"
@@ -67,5 +67,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-10-16T01:44:00+00:00"
+ "generated_utc": "2026-10-23T00:42:44+00:00"
 }
