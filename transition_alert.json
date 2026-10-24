@@ -1,12 +1,14 @@
 {
   "schema": "transition_alert/2.0",
-  "date": "2026-10-22 00:00:00",
+  "date": "2026-10-23 00:00:00",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
   "crown": "#110",
   "src": "engine_target_observation",
   "target_src": "causal_engine_target",
-  "ledger_as_of": null,
-  "prev": {},
+  "ledger_as_of": "2026-10-22",
+  "prev": {
+    "XLE": 0.7
+  },
   "target": {
     "XLE": 0.7
   },
@@ -15,7 +17,7 @@
     "XLE": {
       "entry_date": "4947",
       "entry_price": 65.81550034978248,
-      "held_days": 35,
+      "held_days": 36,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -23,15 +25,15 @@
     }
   },
   "simulated_weights": {
-    "XLE": 0.6900963428885503
+    "XLE": 0.6954843294036959
   },
   "simulated_positions": {
     "XLE": {
       "entry_date": "2026-09-02",
       "entry_price": 65.81550034978248,
-      "held_days": 35,
-      "strategy_held_days": 35,
-      "actual_held_days": 35,
+      "held_days": 36,
+      "strategy_held_days": 36,
+      "actual_held_days": 36,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -43,19 +45,19 @@
   "pending_orders": null,
   "observations": [],
   "comparison_status": {
-    "valid": false,
-    "expected": "2026-10-21",
-    "as_of": null,
-    "error": "previous_session_missing"
+    "valid": true,
+    "expected": "2026-10-22",
+    "as_of": "2026-10-22",
+    "error": null
   },
-  "previous_cash": null,
+  "previous_cash": 0.30000000000000004,
   "source_ledger_as_of": "2026-10-22",
   "ledger_integrity": {
     "source": "historical_engine_target",
     "as_of": "2026-10-22",
     "pending_verification": [],
     "dev_open": [],
-    "sessions": 0,
+    "sessions": 1,
     "stale": false,
     "weights_valid": true
   },
@@ -186,18 +188,22 @@
       "ticker": "PDBC",
       "gate_blocked": true,
       "entry_guard": {
-        "blocked": false,
-        "reasons": [],
-        "active_exit_type": "NONE",
-        "active_exit_reason": "",
+        "blocked": true,
+        "reasons": [
+          "WTI>100"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>100",
         "same_day_risk_exit": false,
         "same_day_context_provided": true
       },
       "reason": {
-        "blocked": false,
-        "reasons": [],
-        "active_exit_type": "NONE",
-        "active_exit_reason": "",
+        "blocked": true,
+        "reasons": [
+          "WTI>100"
+        ],
+        "active_exit_type": "FULL",
+        "active_exit_reason": "WTI>100",
         "same_day_risk_exit": false,
         "same_day_context_provided": true
       }
@@ -558,8 +564,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-10-22",
-    "engine_date": "2026-10-22",
+    "input_date": "2026-10-23",
+    "engine_date": "2026-10-23",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -567,6 +573,6 @@
   "action_block_reason": [
     "실계좌 또는 데이터 실행 근거 미충족"
   ],
-  "generated_at": "2026-10-23T02:04:14",
+  "generated_at": "2026-10-24T01:58:50",
   "note": "엔진 목표 관측 기록. 실행 가능한 실계좌 주문 계획 없음."
 }
