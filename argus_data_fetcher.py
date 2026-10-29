@@ -1,3 +1,4 @@
+# 🔧 v3.9.22: 시장 종가 추출 통일·재시도 누적·미수집 개별 복구 (정확 거래일 계약 유지)
 # 🔧 v3.9.21: 동일 세션 센서 재수집·당시 판본 오류 원인 보존
 # 🔧 v3.9.19 (2026-09-21, S291): RE-FETCH PIT SEMANTICS — 결함 S291-8 처방. **v3.9.18 의 자기 결함 정정.**
 #   사건: v3.9.18 의 자가 재수집(처방 ④)이 2026-09-17·09-18 을 다시 받으면서
@@ -2527,121 +2528,149 @@ def _enforce_final_session_integrity(df: pd.DataFrame, *, pre_snapshot=None, rep
     return final
 
 
-def _yf_batch_once(symbols: list, start: str, end: str, exact_date=None) -> dict:
-    """yfinance 배치 → {symbol: close}.
+def _yf_close_series(raw, symbol: str, *, single_symbol: bool = False) -> pd.Series:
+    """Extract only Close; never guess another field or another ticker.
 
-    🔴 v3.9.11 [MARKET CONTRACT] exact_date 를 주면 **그 날짜의 실제 bar** 만 채택한다.
-       종전은 무조건 window 의 마지막 행(`close.iloc[-1]`)을 썼다. 그러면 요청 날짜에
-       bar 가 없을 때 인접일 값이 요청 날짜로 stamp 된다 —
-       target 2026-05-20 · Yahoo 에 5/20 없음 · 5/19 존재 → 5/19 값이 Date=5/20 으로 기록.
-       미래 날짜 오염은 v3.9.10 이 막았지만 historical adjacent-bar misstamp 는 남아 있었다.
-       이 함수가 repair · backfill · daily 세 경로의 **유일한 시장데이터 취득 지점**이므로
-       여기서 Date ↔ bar identity 를 한 번만 계약한다.
-       해당 날짜 bar 가 없으면 그 심볼은 반환하지 않는다 → 기존 4단 ffill 방어가
-       'ffill' 라벨과 함께 정직하게 처리한다.
+    yf.download daily indexes are session labels (usually naive); aware history
+    indexes are converted to exchange time before deriving the session date.
     """
+    if raw is None or raw.empty:
+        return pd.Series(dtype=float)
+    if isinstance(raw.columns, pd.MultiIndex):
+        candidates = [col for col in raw.columns
+                      if "Close" in col and symbol in col]
+    else:
+        candidates = ["Close"] if single_symbol and "Close" in raw.columns else []
+    if len(candidates) != 1:
+        raise ValueError(f"{symbol}: Close 열 식별 불가 ({len(candidates)}개)")
+    s = raw[candidates[0]]
+    if not isinstance(s, pd.Series):
+        raise ValueError(f"{symbol}: 중복 Close 열")
+    idx = pd.DatetimeIndex(pd.to_datetime(s.index))
+    if idx.tz is not None:
+        idx = idx.tz_convert(US_EQUITY_TZ).tz_localize(None)
+    s = pd.to_numeric(s, errors="coerce").copy()
+    s.index = idx.normalize()
+    return s[~s.index.isna()].sort_index()
+
+
+def _yf_valid_close(s: pd.Series, exact_date=None):
+    """Return a finite positive close for the requested session, or None."""
+    if exact_date is not None:
+        want = pd.Timestamp(exact_date)
+        if want.tzinfo is not None:
+            want = want.tz_convert(US_EQUITY_TZ).tz_localize(None)
+        s = s[s.index == want.normalize()]
+    if s.empty:
+        return None
+    # A duplicate session is ambiguous; do not silently choose a conflicting bar.
+    if s.index[-1] in s.index[:-1]:
+        return None
+    value = float(s.iloc[-1])
+    return value if np.isfinite(value) and value > 0 else None
+
+
+def _yf_history_series(symbol: str, start: str, end: str) -> pd.Series:
+    """One bounded, sequential recovery request through Ticker.history."""
+    raw = yf.Ticker(symbol).history(start=start, end=end, interval="1d",
+                                    auto_adjust=True, actions=False, timeout=15)
+    return _yf_close_series(raw, symbol, single_symbol=True)
+
+
+def _yf_batch_once(symbols: list, start: str, end: str, exact_date=None) -> dict:
+    """Batch download, admitting only actual requested-session Close bars."""
     try:
         raw = yf.download(symbols, start=start, end=end,
-                          auto_adjust=True, progress=False)
-        if raw.empty:
+                          auto_adjust=True, progress=False, timeout=15)
+        if raw is None or raw.empty:
+            print(f"    ⚠️ 배치 무데이터: {len(symbols)}종 [{start}~{end}] rows=0")
             return {}
-        close = raw["Close"] if isinstance(raw.columns, pd.MultiIndex) else raw
-        if exact_date is not None:
-            _want = pd.Timestamp(exact_date).normalize()
-            _idx = pd.DatetimeIndex(pd.to_datetime(close.index))
-            if _idx.tz is not None:
-                _idx = _idx.tz_localize(None)
-            _hit = close[_idx.normalize() == _want]
-            if len(_hit) == 0:
-                print(f"    ⏭️ {symbols[:2]}... {_want.date()} bar 없음 — 인접일 대체 금지")
-                return {}
-            last = _hit.iloc[-1]
-        else:
-            last = close.iloc[-1]
-        return {sym: float(last[sym])
-                for sym in symbols
-                if sym in last.index and not pd.isna(last[sym])}
-    except Exception as e:
-        print(f"    ⚠️  배치 {symbols[:2]}...: {e}")
+        result = {}
+        for symbol in symbols:
+            try:
+                s = _yf_close_series(raw, symbol, single_symbol=len(symbols) == 1)
+                value = _yf_valid_close(s, exact_date)
+                if value is not None:
+                    result[symbol] = value
+                else:
+                    latest = s.dropna().index.max() if s.notna().any() else "없음"
+                    print(f"    🔎 {symbol}: 요청={exact_date} · 원행={len(s)} · "
+                          f"최신 유효 stamp={latest} · 해당 세션 유효 종가 없음")
+            except Exception as exc:
+                print(f"    ⚠️ {symbol}: {type(exc).__name__}: {exc}")
+        return result
+    except Exception as exc:
+        print(f"    ⚠️ 배치 {symbols[:2]}...: {type(exc).__name__}: {exc}")
         return {}
 
 
 def _yf_batch(symbols: list, start: str, end: str, exact_date=None) -> dict:
-    """🔧 v3.9.18 (S291) 처방 ③ — 배치 재시도 래퍼.
+    """Accumulate retries, then recover missing tickers once individually.
 
-    결함 S291-4 에서 ETF 배치가 두 세션 연속 빈 결과를 냈는데, 단발 호출이라
-    '일시적 빈 응답' 과 '실제 bar 부재' 를 구분할 근거가 하나도 남지 않았다.
-    v3.9.17 이 세션 해석에 넣은 재시도(SESSION_RESOLVE_ATTEMPTS)와 같은 처방을
-    시장데이터 취득 지점에도 둔다. 시도별 수확량을 항상 남긴다.
-
-    ⚠️ 재시도는 Yahoo 에 bar 가 실제로 없을 때는 아무것도 바꾸지 못한다.
-       그 경우를 '해결' 한다고 주장하지 않는다 — 구분 가능하게 만들 뿐이다.
+    Recovery changes the request path, never the session or freshness contract.
+    A source that still lacks the requested bar remains missing.
     """
-    _best = {}
-    for _i in range(1, max(1, ETF_BATCH_ATTEMPTS) + 1):
-        _got = _yf_batch_once(symbols, start, end, exact_date=exact_date)
-        if len(_got) > len(_best):
-            _best = _got
-        if len(_got) == len(symbols):
-            if _i > 1:
-                print(f"    ✅ 배치 재시도 {_i}/{ETF_BATCH_ATTEMPTS} 전량 수집")
-            return _got
-        print(f"    🔎 배치 시도 {_i}/{ETF_BATCH_ATTEMPTS}: {len(_got)}/{len(symbols)}종")
-        if _i < ETF_BATCH_ATTEMPTS:
+    symbols = list(dict.fromkeys(symbols))
+    best = {}
+    attempts = max(1, ETF_BATCH_ATTEMPTS)
+    for attempt in range(1, attempts + 1):
+        missing = [symbol for symbol in symbols if symbol not in best]
+        if not missing:
+            return best
+        best.update(_yf_batch_once(missing, start, end, exact_date=exact_date))
+        print(f"    🔎 배치 시도 {attempt}/{attempts}: 누적 {len(best)}/{len(symbols)}종")
+        if len(best) == len(symbols):
+            return best
+        if attempt < attempts:
             time.sleep(ETF_BATCH_BACKOFF_S)
-    if not _best:
-        print(f"    🔴 v3.9.18 배치 전량 실패 — {ETF_BATCH_ATTEMPTS}회 시도 후 0/{len(symbols)}종. "
-              f"해당 세션 종가는 carry 표기로 기록된다 (실측값 아님).")
-    return _best
+    missing = [symbol for symbol in symbols if symbol not in best]
+    print(f"    🔧 미수집 {len(missing)}종 개별 history 복구 (각 1회)")
+    for symbol in missing:
+        try:
+            s = _yf_history_series(symbol, start, end)
+            value = _yf_valid_close(s, exact_date)
+            if value is not None:
+                best[symbol] = value
+                print(f"    ✅ {symbol}: 개별 복구 · 요청={exact_date}")
+            else:
+                latest = s.dropna().index.max() if s.notna().any() else "없음"
+                print(f"    🔴 {symbol}: 개별 복구 실패 · 요청={exact_date} · 최신={latest}")
+        except Exception as exc:
+            print(f"    ⚠️ {symbol}: 개별 복구 {type(exc).__name__}: {exc}")
+    if len(best) < len(symbols):
+        print(f"    🔴 최종 {len(best)}/{len(symbols)}종 — 미수집은 실측값으로 인정하지 않음")
+    return best
 
 
-def _yf_series(symbol: str, start: str, end: str, *, quiet: bool = False) -> pd.Series:
-    """단일 티커 히스토리 → Series.
-    🔧 v3.8 (S후속): yfinance 1.x 는 단일 티커도 MultiIndex 컬럼((Price,Ticker))으로 반환 →
-        raw["Close"] 가 DataFrame 이 되어 이후 float(series.iloc[-1]) 크래시 유발
-        (백필/저커버 VIX3M 경로 exit 1). MultiIndex 평탄화 + 1D 강제로 Series 보장(근본 처방).
-
-    🔧 v3.9.17 (S291) — REG-S291_1 결함 1·2 처방
-        ① 빈 반환을 무로그로 삼키지 않는다. 2026-09-15 정지 사건에서, 실패한 실행이
-           원천으로부터 무엇을 받았는지 사후에 알 방법이 아예 없었다. 진단 불가 자체가 결함이다.
-           이제 '예외' · '무데이터' · '전량 NaN' 세 경로를 구분해 항상 남긴다.
-        ② 인덱스 날짜를 거래소 시간대(ET)로 확정한다. 기존 `tz_localize(None)` 은
-           tz-aware 인덱스를 UTC 벽시계로 변환하므로, 일봉 stamp 가 00:00 ET 가 아닌
-           경우 날짜가 밀릴 여지가 있었다. 일봉의 세션 날짜는 ET 날짜다.
-           ⚠️ 실측 단서: 가짜 yf.download 주입 시험(naive / ET 00:00 / UTC 20:00)에서
-              기존본과 산출본의 반환 날짜는 **전부 동일**했다. 즉 이 항목은 관측된 버그의
-              수정이 아니라 날짜 밀림 경로를 구조적으로 제거하는 방어다. 과대주장 금지.
-              시험 환경 pandas 3.0.2 · yfinance 1.7.0 (requirements 는 pandas>=2.0 미고정).
-    """
+def _yf_series(symbol: str, start: str, end: str, *, quiet: bool = False,
+               exact_date=None) -> pd.Series:
+    """Single-ticker Close history with the same extraction/session rules."""
+    s = pd.Series(dtype=float)
     try:
         raw = yf.download(symbol, start=start, end=end,
-                          auto_adjust=True, progress=False)
-        if raw is None or len(raw) == 0:
-            if not quiet:
-                print(f"    ⚠️  _yf_series 무데이터: {symbol} [{start}~{end}] "
-                      f"rows=0 · 예외 없음 (원천 미노출 또는 일시 차단)")
-            return pd.Series(dtype=float)
-        # yfinance 1.x MultiIndex 컬럼 평탄화 (top level = Price 필드)
-        if isinstance(raw.columns, pd.MultiIndex):
-            raw.columns = raw.columns.get_level_values(0)
-        col = "Close" if "Close" in raw.columns else raw.columns[0]
-        s = raw[col]
-        if isinstance(s, pd.DataFrame):   # 중복 라벨 방어 → 첫 열
-            s = s.iloc[:, 0]
-        s = s.dropna()
-        idx = pd.to_datetime(s.index)
-        if getattr(idx, "tz", None) is not None:
-            idx = idx.tz_convert(US_EQUITY_TZ).tz_localize(None)
-        s.index = idx.normalize()
-        if len(s) == 0 and not quiet:
-            print(f"    ⚠️  _yf_series 전량 NaN: {symbol} [{start}~{end}] "
-                  f"원행={len(raw)} → 유효 0")
-        return s
-    except Exception as e:
+                          auto_adjust=True, progress=False, timeout=15)
+        s = _yf_close_series(raw, symbol, single_symbol=True)
+    except Exception as exc:
         if not quiet:
-            print(f"    ⚠️  _yf_series 예외: {symbol} [{start}~{end}] "
-                  f"{type(e).__name__}: {e}")
-        return pd.Series(dtype=float)
+            print(f"    ⚠️ _yf_series {symbol}: {type(exc).__name__}: {exc}")
+    valid = s[np.isfinite(s) & (s > 0) & ~s.index.duplicated(keep=False)]
+    if valid.empty or (exact_date is not None and _yf_valid_close(s, exact_date) is None):
+        try:
+            recovered = _yf_history_series(symbol, start, end)
+            recovered = recovered[np.isfinite(recovered) & (recovered > 0)
+                                  & ~recovered.index.duplicated(keep=False)]
+            if (exact_date is not None and _yf_valid_close(recovered, exact_date) is not None
+                    or exact_date is None and not recovered.empty):
+                return recovered
+            if not quiet:
+                latest = recovered.index.max() if not recovered.empty else "없음"
+                print(f"    🔎 {symbol}: 개별 history 요청={exact_date} · 최신={latest} · 미복구")
+        except Exception as exc:
+            if not quiet:
+                print(f"    ⚠️ {symbol}: 개별 history {type(exc).__name__}: {exc}")
+    if valid.empty and not quiet:
+        print(f"    ⚠️ _yf_series {symbol}: 유효 Close 없음 [{start}~{end}]")
+    return valid
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -2687,7 +2716,7 @@ def resolve_session_date(ref_tickers=None, lookback_days=10,
     for attempt in range(1, n_try + 1):
         for tk in refs:
             try:
-                ser = _yf_series(tk, start, end)
+                ser = _yf_series(tk, start, end, exact_date=expected)
                 if ser is None or len(ser) == 0:
                     print(f"  🔎 {attempt}/{n_try} {tk:5s} 행 0 — 다음 후보")
                     continue
