@@ -17,12 +17,12 @@
   "oracle_weights": {
     "NLR": 0.25,
     "GLD": 0.2,
-    "SGOV": 0.1202,
-    "XLU": 0.0986,
-    "COPX": 0.0958,
-    "SLV": 0.09539999999999998,
-    "ITA": 0.0776,
-    "CIBR": 0.062400000000000004
+    "SGOV": 0.12500000000000003,
+    "XLU": 0.1007,
+    "COPX": 0.0978,
+    "SLV": 0.0842,
+    "ITA": 0.0786,
+    "CIBR": 0.0637
   },
   "oracle_cash_weight": 0.0,
   "prima_src": "causal_engine_target",
@@ -52,5 +52,5 @@
     "count": 0,
     "policy": "read_only"
   },
-  "logged_utc": "2026-10-29T01:45:12.415374+00:00"
+  "logged_utc": "2026-10-29T02:57:24.807371+00:00"
 }
