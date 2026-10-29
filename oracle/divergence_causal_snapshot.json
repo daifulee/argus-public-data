@@ -1,9 +1,9 @@
 {
   "schema_version": "causal_divergence/1.0",
-  "as_of": "2026-10-27",
+  "as_of": "2026-10-28",
   "current": {
     "prima": "XLE",
-    "oracle": "NLR+GLD+SGOV+SLV+XLU+COPX+ITA+CIBR",
+    "oracle": "NLR+GLD+SGOV+XLU+COPX+SLV+ITA+CIBR",
     "common": "(none)",
     "prima_only": "XLE",
     "oracle_only": "CIBR+COPX+GLD+ITA+NLR+SGOV+SLV+XLU",
@@ -17,17 +17,17 @@
   "oracle_weights": {
     "NLR": 0.25,
     "GLD": 0.2,
-    "SGOV": 0.13499999999999995,
-    "SLV": 0.0993,
-    "XLU": 0.09630000000000001,
-    "COPX": 0.086,
-    "ITA": 0.0834,
-    "CIBR": 0.05
+    "SGOV": 0.1202,
+    "XLU": 0.0986,
+    "COPX": 0.0958,
+    "SLV": 0.09539999999999998,
+    "ITA": 0.0776,
+    "CIBR": 0.062400000000000004
   },
   "oracle_cash_weight": 0.0,
   "prima_src": "causal_engine_target",
   "prima_engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "oracle_date": "2026-10-27",
+  "oracle_date": "2026-10-28",
   "oracle_src": "shadow_json",
   "readiness": {
     "data_fresh": true,
@@ -40,8 +40,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-10-27",
-    "engine_date": "2026-10-27",
+    "input_date": "2026-10-28",
+    "engine_date": "2026-10-28",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -52,5 +52,5 @@
     "count": 0,
     "policy": "read_only"
   },
-  "logged_utc": "2026-10-28T02:39:54.493702+00:00"
+  "logged_utc": "2026-10-29T01:45:12.415374+00:00"
 }
