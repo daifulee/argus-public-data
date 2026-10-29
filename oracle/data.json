@@ -1,6 +1,6 @@
 {
   "date": "2026-10-27",
-  "run_at": "2026-10-28T00:48:39.332673",
+  "run_at": "2026-10-29T01:21:22.306346",
   "version": "1.0.6",
   "regime": {
     "regime": "EXPANSION",
@@ -33,18 +33,18 @@
     "briefing_line": "🟢 확장기 (EXPANSION) | 달러RP 10% · GLD 20% · 공격 70% | 그래디언트 31/100\n  발동 근거: 🌊TIDE=EXPANSION / 🔥INFERNO=STABLE / DFII10=2.66% / 레짐 그래디언트 31 (시장 경계감, 레짐 유지)\n  그래디언트 조정: 시장 변동성 상승. SGOV 15%로 소폭 확대. 공격군 65%."
   },
   "gradient": 30.6,
-  "conviction": 41.0,
+  "conviction": 42.0,
   "integrity": "26/26",
   "smoke": false,
   "allocation": {
-    "SGOV": 10.989999999999995,
+    "SGOV": 13.499999999999995,
     "GLD": 20.0,
     "NLR": 25.0,
-    "COPX": 11.39,
-    "XLU": 9.98,
-    "PAVE": 9.34,
-    "ITA": 7.41,
-    "SLV": 5.89
+    "SLV": 9.93,
+    "XLU": 9.63,
+    "COPX": 8.6,
+    "ITA": 8.34,
+    "CIBR": 5.0
   },
   "top_picks": [
     [
@@ -56,12 +56,12 @@
       0.19
     ],
     [
-      "COPX",
-      0.09
+      "SLV",
+      0.07
     ],
     [
       "XLU",
-      0.07
+      0.06
     ]
   ]
 }
