@@ -1,11 +1,11 @@
 {
   "schema": "transition_alert/2.0",
-  "date": "2026-10-29 00:00:00",
+  "date": "2026-10-30 00:00:00",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
   "crown": "#110",
   "src": "engine_target_observation",
   "target_src": "causal_engine_target",
-  "ledger_as_of": "2026-10-28",
+  "ledger_as_of": "2026-10-29",
   "prev": {
     "XLE": 1.0
   },
@@ -17,7 +17,7 @@
     "XLE": {
       "entry_date": "4947",
       "entry_price": 66.56131994590513,
-      "held_days": 40,
+      "held_days": 41,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -25,15 +25,15 @@
     }
   },
   "simulated_weights": {
-    "XLE": 0.990513409702352
+    "XLE": 0.9906874087275249
   },
   "simulated_positions": {
     "XLE": {
       "entry_date": "2026-09-02",
       "entry_price": 66.56131994590513,
-      "held_days": 40,
-      "strategy_held_days": 40,
-      "actual_held_days": 40,
+      "held_days": 41,
+      "strategy_held_days": 41,
+      "actual_held_days": 41,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -46,15 +46,15 @@
   "observations": [],
   "comparison_status": {
     "valid": true,
-    "expected": "2026-10-28",
-    "as_of": "2026-10-28",
+    "expected": "2026-10-29",
+    "as_of": "2026-10-29",
     "error": null
   },
   "previous_cash": 0.0,
-  "source_ledger_as_of": "2026-10-28",
+  "source_ledger_as_of": "2026-10-29",
   "ledger_integrity": {
     "source": "historical_engine_target",
-    "as_of": "2026-10-28",
+    "as_of": "2026-10-29",
     "pending_verification": [],
     "dev_open": [],
     "sessions": 1,
@@ -564,8 +564,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-10-29",
-    "engine_date": "2026-10-29",
+    "input_date": "2026-10-30",
+    "engine_date": "2026-10-30",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -573,6 +573,6 @@
   "action_block_reason": [
     "실계좌 또는 데이터 실행 근거 미충족"
   ],
-  "generated_at": "2026-10-30T03:04:52",
+  "generated_at": "2026-10-31T02:19:52",
   "note": "엔진 목표 관측 기록. 실행 가능한 실계좌 주문 계획 없음."
 }
