@@ -1,47 +1,47 @@
 {
   "schema": "causal_target_diff/1.0",
-  "previous_date": "2026-11-03",
+  "previous_date": "2026-11-04",
   "comparable": true,
-  "date": "2026-11-04",
+  "date": "2026-11-05",
   "changed": true,
   "actionable": false,
   "src": "causal_engine_target",
   "positions": {
-    "XLE": 0.5669564014099561,
-    "PAVE": 0.13302978478782293,
-    "INDA": 0.007685043836965917,
-    "XLU": 0.2651004215009159,
-    "ITA": 0.027228348464339275
+    "XLE": 1.0
   },
   "target_cash_weight": 0.0,
   "simulated_positions": {
-    "XLE": 0.98977244250928
+    "XLE": 0.5615832834747334,
+    "INDA": 0.007844086498359264,
+    "ITA": 0.008895323917274729,
+    "PAVE": 0.12779893719444962,
+    "XLU": 0.2687169367167485
   },
-  "simulated_cash_weight": 0.010227557490719992,
+  "simulated_cash_weight": 0.02516143219843435,
   "observations": [
     {
       "ticker": "ITA",
-      "previous_target": 0,
-      "target": 0.027228348464339275,
-      "delta": 0.027228348464339275
+      "previous_target": 0.0272,
+      "target": 0,
+      "delta": -0.0272
     },
     {
       "ticker": "PAVE",
-      "previous_target": 0,
-      "target": 0.13302978478782293,
-      "delta": 0.13302978478782293
+      "previous_target": 0.133,
+      "target": 0,
+      "delta": -0.133
     },
     {
       "ticker": "XLE",
-      "previous_target": 1.0,
-      "target": 0.5669564014099561,
-      "delta": -0.43304359859004393
+      "previous_target": 0.567,
+      "target": 1.0,
+      "delta": 0.43300000000000005
     },
     {
       "ticker": "XLU",
-      "previous_target": 0,
-      "target": 0.2651004215009159,
-      "delta": 0.2651004215009159
+      "previous_target": 0.2651,
+      "target": 0,
+      "delta": -0.2651
     }
   ],
   "entered": [],
@@ -50,39 +50,35 @@
   "actions": "",
   "simulated_actions": [
     {
-      "date": "2026-11-04 00:00:00",
-      "action": "BUY",
-      "ticker": "PAVE",
-      "reason": "SC6.7|B",
-      "pct": 100,
-      "signals": "m3_crash5"
-    },
-    {
-      "date": "2026-11-04 00:00:00",
-      "action": "BUY",
+      "date": "2026-11-05 00:00:00",
+      "action": "SELL",
       "ticker": "INDA",
-      "reason": "SC3.3|C",
-      "pct": 100,
-      "signals": "m3_neg|dxy101"
+      "reason": "WTI>90",
+      "pct": 100
     },
     {
-      "date": "2026-11-04 00:00:00",
-      "action": "BUY",
-      "ticker": "XLU",
-      "reason": "SC2.7|A",
-      "pct": 100,
-      "signals": "tnx4|m1_rise3|tyx471"
-    },
-    {
-      "date": "2026-11-04 00:00:00",
-      "action": "BUY",
+      "date": "2026-11-05 00:00:00",
+      "action": "SELL",
       "ticker": "ITA",
-      "reason": "SC1.7|C",
-      "pct": 100,
-      "signals": "tnx4|wti85|tyx471"
+      "reason": "WTI>90",
+      "pct": 100
+    },
+    {
+      "date": "2026-11-05 00:00:00",
+      "action": "SELL",
+      "ticker": "PAVE",
+      "reason": "WTI>90",
+      "pct": 100
+    },
+    {
+      "date": "2026-11-05 00:00:00",
+      "action": "SELL",
+      "ticker": "XLU",
+      "reason": "WTI>90",
+      "pct": 100
     }
   ],
   "change_reason": "엔진 목표 변경 관측",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "generated_utc": "2026-11-05T02:46:20.677428+00:00"
+  "generated_utc": "2026-11-06T03:42:10.358043+00:00"
 }
