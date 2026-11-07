@@ -1,9 +1,9 @@
 {
   "schema": "causal_target_diff/1.0",
-  "previous_date": "2026-11-04",
+  "previous_date": "2026-11-05",
   "comparable": true,
-  "date": "2026-11-05",
-  "changed": true,
+  "date": "2026-11-06",
+  "changed": false,
   "actionable": false,
   "src": "causal_engine_target",
   "positions": {
@@ -11,74 +11,16 @@
   },
   "target_cash_weight": 0.0,
   "simulated_positions": {
-    "XLE": 0.5615832834747334,
-    "INDA": 0.007844086498359264,
-    "ITA": 0.008895323917274729,
-    "PAVE": 0.12779893719444962,
-    "XLU": 0.2687169367167485
+    "XLE": 0.9905277678063447
   },
-  "simulated_cash_weight": 0.02516143219843435,
-  "observations": [
-    {
-      "ticker": "ITA",
-      "previous_target": 0.0272,
-      "target": 0,
-      "delta": -0.0272
-    },
-    {
-      "ticker": "PAVE",
-      "previous_target": 0.133,
-      "target": 0,
-      "delta": -0.133
-    },
-    {
-      "ticker": "XLE",
-      "previous_target": 0.567,
-      "target": 1.0,
-      "delta": 0.43300000000000005
-    },
-    {
-      "ticker": "XLU",
-      "previous_target": 0.2651,
-      "target": 0,
-      "delta": -0.2651
-    }
-  ],
+  "simulated_cash_weight": 0.009472232193655323,
+  "observations": [],
   "entered": [],
   "exited": [],
   "reweighted": [],
   "actions": "",
-  "simulated_actions": [
-    {
-      "date": "2026-11-05 00:00:00",
-      "action": "SELL",
-      "ticker": "INDA",
-      "reason": "WTI>90",
-      "pct": 100
-    },
-    {
-      "date": "2026-11-05 00:00:00",
-      "action": "SELL",
-      "ticker": "ITA",
-      "reason": "WTI>90",
-      "pct": 100
-    },
-    {
-      "date": "2026-11-05 00:00:00",
-      "action": "SELL",
-      "ticker": "PAVE",
-      "reason": "WTI>90",
-      "pct": 100
-    },
-    {
-      "date": "2026-11-05 00:00:00",
-      "action": "SELL",
-      "ticker": "XLU",
-      "reason": "WTI>90",
-      "pct": 100
-    }
-  ],
-  "change_reason": "엔진 목표 변경 관측",
+  "simulated_actions": [],
+  "change_reason": "목표 변화 없음",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "generated_utc": "2026-11-06T03:42:10.358043+00:00"
+  "generated_utc": "2026-11-07T03:14:51.887950+00:00"
 }
