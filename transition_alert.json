@@ -1,17 +1,13 @@
 {
   "schema": "transition_alert/2.0",
-  "date": "2026-11-05 00:00:00",
+  "date": "2026-11-06 00:00:00",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
   "crown": "#110",
   "src": "engine_target_observation",
   "target_src": "causal_engine_target",
-  "ledger_as_of": "2026-11-04",
+  "ledger_as_of": "2026-11-05",
   "prev": {
-    "XLE": 0.5669564014099561,
-    "PAVE": 0.13302978478782293,
-    "INDA": 0.007685043836965917,
-    "XLU": 0.2651004215009159,
-    "ITA": 0.027228348464339275
+    "XLE": 1.0
   },
   "target": {
     "XLE": 1.0
@@ -20,8 +16,8 @@
   "position_state": {
     "XLE": {
       "entry_date": "4947",
-      "entry_price": 66.56131994590513,
-      "held_days": 45,
+      "entry_price": 64.42299214375977,
+      "held_days": 46,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
@@ -29,141 +25,36 @@
     }
   },
   "simulated_weights": {
-    "XLE": 0.5615832834747334,
-    "INDA": 0.007844086498359264,
-    "ITA": 0.008895323917274729,
-    "PAVE": 0.12779893719444962,
-    "XLU": 0.2687169367167485
+    "XLE": 0.9905277678063447
   },
   "simulated_positions": {
     "XLE": {
       "entry_date": "2026-09-02",
-      "entry_price": 66.56131994590513,
-      "held_days": 45,
-      "strategy_held_days": 45,
-      "actual_held_days": 45,
+      "entry_price": 64.42299214375977,
+      "held_days": 46,
+      "strategy_held_days": 46,
+      "actual_held_days": 46,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
       "target_days": 63,
-      "quantity": 298052.4793228182,
-      "quantity_unit": "adjusted_price_units"
-    },
-    "INDA": {
-      "entry_date": "2026-11-05",
-      "entry_price": 50.02000045776367,
-      "held_days": 0,
-      "strategy_held_days": 0,
-      "actual_held_days": 0,
-      "weight_factor": 1.0,
-      "level": "C",
-      "score": 3.3,
-      "target_days": 63,
-      "quantity": 5129.433750342136,
-      "quantity_unit": "adjusted_price_units"
-    },
-    "ITA": {
-      "entry_date": "2026-11-05",
-      "entry_price": 68.11000061035156,
-      "held_days": 0,
-      "strategy_held_days": 0,
-      "actual_held_days": 0,
-      "weight_factor": 1.0,
-      "level": "C",
-      "score": 1.7000000000000002,
-      "target_days": 42,
-      "quantity": 4271.905385988319,
-      "quantity_unit": "adjusted_price_units"
-    },
-    "PAVE": {
-      "entry_date": "2026-11-05",
-      "entry_price": 50.72999954223633,
-      "held_days": 0,
-      "strategy_held_days": 0,
-      "actual_held_days": 0,
-      "weight_factor": 1.0,
-      "level": "B",
-      "score": 6.7,
-      "target_days": 63,
-      "quantity": 82401.12215688483,
-      "quantity_unit": "adjusted_price_units"
-    },
-    "XLU": {
-      "entry_date": "2026-11-05",
-      "entry_price": 43.29999923706055,
-      "held_days": 0,
-      "strategy_held_days": 0,
-      "actual_held_days": 0,
-      "weight_factor": 1.0,
-      "level": "A",
-      "score": 2.7,
-      "target_days": 21,
-      "quantity": 202991.51910369738,
+      "quantity": 525428.6643004498,
       "quantity_unit": "adjusted_price_units"
     }
   },
-  "pending_orders": {
-    "signal_index": 4992,
-    "due_index": 4993,
-    "signal_date": "2026-11-05",
-    "quantity_deltas": {
-      "INDA": -5129.433750342136,
-      "ITA": -4271.905385988319,
-      "PAVE": -82401.12215688483,
-      "XLE": 227376.18497763155,
-      "XLU": -202991.51910369738
-    },
-    "unit": "adjusted_price_units",
-    "status": "SIMULATED_PENDING_NOT_SENT"
-  },
-  "observations": [
-    {
-      "ticker": "INDA",
-      "previous_target": 0.007685043836965917,
-      "target": 0,
-      "delta": -0.007685043836965917,
-      "kind": "engine_target_change"
-    },
-    {
-      "ticker": "ITA",
-      "previous_target": 0.027228348464339275,
-      "target": 0,
-      "delta": -0.027228348464339275,
-      "kind": "engine_target_change"
-    },
-    {
-      "ticker": "PAVE",
-      "previous_target": 0.13302978478782293,
-      "target": 0,
-      "delta": -0.13302978478782293,
-      "kind": "engine_target_change"
-    },
-    {
-      "ticker": "XLE",
-      "previous_target": 0.5669564014099561,
-      "target": 1.0,
-      "delta": 0.43304359859004393,
-      "kind": "engine_target_change"
-    },
-    {
-      "ticker": "XLU",
-      "previous_target": 0.2651004215009159,
-      "target": 0,
-      "delta": -0.2651004215009159,
-      "kind": "engine_target_change"
-    }
-  ],
+  "pending_orders": null,
+  "observations": [],
   "comparison_status": {
     "valid": true,
-    "expected": "2026-11-04",
-    "as_of": "2026-11-04",
+    "expected": "2026-11-05",
+    "as_of": "2026-11-05",
     "error": null
   },
   "previous_cash": 0.0,
-  "source_ledger_as_of": "2026-11-04",
+  "source_ledger_as_of": "2026-11-05",
   "ledger_integrity": {
     "source": "historical_engine_target",
-    "as_of": "2026-11-04",
+    "as_of": "2026-11-05",
     "pending_verification": [],
     "dev_open": [],
     "sessions": 1,
@@ -179,23 +70,21 @@
       "entry_guard": {
         "blocked": true,
         "reasons": [
-          "WTI>90",
-          "SAME_DAY_RISK_EXIT"
+          "WTI>90"
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>90",
-        "same_day_risk_exit": true,
+        "same_day_risk_exit": false,
         "same_day_context_provided": true
       },
       "reason": {
         "blocked": true,
         "reasons": [
-          "WTI>90",
-          "SAME_DAY_RISK_EXIT"
+          "WTI>90"
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>90",
-        "same_day_risk_exit": true,
+        "same_day_risk_exit": false,
         "same_day_context_provided": true
       }
     },
@@ -205,23 +94,21 @@
       "entry_guard": {
         "blocked": true,
         "reasons": [
-          "WTI>90",
-          "SAME_DAY_RISK_EXIT"
+          "WTI>90"
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>90",
-        "same_day_risk_exit": true,
+        "same_day_risk_exit": false,
         "same_day_context_provided": true
       },
       "reason": {
         "blocked": true,
         "reasons": [
-          "WTI>90",
-          "SAME_DAY_RISK_EXIT"
+          "WTI>90"
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>90",
-        "same_day_risk_exit": true,
+        "same_day_risk_exit": false,
         "same_day_context_provided": true
       }
     },
@@ -395,23 +282,21 @@
       "entry_guard": {
         "blocked": true,
         "reasons": [
-          "WTI>90",
-          "SAME_DAY_RISK_EXIT"
+          "WTI>90"
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>90",
-        "same_day_risk_exit": true,
+        "same_day_risk_exit": false,
         "same_day_context_provided": true
       },
       "reason": {
         "blocked": true,
         "reasons": [
-          "WTI>90",
-          "SAME_DAY_RISK_EXIT"
+          "WTI>90"
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>90",
-        "same_day_risk_exit": true,
+        "same_day_risk_exit": false,
         "same_day_context_provided": true
       }
     },
@@ -421,23 +306,21 @@
       "entry_guard": {
         "blocked": true,
         "reasons": [
-          "WTI>90",
-          "SAME_DAY_RISK_EXIT"
+          "WTI>90"
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>90",
-        "same_day_risk_exit": true,
+        "same_day_risk_exit": false,
         "same_day_context_provided": true
       },
       "reason": {
         "blocked": true,
         "reasons": [
-          "WTI>90",
-          "SAME_DAY_RISK_EXIT"
+          "WTI>90"
         ],
         "active_exit_type": "FULL",
         "active_exit_reason": "WTI>90",
-        "same_day_risk_exit": true,
+        "same_day_risk_exit": false,
         "same_day_context_provided": true
       }
     },
@@ -677,8 +560,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-11-05",
-    "engine_date": "2026-11-05",
+    "input_date": "2026-11-06",
+    "engine_date": "2026-11-06",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -686,6 +569,6 @@
   "action_block_reason": [
     "실계좌 또는 데이터 실행 근거 미충족"
   ],
-  "generated_at": "2026-11-06T03:45:00",
+  "generated_at": "2026-11-07T03:16:42",
   "note": "엔진 목표 관측 기록. 실행 가능한 실계좌 주문 계획 없음."
 }
