@@ -1,8 +1,11 @@
 # =====================================================================
 # 🦅 ARGUS — BT 파일 FRED 발표일 정렬 재구성 (ALFRED 정본)
-# VERSION : v1.0.0-PITREBUILD-GHA
+# VERSION : v1.1.0-PITREBUILD-GHA
 # DATE    : 2026-11-10 (S291 후속, 과최적화 감사 2단계)
-# CHANGE  : 신설. argus_pit_rebuild.py v1.0.1 을 FRED_API_KEY(Secret) 로 실행해
+# CHANGE  : v1.1.0 — 재구성기 v1.1.0 대응. 요약 표에 판본 수·첫 판본일·혼합 분할일·
+#           1776 시작 행 제거 건수 열 추가. 엔진 소비 계열 경고는 calendar 전면 강등일 때만
+#           (혼합은 정상 경로). 실패 실행에서도 out/ 의 진단 매니페스트가 아티팩트로 남는다.
+#           v1.0.0 — 신설. argus_pit_rebuild.py v1.0.1 을 FRED_API_KEY(Secret) 로 실행해
 #           BT_LONG 의 FRED 열을 LIVE 계약(fred_prior_date_v1)과 같은 규칙으로 재구성한다.
 # 배치    : argus-public-data/.github/workflows/argus_pit_rebuild.yml
 #           (같은 저장소 루트에 argus_pit_rebuild.py 와 입력 BT CSV 가 있어야 한다)
@@ -145,15 +148,17 @@ jobs:
                f"- 버전 `{man['version']}` · 계약 `{man['contract']}` · 요청 방식 `{mode}`",
                f"- 입력 `{man['input']}` sha `{man['input_sha12']}` → 출력 `{man['output']}` sha `{man['output_sha12']}`",
                f"- {man['rows']}행 × {man['cols']}열 · 대상 외 열 검증 {man['untouched_cols_verified']}개", "",
-               "| 열 | 방식 | 변경 셀 | NaN 전→후 | 관측 경과 중앙값(일) | ALFRED 최초 게시 지연 중앙값/p90 | 개정 관측 비율 | 강등 사유 |",
-               "|:--|:--|--:|:--|--:|:--|--:|:--|"]
+               "| 열 | 방식 | 판본 수 | 첫 판본일 | 혼합 분할 결정일 | 1776행 제거 | 변경 셀 | NaN 전→후 | 관측 경과 중앙값(일) | ALFRED 최초 게시 지연 중앙값/p90 | 개정 관측 비율 | 강등 사유 |",
+               "|:--|:--|--:|:--|:--|--:|--:|:--|--:|:--|--:|:--|"]
           for c, i in man["columns"].items():
               lag = i.get("alfred_first_release_lag_days") or {}
-              L.append(f"| {c}{' ⭐' if c in engine_cols else ''} | {i['method']} | {i['changed_cells']} | "
+              L.append(f"| {c}{' ⭐' if c in engine_cols else ''} | {i['method']} | "
+                       f"{i.get('alfred_vintages','')} | {i.get('alfred_first_vintage','')} | "
+                       f"{i.get('hybrid_split_decision','')} | {i.get('alfred_dropped_rs_before_obs','')} | {i['changed_cells']} | "
                        f"{i['nan_before']}→{i['nan_after']} | {i.get('median_obs_age_days')} | "
                        f"{lag.get('median','')}/{lag.get('p90','')} | {i.get('alfred_revised_obs_share','')} | "
                        f"{i.get('downgrade_reason','')} |")
-              if mode == "alfred" and c in engine_cols and i["method"] != "alfred_prior_date":
+              if mode == "alfred" and c in engine_cols and i["method"] == "calendar_rule_current_vintage":
                   print(f"::warning::엔진 소비 계열 {c} 가 calendar 로 강등됨 — {i.get('downgrade_reason')}")
           L += ["", "⭐ = 엔진 소비 계열", "", "### 🧊 동결 구간", ""]
           for c, runs in man.get("frozen_runs", {}).items():
