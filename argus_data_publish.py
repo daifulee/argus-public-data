@@ -1,7 +1,13 @@
 # 원본 검증 규칙을 유지하며 게시 경합 시 최신 원격 상태에서 재생성한다.
+# 🔧 v3.9.23 동반 (2026-11-10, S292): 기업행위 원장 corporate_actions.json 과 원장이 이번 실행에서
+#   조정했다고 기록한 정적 가격 저장소(BT_LONG_*.csv · 짝 *.manifest.json)를 같은 커밋에 싣는다.
+#   argus_data 만 조정되고 BT_LONG 이 남으면 하류 교차 소스 검사(겹침 비율 ±5%)가 깨지고
+#   결합 자료에 척도 이음매가 생긴다 — 두 계통은 한 커밋으로만 움직인다.
+#   허용 경로 정규식 · 추적 중 파일 · 일반 파일 조건을 모두 만족해야 게시 대상에 넣는다.
 import datetime as dt
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -175,6 +181,8 @@ DATA_FILES = [
     'CURRENT_GENERATION.json',
 ]
 WORKFLOW_PATH = '.github/workflows/data update.yml'
+CORP_ACTIONS_FILE = 'corporate_actions.json'
+_CA_TOUCH_RE = re.compile(r'^BT_LONG_[A-Za-z0-9_]+\.(csv|manifest\.json)$')
 
 
 def command(args, cwd, *, env=None, capture=False, check=True):
@@ -194,6 +202,32 @@ def refresh(repo):
 
 def shell(script, cwd, env):
     command(['bash', '-euo', 'pipefail', '-c', script], cwd, env=env)
+
+
+def corporate_action_files(work):
+    """원장과 원장이 이번 실행에서 조정한 정적 저장소 목록. 허용 외 경로는 게시를 중단한다."""
+    ledger = work / CORP_ACTIONS_FILE
+    if not ledger.exists():
+        return []
+    if ledger.is_symlink() or not ledger.is_file():
+        raise RuntimeError(f'{CORP_ACTIONS_FILE} 일반 파일 아님')
+    led = json.loads(ledger.read_text(encoding='utf-8'))
+    touched = (led.get('last_run') or {}).get('touched_files') or []
+    if not isinstance(touched, list):
+        raise RuntimeError('원장 touched_files 형식 오류')
+    out = [CORP_ACTIONS_FILE]
+    for name in touched:
+        if not isinstance(name, str) or not _CA_TOUCH_RE.match(name):
+            raise RuntimeError(f'원장 touched_files 허용 외 경로: {name!r}')
+        path = work / name
+        if path.is_symlink() or not path.is_file():
+            raise RuntimeError(f'조정 대상 저장소 일반 파일 아님: {name}')
+        if not git(work, 'ls-files', '--', name):
+            raise RuntimeError(f'추적되지 않는 저장소는 게시하지 않음: {name}')
+        out.append(name)
+    if len(out) > 1:
+        print(f'🧾 기업행위 조정 동반 게시 {len(out) - 1}건: {out[1:]}', flush=True)
+    return out
 
 
 def pending_check(work):
@@ -305,6 +339,7 @@ def publish(repo, env, mode, generate_fn=generate, max_attempts=3):
                 optional = []
             else:
                 required = required + ['wsts_yoy.json', 'argus_data_publication.json']
+                optional = optional + corporate_action_files(work)
             for name in required:
                 p = work / name
                 if not p.exists() or p.is_symlink():

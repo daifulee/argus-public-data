@@ -1,3 +1,7 @@
+# 🔧 v3.9.23 (2026-11-10, S292): CORPORATE ACTION LAYER — ITA 3:1 분할 미조정 결함 처방.
+#   가격 단절 감지 → 원천(yfinance splits · Yahoo chart events) 확인 → 원장 corporate_actions.json →
+#   argus_data 와 BT_LONG_* 를 자료 실측(경계·겹침 비율) 기준으로 멱등 조정 → 짝 매니페스트 sha 갱신.
+#   설명되지 않는 단절은 PRICE_INTEGRITY 열·원장 last_run 에 기록 (저장은 막지 않는다). 상세는 해당 구획 주석.
 # 🔧 v3.9.22: 시장 종가 추출 통일·재시도 누적·미수집 개별 복구 (정확 거래일 계약 유지)
 # 🔧 v3.9.21: 동일 세션 센서 재수집·당시 판본 오류 원인 보존
 # 🔧 v3.9.19 (2026-09-21, S291): RE-FETCH PIT SEMANTICS — 결함 S291-8 처방. **v3.9.18 의 자기 결함 정정.**
@@ -3939,6 +3943,520 @@ def compute_smh_triflag(df, prices=None, wsts_series=None):
     return flag_px.reindex(df.index, method="ffill").fillna(0).astype(int)
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# 🆕 v3.9.23 (S292, 2026-11-10): CORPORATE ACTION LAYER + PRICE BREAK DETECTOR
+#   사건: iShares ITA 3:1 액면분할 (기록일 2026-11-03 · 분할 조정 거래 개시 2026-11-05).
+#     argus_data.csv 는 매 세션 '그날 종가 1개' 만 append 하므로 과거 행은 분할 전 척도로
+#     남았다 (2026-11-04 212.84 → 2026-11-05 68.11, 하루 -68%). BT_LONG_* 5종도 분할 전 척도.
+#     브리핑 1개월 수익률 ITA -65.32% · 1년 포착률 -65.5% 로 거짓 표시되었다.
+#   원인: 수집기는 Yahoo auto_adjust=True 로 '그날' 값만 받는다. 원천은 과거를 소급 조정하지만
+#     우리 저장소의 과거 행은 아무도 다시 조정하지 않는다. 기업행위 계층이 존재하지 않았다.
+#     하류 가격 무결성 가드 R2 는 '10거래일 내 반대쌍(곱≈1)' 을 요구하므로 되돌림 없는
+#     단방향 분할 단절은 구조적으로 통과한다 (R1 은 경고 전용).
+#   처방 (자동 추정 금지 · 원천 확인 후에만 조정):
+#     ① 가격 단절 감지기 — 최근 PRICE_BREAK_CONFIRM_LOOKBACK 세션의 일간 비율이
+#        |ln r| > ln(PRICE_BREAK_QUERY_MOVE) 인 티커만 원천에 분할 이력을 조회한다.
+#     ② 원천 확인 — yfinance Ticker.splits 1차, Yahoo chart API(events=split, UA) 2차.
+#        단절일 == 분할일 이고 비율이 분할비와 부합할 때만 사건으로 채택한다.
+#     ③ 원장 corporate_actions.json — 사건·근거·저장소별 적용 기록 (감사용 SSOT).
+#     ④ 적용 — 판정은 원장 표시가 아니라 **자료 자체의 실측**으로 한다 (멱등):
+#        argus_data: 분할일 경계 비율이 분할비에 가까울 때만 분할일 이전 행을 조정.
+#          이번 실행에서 원천으로부터 새로 받은 분할일 이전 행(이미 조정된 값)은 제외한다.
+#        BT_LONG_*: argus_data 와의 겹침일 중앙 비율이 분할비면 조정, 1 이면 정합으로 보고 무변경.
+#          대상 열만 문자열 수준으로 바꿔 나머지 열은 바이트 동일하게 보존한다.
+#        짝 매니페스트(*.manifest.json)의 sha 를 갱신하고 조정 전 sha 를 함께 남긴다.
+#     ⑤ 전 이력 단절 보고 — 설명되지 않는 단절은 PRICE_INTEGRITY 열과 원장 last_run 에 남긴다.
+#        저장은 막지 않는다 (v3.9.18 철학: 레인은 살아서 정직하게 기록, 행동 차단은 하류).
+#   🔴 자본 영향: 분할일 이전 구간의 수익률·이동평균 비율은 척도 불변이라 변하지 않는다.
+#     바뀌는 것은 분할일 하루의 거짓 -68% 와 그 하루를 포함하는 창의 파생값뿐이다.
+# ═══════════════════════════════════════════════════════════════════════════
+CORP_ACTIONS_PATH = os.path.join(SCRIPT_DIR, "corporate_actions.json")
+CORP_ACTIONS_SCHEMA = "argus_corporate_actions_v1"
+CORP_STATIC_STORE_PATTERN = re.compile(r"^BT_LONG_[A-Za-z0-9_]+\.csv$")
+# 운영 가드 상수 (BT 판정 임계가 아니다 — Commander 승인 대상 표기)
+PRICE_BREAK_CONFIRM_LOOKBACK = int(os.getenv("PRICE_BREAK_CONFIRM_LOOKBACK", "15"))
+PRICE_BREAK_QUERY_MOVE = float(os.getenv("PRICE_BREAK_QUERY_MOVE", "1.18"))   # ±18% 초과 일간 변화만 원천 조회
+PRICE_BREAK_REPORT_MOVE = float(os.getenv("PRICE_BREAK_REPORT_MOVE", "1.60"))  # 전 이력 단절 보고 기준
+SPLIT_MATCH_TOL = float(os.getenv("SPLIT_MATCH_TOL", "1.25"))     # 경계 비율 대 분할비 허용 배수
+STATIC_ALIGN_TOL = float(os.getenv("STATIC_ALIGN_TOL", "1.02"))   # 겹침 중앙 비율 허용 배수
+# 흔한 분할비 (정분할·역분할). 원천이 '분할 없음' 이라 답한 큰 변화가 이 비율과 맞으면 미설명으로 남긴다.
+COMMON_SPLIT_RATIOS = (1.5, 2.0, 3.0, 4.0, 5.0, 10.0)
+CA_CHECKED_KEEP = 400   # 원천 확인 이력 보관 건수 (같은 날짜 반복 조회 방지)
+_YAHOO_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+             "(KHTML, like Gecko) Chrome/120.0 Safari/537.36")
+
+
+def _ca_now():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def _ca_load_ledger(path=None):
+    """원장을 읽는다. 없거나 깨졌으면 빈 원장 (깨진 원본은 덮어쓰기 전에 보존)."""
+    path = path or CORP_ACTIONS_PATH
+    empty = {"schema": CORP_ACTIONS_SCHEMA, "actions": [], "last_run": {}}
+    if not os.path.exists(path):
+        return empty
+    try:
+        with open(path, encoding="utf-8") as f:
+            led = json.load(f)
+        if led.get("schema") != CORP_ACTIONS_SCHEMA or not isinstance(led.get("actions"), list):
+            raise ValueError(f"schema 불일치: {led.get('schema')!r}")
+        led.setdefault("last_run", {})
+        return led
+    except Exception as exc:
+        bad = f"{path}.corrupt.{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}"
+        try:
+            shutil.copyfile(path, bad)
+        except Exception:
+            pass
+        print(f"  🔴 v3.9.23 원장 판독 실패({type(exc).__name__}: {exc}) — 원본 보존 {os.path.basename(bad)}, 빈 원장으로 시작")
+        return empty
+
+
+def _ca_save_ledger(led, path=None):
+    path = path or CORP_ACTIONS_PATH
+    led["schema"] = CORP_ACTIONS_SCHEMA
+    led["updated_utc"] = _ca_now()
+    tmp = f"{path}.tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(led, f, ensure_ascii=False, indent=2, sort_keys=False)
+        f.write("\n")
+    os.replace(tmp, path)
+
+
+def _ca_find(led, ticker, ex_date):
+    for a in led.get("actions", []):
+        if a.get("ticker") == ticker and a.get("ex_date") == str(ex_date):
+            return a
+    return None
+
+
+def _ca_split_events_yf(symbol):
+    """1차 원천: yfinance Ticker.splits → [(date, ratio)]. ratio = 신주/구주 (3:1 → 3.0)."""
+    out = []
+    s = yf.Ticker(symbol).splits
+    if s is None or len(s) == 0:
+        return out
+    idx = pd.DatetimeIndex(pd.to_datetime(s.index))
+    if idx.tz is not None:
+        idx = idx.tz_convert(US_EQUITY_TZ).tz_localize(None)
+    for d, v in zip(idx.normalize(), s.values):
+        try:
+            r = float(v)
+        except (TypeError, ValueError):
+            continue
+        if np.isfinite(r) and r > 0 and abs(np.log(r)) > 1e-6:
+            out.append((d.date(), r))
+    return out
+
+
+def _ca_split_events_chart(symbol, start, end, request_get=None):
+    """2차 원천: Yahoo chart API events=split (UA 명시, 격언 #107)."""
+    request_get = request_get or requests.get
+    p1 = int(pd.Timestamp(start).tz_localize("UTC").timestamp())
+    p2 = int((pd.Timestamp(end) + pd.Timedelta(days=2)).tz_localize("UTC").timestamp())
+    url = (f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+           f"?period1={p1}&period2={p2}&interval=1d&events=split")
+    resp = request_get(url, headers={"User-Agent": _YAHOO_UA}, timeout=30)
+    if getattr(resp, "status_code", 0) != 200:
+        raise RuntimeError(f"chart API HTTP {getattr(resp, 'status_code', '?')}")
+    res = (resp.json().get("chart") or {}).get("result") or []
+    out = []
+    for r0 in res:
+        for ev in ((r0.get("events") or {}).get("splits") or {}).values():
+            try:
+                num, den = float(ev["numerator"]), float(ev["denominator"])
+                d = pd.Timestamp(int(ev["date"]), unit="s", tz="UTC").tz_convert(US_EQUITY_TZ)
+            except (KeyError, TypeError, ValueError):
+                continue
+            if num > 0 and den > 0 and abs(np.log(num / den)) > 1e-6:
+                out.append((d.tz_localize(None).normalize().date(), num / den))
+    return out
+
+
+def _ca_fetch_split_events(symbol, start, end, *, yf_fn=None, chart_fn=None):
+    """원천 확인. 두 원천 모두 실패하면 ([], 사유) — 추정으로 채우지 않는다."""
+    yf_fn = yf_fn or _ca_split_events_yf
+    chart_fn = chart_fn or _ca_split_events_chart
+    errors = []
+    for label, fn in (("yfinance_splits", lambda: yf_fn(symbol)),
+                      ("yahoo_chart_events", lambda: chart_fn(symbol, start, end))):
+        try:
+            ev = fn()
+            ev = [(d, r) for d, r in ev if pd.Timestamp(start).date() <= d <= pd.Timestamp(end).date()]
+            return ev, label, errors
+        except Exception as exc:
+            errors.append(f"{label}: {type(exc).__name__}: {exc}")
+    return [], None, errors
+
+
+def _ca_daily_ratios(s):
+    """유효 종가끼리의 일간 비율 r_t = P_t / P_{t-1} (결측은 건너뛴다)."""
+    v = pd.to_numeric(s, errors="coerce")
+    v = v[np.isfinite(v) & (v > 0)]
+    return (v / v.shift(1)).dropna()
+
+
+def _ca_boundary_ratio(s, ex_ts, exclude=None):
+    """분할일 경계의 (직전 유효 종가) / (분할일 이후 첫 유효 종가). 조정 전이면 ≈ 분할비."""
+    v = pd.to_numeric(s, errors="coerce")
+    v = v[np.isfinite(v) & (v > 0)]
+    if exclude:
+        v = v[~v.index.isin(list(exclude))]
+    pre, post = v[v.index < ex_ts], v[v.index >= ex_ts]
+    if pre.empty or post.empty:
+        return None
+    return float(pre.iloc[-1] / post.iloc[0])
+
+
+def _ca_classify_boundary(b, ratio):
+    """'unadjusted' | 'adjusted' | 'ambiguous'. 분할비에 더 가깝고 허용 배수 안일 때만 unadjusted."""
+    if b is None or not np.isfinite(b) or b <= 0:
+        return "ambiguous"
+    d_split, d_one = abs(np.log(b) - np.log(ratio)), abs(np.log(b))
+    tol = np.log(SPLIT_MATCH_TOL)
+    if d_split < d_one and d_split <= tol:
+        return "unadjusted"
+    if d_one < d_split and d_one <= tol:
+        return "adjusted"
+    return "ambiguous"
+
+
+def _ca_apply_to_frame(df, ticker, ex_date, ratio, *, fresh_dates=None):
+    """argus_data(df, 메모리) 조정. 반환 (상태, 조정 행수, 경계 전, 경계 후)."""
+    col = f"{ticker}_Close"
+    if col not in df.columns:
+        return "no_column", 0, None, None
+    ex_ts = pd.Timestamp(ex_date)
+    fresh = set(pd.Timestamp(x) for x in (fresh_dates or []))
+    # 이번 실행에서 원천으로부터 받은 분할일 이전 행 = 이미 조정된 값 → 판정·조정에서 제외
+    scol = f"{ticker}_Close_source"
+    fresh_pre = [t for t in fresh if t < ex_ts and t in df.index and
+                 (scol not in df.columns or str(df.at[t, scol]) == CLOSE_SRC_LIVE)]
+    before = _ca_boundary_ratio(df[col], ex_ts, exclude=fresh_pre)
+    state = _ca_classify_boundary(before, ratio)
+    if state != "unadjusted":
+        return state, 0, before, before
+    mask = (df.index < ex_ts) & ~df.index.isin(fresh_pre)
+    df.loc[mask, col] = pd.to_numeric(df.loc[mask, col], errors="coerce") / ratio
+    vcol = f"{ticker}_Volume"
+    if vcol in df.columns:
+        df.loc[mask, vcol] = pd.to_numeric(df.loc[mask, vcol], errors="coerce") * ratio
+    after = _ca_boundary_ratio(df[col], ex_ts)
+    return "applied", int(mask.sum()), before, after
+
+
+def _ca_sha12(path):
+    try:
+        return _sha256_file(path)[:12]
+    except Exception:
+        return None
+
+
+def _ca_rewrite_static(path, ticker, ex_date, ratio):
+    """BT_LONG_* 정적 저장소: 대상 열만 문자열 수준으로 바꾼다. 다른 열은 바이트 동일."""
+    with open(path, "rb") as f:
+        raw = f.read()
+    text = raw.decode("utf-8")
+    nl = "\r\n" if "\r\n" in text[:4096] else "\n"
+    lines = text.split(nl)
+    trailing = lines[-1] == ""
+    if trailing:
+        lines = lines[:-1]
+    header = lines[0].split(",")
+    try:
+        ci = header.index(f"{ticker}_Close")
+    except ValueError:
+        return 0
+    vi = header.index(f"{ticker}_Volume") if f"{ticker}_Volume" in header else None
+    ex_ts = pd.Timestamp(ex_date)
+    n = 0
+    for i in range(1, len(lines)):
+        ln = lines[i]
+        if not ln or '"' in ln:
+            if '"' in ln:
+                raise ValueError(f"{os.path.basename(path)}:{i+1} 따옴표 포함 행 — 문자열 수준 조정 불가")
+            continue
+        parts = ln.split(",")
+        try:
+            d = pd.Timestamp(parts[0])
+        except Exception:
+            continue
+        if d >= ex_ts:
+            continue
+        changed = False
+        if ci < len(parts) and parts[ci] not in ("", "nan", "NaN"):
+            parts[ci] = repr(float(parts[ci]) / ratio)
+            changed = True
+        if vi is not None and vi < len(parts) and parts[vi] not in ("", "nan", "NaN"):
+            vv = float(parts[vi]) * ratio
+            parts[vi] = str(int(round(vv))) if "." not in parts[vi] else repr(vv)
+            changed = True
+        if changed:
+            lines[i] = ",".join(parts)
+            n += 1
+    out = nl.join(lines) + (nl if trailing else "")
+    tmp = f"{path}.tmp"
+    with open(tmp, "wb") as f:
+        f.write(out.encode("utf-8"))
+    os.replace(tmp, path)
+    return n
+
+
+def _ca_update_manifests(changed, store_dir, action_id):
+    """짝 매니페스트의 input/output sha 를 새 값으로 바꾸고 조정 전 값을 보존한다."""
+    touched = []
+    for name in sorted(os.listdir(store_dir)):
+        if not name.endswith(".manifest.json"):
+            continue
+        mp = os.path.join(store_dir, name)
+        try:
+            with open(mp, encoding="utf-8") as f:
+                man = json.load(f)
+        except Exception:
+            continue
+        hit = False
+        for role in ("input", "output"):
+            fn = man.get(role)
+            if fn in changed:
+                old, new = man.get(f"{role}_sha12"), changed[fn]["sha12_after"]
+                if old != new:
+                    man.setdefault("corporate_actions_applied", []).append({
+                        "action": action_id, "role": role, "file": fn,
+                        f"{role}_sha12_before": old, f"{role}_sha12_after": new,
+                        "applied_utc": _ca_now(),
+                        "note": "가격 열만 분할 조정 · FRED 재구성 열 무변경 (재생성과 동치)"})
+                    man[f"{role}_sha12"] = new
+                    hit = True
+        if hit:
+            tmp = f"{mp}.tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(man, f, ensure_ascii=False, indent=2)
+                f.write("\n")
+            os.replace(tmp, mp)
+            touched.append(name)
+    return touched
+
+
+def _ca_static_stores(store_dir):
+    return [n for n in sorted(os.listdir(store_dir)) if CORP_STATIC_STORE_PATTERN.match(n)]
+
+
+def _ca_align_static(df, action, store_dir, rec):
+    """정적 저장소 1건 처리. argus_data(이미 조정 반영된 메모리 df) 와의 겹침으로 판정."""
+    tk, ex, ratio = action["ticker"], action["ex_date"], float(action["ratio"])
+    col = f"{tk}_Close"
+    changed = {}
+    # 기준(argus_data) 척도가 확정되지 않았으면 정적 저장소를 판정하지 않는다.
+    #   미확정 기준과 비교하면 '정합' 으로 오판해 검증 sha 를 캐시하고 이후 조정을 건너뛸 수 있다.
+    base_state = action.get("stores", {}).get("argus_data.csv", {}).get("status")
+    if base_state not in ("applied", "aligned"):
+        rec["warnings"].append(f"{tk}@{ex}: argus_data 척도 미확정({base_state}) — 정적 저장소 판정 보류")
+        return changed
+    for name in _ca_static_stores(store_dir):
+        path = os.path.join(store_dir, name)
+        sha_now = _ca_sha12(path)
+        prev = action.setdefault("stores", {}).get(name, {})
+        if prev.get("verified_sha12") and prev["verified_sha12"] == sha_now:
+            continue                      # 같은 내용을 이미 검증함 — 재판독 생략
+        try:
+            hdr = pd.read_csv(path, nrows=0).columns
+            if col not in hdr:
+                action["stores"][name] = {"status": "no_column", "verified_sha12": sha_now}
+                continue
+            b = pd.read_csv(path, usecols=[hdr[0], col], index_col=0, parse_dates=True)[col]
+            b = pd.to_numeric(b, errors="coerce")
+            if (b.index >= pd.Timestamp(ex)).any():
+                # 분할일을 가로지르는 정적 저장소: 경계 판정
+                st = _ca_classify_boundary(_ca_boundary_ratio(b, pd.Timestamp(ex)), ratio)
+                q = None
+            else:
+                ov = b.index.intersection(df.index)
+                ov = ov[ov < pd.Timestamp(ex)]
+                if len(ov) == 0:
+                    action["stores"][name] = {"status": "no_overlap", "verified_sha12": sha_now}
+                    rec["warnings"].append(f"{name}: argus_data 와 겹침 0 — 판정 불가")
+                    continue
+                ad = pd.to_numeric(df.loc[ov, col], errors="coerce")
+                q = float((b.loc[ov] / ad).replace([np.inf, -np.inf], np.nan).dropna().median())
+                tol = np.log(STATIC_ALIGN_TOL)
+                st = ("unadjusted" if abs(np.log(q) - np.log(ratio)) <= tol else
+                      "adjusted" if abs(np.log(q)) <= tol else "ambiguous")
+            if st == "unadjusted":
+                n = _ca_rewrite_static(path, tk, ex, ratio)
+                sha_after = _ca_sha12(path)
+                changed[name] = {"sha12_before": sha_now, "sha12_after": sha_after}
+                action["stores"][name] = {"status": "applied", "rows_adjusted": n,
+                                          "overlap_ratio_before": q, "sha12_before": sha_now,
+                                          "sha12_after": sha_after, "verified_sha12": sha_after,
+                                          "applied_utc": _ca_now()}
+                rec["touched_files"].append(name)
+                print(f"  🧾 v3.9.23 {name}: {tk} {n}행 ÷{ratio:g} (겹침 비율 {q if q is None else round(q, 4)})")
+            elif st == "adjusted":
+                action["stores"][name] = {"status": "aligned", "overlap_ratio": q,
+                                          "verified_sha12": sha_now, "checked_utc": _ca_now()}
+            else:
+                action["stores"][name] = {"status": "ambiguous", "overlap_ratio": q,
+                                          "checked_utc": _ca_now()}
+                rec["warnings"].append(f"{name}: {tk} 판정 모호 (겹침 비율 {q}) — 무변경")
+                print(f"  🔴 v3.9.23 {name}: {tk} 척도 판정 모호 (비율 {q}) — 자동 조정하지 않음")
+        except Exception as exc:
+            action["stores"][name] = {"status": "error", "error": f"{type(exc).__name__}: {exc}"}
+            rec["warnings"].append(f"{name}: {type(exc).__name__}: {exc}")
+            print(f"  ⚠️ v3.9.23 {name} 처리 실패 — {type(exc).__name__}: {exc} (무변경)")
+    if changed:
+        rec["touched_files"].extend(
+            _ca_update_manifests(changed, store_dir, f"{tk}@{ex}x{ratio:g}"))
+    return changed
+
+
+def _ca_scan_breaks(df, led, move):
+    """설명되지 않는 단절 목록. 원장의 분할일과 같은 날의 단절은 '설명됨' 으로 본다."""
+    explained = {(a["ticker"], a["ex_date"]) for a in led.get("actions", [])}
+    out = []
+    thr = np.log(move)
+    for tk in ETF_TICKERS:
+        col = f"{tk}_Close"
+        if col not in df.columns:
+            continue
+        r = _ca_daily_ratios(df[col])
+        for t, v in r[np.abs(np.log(r)) > thr].items():
+            key = (tk, str(t.date()))
+            if key in explained:
+                continue
+            out.append({"ticker": tk, "date": str(t.date()), "ratio": round(float(v), 6)})
+    return out
+
+
+def apply_corporate_actions(df, *, fresh_dates=None, store_dir=None, ledger_path=None,
+                            fetch_fn=None):
+    """기업행위 계층 단일 진입점. df(argus_data) 를 제자리 조정하고 정적 저장소·원장을 맞춘다.
+
+    반환 (df, 실행 기록). 어떤 실패도 저장을 막지 않는다 — 실패는 기록으로 남긴다.
+    """
+    store_dir = store_dir or SCRIPT_DIR
+    fetch_fn = fetch_fn or _ca_fetch_split_events
+    led = _ca_load_ledger(ledger_path)
+    rec = {"run_utc": _ca_now(), "fetcher_ver": FETCHER_VER, "queried": [],
+           "confirmed": [], "unconfirmed": [], "applied": [], "touched_files": [],
+           "warnings": [], "price_breaks": [], "status": "clean"}
+    try:
+        tail_start = df.index[-PRICE_BREAK_CONFIRM_LOOKBACK] if len(df) > PRICE_BREAK_CONFIRM_LOOKBACK else df.index[0]
+        qthr = np.log(PRICE_BREAK_QUERY_MOVE)
+        # ① 감지 — 최근 구간의 큰 일간 변화 (원장에 이미 있는 분할일·확인 이력은 제외)
+        known = {(a["ticker"], a["ex_date"]) for a in led["actions"]}
+        led.setdefault("checked", [])
+        known |= {(c["ticker"], c["date"]) for c in led["checked"] if c.get("result") == "no_split"}
+        cands = {}
+        for tk in ETF_TICKERS:
+            col = f"{tk}_Close"
+            if col not in df.columns:
+                continue
+            r = _ca_daily_ratios(df[col])
+            # 최근 구간은 ±18% 초과, 전 이력은 보고 기준(±60%) 초과 단절을 원천에 조회한다.
+            #   배포가 분할 후 lookback 을 넘겨 늦어져도 전 이력 단절로 다시 잡힌다.
+            _lr = np.abs(np.log(r))
+            r = r[((r.index >= tail_start) & (_lr > qthr)) | (_lr > np.log(PRICE_BREAK_REPORT_MOVE))]
+            for t, v in r.items():
+                if (tk, str(t.date())) not in known:
+                    cands.setdefault(tk, []).append((t.date(), float(v)))
+        # ② 원천 확인
+        for tk, hits in cands.items():
+            start = (pd.Timestamp(min(d for d, _ in hits)) - pd.Timedelta(days=7)).date()
+            end = (pd.Timestamp(max(d for d, _ in hits)) + pd.Timedelta(days=1)).date()
+            events, src, errs = fetch_fn(tk, start, end)
+            rec["queried"].append({"ticker": tk, "source": src, "events": [(str(d), r) for d, r in events],
+                                   "errors": errs})
+            for d, r_day in hits:
+                match = [(ed, er) for ed, er in events if ed == d]
+                ok = None
+                for ed, er in match:
+                    # 조정 전 자료의 그날 비율은 1/분할비 근처 (3:1 → 약 0.333)
+                    if abs(np.log(r_day) + np.log(er)) <= np.log(SPLIT_MATCH_TOL):
+                        ok = (ed, er)
+                        break
+                if ok is None:
+                    split_like = any(abs(abs(np.log(r_day)) - np.log(k)) <= np.log(SPLIT_MATCH_TOL) / 2
+                                     for k in COMMON_SPLIT_RATIOS)
+                    item = {"ticker": tk, "date": str(d), "ratio": round(r_day, 6), "source": src,
+                            "source_events": [(str(x), y) for x, y in events], "errors": errs,
+                            "split_like": bool(split_like)}
+                    if src is not None and not split_like:
+                        # 원천이 응답했고 분할 사건이 없으며 비율도 분할비 꼴이 아니다 → 실제 큰 변화
+                        rec.setdefault("large_moves", []).append(item)
+                        led["checked"].append({"ticker": tk, "date": str(d), "result": "no_split",
+                                               "ratio": round(r_day, 6), "source": src, "checked_utc": _ca_now()})
+                        print(f"  🟡 v3.9.23 {tk} {d} 일간 {(r_day-1)*100:+.1f}% — 원천 분할 없음 · 실제 변동으로 기록")
+                    else:
+                        rec["unconfirmed"].append(item)
+                        print(f"  🔴 v3.9.23 {tk} {d} 일간 비율 {r_day:.4f} — 원천 분할 확인 실패"
+                              f"({src or '원천 불통'}{' · 분할비 꼴' if split_like else ''}) · 자동 조정하지 않음")
+                    continue
+                ed, er = ok
+                if _ca_find(led, tk, ed) is None:
+                    led["actions"].append({
+                        "ticker": tk, "ex_date": str(ed), "ratio": float(er),
+                        "kind": "split" if er > 1 else "reverse_split", "source": src,
+                        "detected_utc": _ca_now(),
+                        "evidence": {"day_ratio_unadjusted": round(r_day, 6),
+                                     "detector": f"|ln r|>ln({PRICE_BREAK_QUERY_MOVE})"},
+                        "stores": {}})
+                rec["confirmed"].append({"ticker": tk, "ex_date": str(ed), "ratio": float(er), "source": src})
+                print(f"  ✅ v3.9.23 {tk} 분할 확인 {ed} 비율 {er:g} ({src})")
+        # ③ 적용 — argus_data 먼저 (정적 저장소 판정의 기준이 되므로)
+        for a in led["actions"]:
+            if a.get("kind") not in ("split", "reverse_split"):
+                continue
+            st, n, b0, b1 = _ca_apply_to_frame(df, a["ticker"], a["ex_date"], float(a["ratio"]),
+                                               fresh_dates=fresh_dates)
+            prev = a.setdefault("stores", {}).get("argus_data.csv", {})
+            if st == "applied":
+                a["stores"]["argus_data.csv"] = {"status": "applied", "rows_adjusted": n,
+                                                 "boundary_ratio_before": b0, "boundary_ratio_after": b1,
+                                                 "applied_utc": _ca_now()}
+                rec["applied"].append(f"argus_data.csv:{a['ticker']}@{a['ex_date']}÷{a['ratio']:g}:{n}행")
+                print(f"  🧾 v3.9.23 argus_data {a['ticker']} 분할일 {a['ex_date']} 이전 {n}행 ÷{a['ratio']:g} "
+                      f"(경계 비율 {b0:.4f} → {b1:.4f})")
+            elif st in ("adjusted", "no_column"):
+                if prev.get("status") != "applied":
+                    a["stores"]["argus_data.csv"] = {"status": "aligned" if st == "adjusted" else st,
+                                                     "boundary_ratio": b0, "checked_utc": _ca_now()}
+            else:
+                a["stores"]["argus_data.csv"] = {"status": "pending" if b0 is None else "ambiguous",
+                                                 "boundary_ratio": b0, "checked_utc": _ca_now()}
+                if b0 is not None:
+                    rec["warnings"].append(f"argus_data.csv: {a['ticker']} 경계 비율 {b0} 판정 모호 — 무변경")
+            # ④ 정적 저장소
+            _ca_align_static(df, a, store_dir, rec)
+        # ⑤ 전 이력 단절 보고 (행동 아님)
+        rec["price_breaks"] = _ca_scan_breaks(df, led, PRICE_BREAK_REPORT_MOVE)
+        if rec["unconfirmed"] or rec["price_breaks"]:
+            rec["status"] = "break_unexplained"
+            for b in rec["price_breaks"][:10]:
+                print(f"  🔴 v3.9.23 설명되지 않는 가격 단절 {b['ticker']} {b['date']} 비율 {b['ratio']}")
+        elif rec["warnings"]:
+            rec["status"] = "warning"
+    except Exception as exc:
+        rec["status"] = "error"
+        rec["warnings"].append(f"계층 실패 {type(exc).__name__}: {exc}")
+        print(f"  ⚠️ v3.9.23 기업행위 계층 실패 — {type(exc).__name__}: {exc} (저장은 진행, 원장에 기록)")
+    rec["touched_files"] = sorted(set(rec["touched_files"]))
+    led["checked"] = led.get("checked", [])[-CA_CHECKED_KEEP:]
+    led["last_run"] = rec
+    try:
+        _ca_save_ledger(led, ledger_path)
+    except Exception as exc:
+        print(f"  ⚠️ v3.9.23 원장 저장 실패 — {type(exc).__name__}: {exc}")
+    try:
+        df["PRICE_INTEGRITY"] = rec["status"]
+    except Exception:
+        pass
+    mark = {"clean": "✅", "warning": "🟠", "break_unexplained": "🔴", "error": "⚠️"}.get(rec["status"], "⚪")
+    print(f"  {mark} v3.9.23 가격 무결성 [{rec['status']}] · 조회 {len(rec['queried'])} · 확인 {len(rec['confirmed'])} "
+          f"· 적용 {len(rec['applied'])} · 정적 변경 {len(rec['touched_files'])} · 미설명 단절 {len(rec['price_breaks'])}")
+    return df, rec
+
+
 def main():
     t0 = time.time()
     print(f"🦅 ARGUS DATA FETCHER {FETCHER_VER} — {datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')}")
@@ -4285,6 +4803,11 @@ def main():
 
         # ffill 보강
         df = apply_ffill_safety(df)
+
+        # 🆕 v3.9.23 (S292): 기업행위 계층 — 분할 확인 시 과거 척도를 원천과 일치시킨다.
+        #   반드시 수집 루프 **뒤**에 둔다: 분할일 첫 행이 이번 실행에서 들어올 수 있기 때문이다.
+        #   이번 실행에서 원천으로부터 받은 분할일 이전 행(이미 조정된 값)은 fresh_dates 로 보호한다.
+        df, _ca_rec = apply_corporate_actions(df, fresh_dates=target_dates)
 
         print(f"  ✅ {len(df)}행")
 
