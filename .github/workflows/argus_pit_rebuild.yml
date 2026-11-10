@@ -1,0 +1,224 @@
+# =====================================================================
+# 🦅 ARGUS — BT 파일 FRED 발표일 정렬 재구성 (ALFRED 정본)
+# VERSION : v1.0.0-PITREBUILD-GHA
+# DATE    : 2026-11-10 (S291 후속, 과최적화 감사 2단계)
+# CHANGE  : 신설. argus_pit_rebuild.py v1.0.1 을 FRED_API_KEY(Secret) 로 실행해
+#           BT_LONG 의 FRED 열을 LIVE 계약(fred_prior_date_v1)과 같은 규칙으로 재구성한다.
+# 배치    : argus-public-data/.github/workflows/argus_pit_rebuild.yml
+#           (같은 저장소 루트에 argus_pit_rebuild.py 와 입력 BT CSV 가 있어야 한다)
+# 설계 원칙
+#   ① 키는 Secret 에만. 로그·산출물·커밋 어디에도 키를 싣지 않는다
+#   ② 수동 실행 전용(workflow_dispatch). 예약 실행 없음 — 역사 재구성은 일일 레인과 분리
+#      (DIR-S290 CALENDAR_MIGRATION_MODE 분리 원칙 정합)
+#   ③ 기본은 커밋하지 않고 아티팩트만 남긴다. Commander 가 매니페스트를 보고 승인한 뒤
+#      commit=true 로 재실행해야 저장소에 게시된다
+#      (S291-7 교훈: 입력 판본을 바꾸는 소비자 변경보다 데이터 게시가 먼저다)
+#   ④ 출력은 작업 폴더 out/ 에 만든다. 저장소 파일을 직접 덮어쓰지 않는다
+#   ⑤ ALFRED 판본 캐시는 실행 간에 공유하지 않는다 — 옛 캐시를 쓰면 이후 판본이 빠진다
+#   ⑥ 실패는 크게: Secret 부재·자체 시험 실패·불변식 위반·행수 불일치는 exit 1
+# =====================================================================
+name: ARGUS PIT Rebuild (ALFRED)
+
+on:
+  workflow_dispatch:
+    inputs:
+      input_csv:
+        description: "입력 BT CSV (저장소 루트 기준)"
+        required: true
+        default: "BT_LONG_v6_FEAT_RF.csv"
+      output_csv:
+        description: "출력 파일명 (저장소 루트에 게시될 이름)"
+        required: true
+        default: "BT_LONG_v6_FEAT_RF_PIT.csv"
+      mode:
+        description: "alfred = 정본(시점+개정) / calendar = 시점만"
+        required: true
+        type: choice
+        options: [alfred, calendar]
+        default: alfred
+      nan_frozen:
+        description: "장기 동결 구간을 NaN 처리 (기본: 표기만)"
+        required: true
+        type: boolean
+        default: false
+      commit:
+        description: "저장소에 게시 (기본 false = 아티팩트만)"
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: argus-pit-rebuild
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      PYTHONUNBUFFERED: "1"
+      IN_CSV: ${{ inputs.input_csv }}
+      OUT_NAME: ${{ inputs.output_csv }}
+      MODE: ${{ inputs.mode }}
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📦 Install dependencies
+        run: python -m pip install --quiet "pandas>=2.2" "numpy>=1.26"
+
+      - name: 🔐 Secret 존재 확인 (값은 출력하지 않음)
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          if [ "$MODE" = "alfred" ] && [ -z "$FRED_API_KEY" ]; then
+            echo "::error::FRED_API_KEY Secret 이 없다 — alfred 방식 실행 불가"
+            exit 1
+          fi
+          echo "Secret 확인 완료 (mode=$MODE)"
+
+      - name: 🧾 입력 확인
+        run: |
+          test -f argus_pit_rebuild.py || { echo "::error::argus_pit_rebuild.py 부재"; exit 1; }
+          test -f "$IN_CSV" || { echo "::error::입력 $IN_CSV 부재"; exit 1; }
+          case "$OUT_NAME" in
+            */*|*..*) echo "::error::출력 이름에 경로 문자 금지: $OUT_NAME"; exit 1;;
+          esac
+          if [ "$OUT_NAME" = "$IN_CSV" ]; then
+            echo "::error::출력 이름이 입력과 같다 — 원본 보존 원칙 위반"; exit 1
+          fi
+          python - <<'PY'
+          import hashlib, os
+          p = os.environ["IN_CSV"]
+          b = open(p, "rb").read()
+          print(f"입력 {p} · {len(b):,} bytes · sha256[:12] {hashlib.sha256(b).hexdigest()[:12]}")
+          PY
+          grep -m1 "^# VERSION" argus_pit_rebuild.py
+
+      - name: 🧪 자체 시험
+        run: python argus_pit_rebuild.py --selftest
+
+      - name: 🛠️ 재구성 실행
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          NAN_FROZEN: ${{ inputs.nan_frozen }}
+        run: |
+          mkdir -p out
+          EXTRA=""
+          if [ "$NAN_FROZEN" = "true" ]; then EXTRA="--nan-frozen"; fi
+          python argus_pit_rebuild.py --input "$IN_CSV" --output "out/$OUT_NAME" \
+            --mode "$MODE" --cache "$RUNNER_TEMP/fred_alfred_cache" $EXTRA
+
+      - name: ✅ 산출 검증 + 요약
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          import pandas as pd
+          inp, name, mode = os.environ["IN_CSV"], os.environ["OUT_NAME"], os.environ["MODE"]
+          stem = os.path.splitext(name)[0]
+          out = f"out/{name}"
+          man = json.load(open(f"out/{stem}.manifest.json", encoding="utf-8"))
+          a = pd.read_csv(inp, usecols=["Date"])
+          b = pd.read_csv(out, usecols=["Date"])
+          fail = []
+          if len(a) != len(b) or not a["Date"].equals(b["Date"]):
+              fail.append(f"행 불일치 {len(a)} vs {len(b)}")
+          log = pd.read_csv(f"out/{stem}.pit_obs.csv", parse_dates=True, index_col=0)
+          for c in log.columns:
+              o = pd.to_datetime(log[c])
+              bad = int((o >= log.index).sum())
+              if bad:
+                  fail.append(f"미래 관측 {c} {bad}건")
+          # 엔진 소비 FRED 계열이 alfred 정본으로 재구성됐는지
+          engine_cols = ["DFII10", "T10YIE", "OAS_HY", "OAS_IG", "USD_CNY", "NFCI", "SAHMCURRENT"]
+          L = ["## 🦅 ARGUS PIT Rebuild", "",
+               f"- 버전 `{man['version']}` · 계약 `{man['contract']}` · 요청 방식 `{mode}`",
+               f"- 입력 `{man['input']}` sha `{man['input_sha12']}` → 출력 `{man['output']}` sha `{man['output_sha12']}`",
+               f"- {man['rows']}행 × {man['cols']}열 · 대상 외 열 검증 {man['untouched_cols_verified']}개", "",
+               "| 열 | 방식 | 변경 셀 | NaN 전→후 | 관측 경과 중앙값(일) | ALFRED 최초 게시 지연 중앙값/p90 | 개정 관측 비율 | 강등 사유 |",
+               "|:--|:--|--:|:--|--:|:--|--:|:--|"]
+          for c, i in man["columns"].items():
+              lag = i.get("alfred_first_release_lag_days") or {}
+              L.append(f"| {c}{' ⭐' if c in engine_cols else ''} | {i['method']} | {i['changed_cells']} | "
+                       f"{i['nan_before']}→{i['nan_after']} | {i.get('median_obs_age_days')} | "
+                       f"{lag.get('median','')}/{lag.get('p90','')} | {i.get('alfred_revised_obs_share','')} | "
+                       f"{i.get('downgrade_reason','')} |")
+              if mode == "alfred" and c in engine_cols and i["method"] != "alfred_prior_date":
+                  print(f"::warning::엔진 소비 계열 {c} 가 calendar 로 강등됨 — {i.get('downgrade_reason')}")
+          L += ["", "⭐ = 엔진 소비 계열", "", "### 🧊 동결 구간", ""]
+          for c, runs in man.get("frozen_runs", {}).items():
+              for r in runs:
+                  L.append(f"- {c}: {r['start']} ~ {r['end']} ({r['days']}일, 값 {r['value']}) → {man['frozen_action']}")
+          if fail:
+              L += ["", "### 🔴 검증 실패", ""] + [f"- {x}" for x in fail]
+          open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8").write("\n".join(L) + "\n")
+          print("\n".join(L))
+          if fail:
+              for x in fail:
+                  print(f"::error::{x}")
+              sys.exit(1)
+          PY
+
+      - name: 💾 아티팩트 보관 (90일)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: argus-pit-rebuild-${{ inputs.mode }}-${{ github.run_id }}
+          path: out/
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: 📤 저장소 게시 (commit=true 일 때만)
+        if: ${{ inputs.commit }}
+        run: |
+          set -e
+          STEM="${OUT_NAME%.*}"
+          cp "out/$OUT_NAME" "out/$STEM.pit_obs.csv" "out/$STEM.manifest.json" .
+          git config user.name  "argus-pit-bot"
+          git config user.email "argus-pit-bot@users.noreply.github.com"
+          git add "$OUT_NAME" "$STEM.pit_obs.csv" "$STEM.manifest.json"
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 생략"; exit 0
+          fi
+          SHA=$(python -c "import json;print(json.load(open('$STEM.manifest.json'))['output_sha12'])")
+          git commit -m "data: PIT 재구성 $OUT_NAME (mode=$MODE, sha $SHA, run ${{ github.run_id }})"
+          for i in 1 2 3; do
+            if git push; then echo "게시 완료"; break; fi
+            echo "push 경합 — 재시도 $i"; sleep $((i*10))
+            git pull --rebase
+            if [ "$i" = "3" ]; then echo "::error::push 3회 실패"; exit 1; fi
+          done
+
+      - name: 🔎 게시 검증 (raw URL 바이트 대조)
+        if: ${{ inputs.commit }}
+        run: |
+          sleep 20
+          python - <<'PY'
+          import hashlib, json, os, time, urllib.request
+          name = os.environ["OUT_NAME"]; stem = os.path.splitext(name)[0]
+          want = json.load(open(f"out/{stem}.manifest.json", encoding="utf-8"))["output_sha12"]
+          url = f"https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/{name}"
+          for i in range(5):
+              try:
+                  b = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 argus-pit-verify"}), timeout=60).read()
+                  got = hashlib.sha256(b).hexdigest()[:12]
+                  print(f"raw {got} vs 빌드 {want}")
+                  if got == want:
+                      print("✅ 게시본 = 빌드본"); raise SystemExit(0)
+              except SystemExit:
+                  raise
+              except Exception as e:
+                  print(f"대기 {i+1}: {type(e).__name__}")
+              time.sleep(30)
+          print("::warning::raw URL 이 아직 빌드본과 다르다 (CDN 지연 가능) — 소비자 전환 전에 재확인 필요")
+          PY
