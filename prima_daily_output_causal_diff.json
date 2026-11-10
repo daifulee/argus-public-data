@@ -1,8 +1,8 @@
 {
   "schema": "causal_target_diff/1.0",
-  "previous_date": "2026-11-05",
+  "previous_date": "2026-11-06",
   "comparable": true,
-  "date": "2026-11-06",
+  "date": "2026-11-09",
   "changed": false,
   "actionable": false,
   "src": "causal_engine_target",
@@ -11,9 +11,9 @@
   },
   "target_cash_weight": 0.0,
   "simulated_positions": {
-    "XLE": 0.9905277678063447
+    "XLE": 0.9905753137547045
   },
-  "simulated_cash_weight": 0.009472232193655323,
+  "simulated_cash_weight": 0.009424686245295475,
   "observations": [],
   "entered": [],
   "exited": [],
@@ -22,5 +22,5 @@
   "simulated_actions": [],
   "change_reason": "목표 변화 없음",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "generated_utc": "2026-11-07T03:14:51.887950+00:00"
+  "generated_utc": "2026-11-10T04:48:46.891659+00:00"
 }
