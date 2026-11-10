@@ -1,10 +1,6 @@
 {
  "series": [
   {
-   "asof": "2011-09-30",
-   "yoy": -0.015234
-  },
-  {
    "asof": "2011-10-31",
    "yoy": -0.015083
   },
@@ -694,34 +690,38 @@
   },
   {
    "asof": "2026-02-28",
-   "yoy": 0.654346
+   "yoy": 0.655154
   },
   {
    "asof": "2026-03-31",
-   "yoy": 0.834841
+   "yoy": 0.836932
   },
   {
    "asof": "2026-04-30",
-   "yoy": 0.982966
+   "yoy": 0.987158
   },
   {
    "asof": "2026-05-31",
-   "yoy": 1.12537
+   "yoy": 1.130467
   },
   {
    "asof": "2026-06-30",
-   "yoy": 1.308208
+   "yoy": 1.314059
   },
   {
    "asof": "2026-07-31",
-   "yoy": 1.368465
+   "yoy": 1.374239
   },
   {
    "asof": "2026-08-31",
-   "yoy": 1.443352
+   "yoy": 1.447237
+  },
+  {
+   "asof": "2026-09-30",
+   "yoy": 1.467876
   }
  ],
- "source_url": "https://www.wsts.org/esraCMS/extension/media/f/WST/7803/WSTS-Historical-Billings-Report-Aug_2026.xlsx",
- "source_sha12": "7d427b3048c1",
- "fetched_utc": "2026-10-09T23:59:40Z"
+ "source_url": "https://www.wsts.org/esraCMS/extension/media/f/WST/7849/WSTS-Historical-Billings-Report-Sep_2026.xlsx",
+ "source_sha12": "369cde4bf7a9",
+ "fetched_utc": "2026-11-10T00:13:04Z"
 }
