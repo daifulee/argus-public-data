@@ -1,0 +1,139 @@
+{
+  "schema": "argus_corporate_actions_v1",
+  "actions": [
+    {
+      "ticker": "ITA",
+      "ex_date": "2026-11-05",
+      "ratio": 3.0,
+      "kind": "split",
+      "source": "yfinance_splits",
+      "detected_utc": "2026-11-10T09:24:44+00:00",
+      "evidence": {
+        "day_ratio_unadjusted": 0.320006,
+        "detector": "|ln r|>ln(1.18)"
+      },
+      "stores": {
+        "argus_data.csv": {
+          "status": "applied",
+          "rows_adjusted": 460,
+          "boundary_ratio_before": 3.1249448602345566,
+          "boundary_ratio_after": 1.0416482867448522,
+          "applied_utc": "2026-11-10T09:24:44+00:00"
+        },
+        "BT_LONG_v5_complete.csv": {
+          "status": "applied",
+          "rows_adjusted": 4843,
+          "overlap_ratio_before": 3.0021059451585743,
+          "sha12_before": "120dff311037",
+          "sha12_after": "cce12633d8ee",
+          "verified_sha12": "cce12633d8ee",
+          "applied_utc": "2026-11-10T09:24:44+00:00"
+        },
+        "BT_LONG_v6_FEAT_RF.csv": {
+          "status": "applied",
+          "rows_adjusted": 4893,
+          "overlap_ratio_before": 3.0021059220528423,
+          "sha12_before": "6922f51841f2",
+          "sha12_after": "8034fefcb944",
+          "verified_sha12": "8034fefcb944",
+          "applied_utc": "2026-11-10T09:24:44+00:00"
+        },
+        "BT_LONG_v6_FEAT_RF_PIT.csv": {
+          "status": "applied",
+          "rows_adjusted": 4893,
+          "overlap_ratio_before": 3.0021059220528423,
+          "sha12_before": "c4a74a66a79d",
+          "sha12_after": "13ba142969d1",
+          "verified_sha12": "13ba142969d1",
+          "applied_utc": "2026-11-10T09:24:44+00:00"
+        },
+        "BT_LONG_v6_PDBCTRUNC.csv": {
+          "status": "applied",
+          "rows_adjusted": 4893,
+          "overlap_ratio_before": 3.0021059220528423,
+          "sha12_before": "2d7b5ddb0987",
+          "sha12_after": "82d387dc3730",
+          "verified_sha12": "82d387dc3730",
+          "applied_utc": "2026-11-10T09:24:44+00:00"
+        },
+        "BT_LONG_v6_PDBCTRUNC_FEAT.csv": {
+          "status": "applied",
+          "rows_adjusted": 4893,
+          "overlap_ratio_before": 3.0021059220528423,
+          "sha12_before": "f311a2905d98",
+          "sha12_after": "d340f81fe962",
+          "verified_sha12": "d340f81fe962",
+          "applied_utc": "2026-11-10T09:24:44+00:00"
+        }
+      }
+    }
+  ],
+  "last_run": {
+    "run_utc": "2026-11-10T09:24:44+00:00",
+    "fetcher_ver": "v3.9.23",
+    "queried": [
+      {
+        "ticker": "EWZ",
+        "source": "yfinance_splits",
+        "events": [],
+        "errors": []
+      },
+      {
+        "ticker": "ITA",
+        "source": "yfinance_splits",
+        "events": [
+          [
+            "2026-11-05",
+            3.0
+          ]
+        ],
+        "errors": []
+      }
+    ],
+    "confirmed": [
+      {
+        "ticker": "ITA",
+        "ex_date": "2026-11-05",
+        "ratio": 3.0,
+        "source": "yfinance_splits"
+      }
+    ],
+    "unconfirmed": [],
+    "applied": [
+      "argus_data.csv:ITA@2026-11-05÷3:460행"
+    ],
+    "touched_files": [
+      "BT_LONG_v5_complete.csv",
+      "BT_LONG_v6_FEAT_RF.csv",
+      "BT_LONG_v6_FEAT_RF_PIT.csv",
+      "BT_LONG_v6_FEAT_RF_PIT.manifest.json",
+      "BT_LONG_v6_PDBCTRUNC.csv",
+      "BT_LONG_v6_PDBCTRUNC_FEAT.csv"
+    ],
+    "warnings": [],
+    "price_breaks": [],
+    "status": "clean",
+    "large_moves": [
+      {
+        "ticker": "EWZ",
+        "date": "2026-10-26",
+        "ratio": 0.801831,
+        "source": "yfinance_splits",
+        "source_events": [],
+        "errors": [],
+        "split_like": false
+      }
+    ]
+  },
+  "checked": [
+    {
+      "ticker": "EWZ",
+      "date": "2026-10-26",
+      "result": "no_split",
+      "ratio": 0.801831,
+      "source": "yfinance_splits",
+      "checked_utc": "2026-11-10T09:24:44+00:00"
+    }
+  ],
+  "updated_utc": "2026-11-10T09:24:44+00:00"
+}

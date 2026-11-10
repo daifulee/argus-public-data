@@ -389,11 +389,31 @@
   "frozen_action": "표기만 (값 유지)",
   "status": "OK",
   "input": "BT_LONG_v6_FEAT_RF.csv",
-  "input_sha12": "6922f51841f2",
+  "input_sha12": "8034fefcb944",
   "output": "BT_LONG_v6_FEAT_RF_PIT.csv",
-  "output_sha12": "c4a74a66a79d",
+  "output_sha12": "13ba142969d1",
   "rows": 4893,
   "cols": 104,
   "untouched_cols_verified": 88,
-  "generated_utc": "2026-11-10T08:46:20.726069+00:00"
+  "generated_utc": "2026-11-10T08:46:20.726069+00:00",
+  "corporate_actions_applied": [
+    {
+      "action": "ITA@2026-11-05x3",
+      "role": "input",
+      "file": "BT_LONG_v6_FEAT_RF.csv",
+      "input_sha12_before": "6922f51841f2",
+      "input_sha12_after": "8034fefcb944",
+      "applied_utc": "2026-11-10T09:24:44+00:00",
+      "note": "가격 열만 분할 조정 · FRED 재구성 열 무변경 (재생성과 동치)"
+    },
+    {
+      "action": "ITA@2026-11-05x3",
+      "role": "output",
+      "file": "BT_LONG_v6_FEAT_RF_PIT.csv",
+      "output_sha12_before": "c4a74a66a79d",
+      "output_sha12_after": "13ba142969d1",
+      "applied_utc": "2026-11-10T09:24:44+00:00",
+      "note": "가격 열만 분할 조정 · FRED 재구성 열 무변경 (재생성과 동치)"
+    }
+  ]
 }
