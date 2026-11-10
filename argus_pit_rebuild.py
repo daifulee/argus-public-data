@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 # =====================================================================
 # ARGUS — BT 파일 FRED 계열 발표일(Point-in-Time) 정렬 재구성기
-# VERSION : v1.1.0-PITREBUILD
+# VERSION : v1.1.1-PITREBUILD
 # DATE    : 2026-11-10 (S291 후속, 과최적화 감사 2단계)
-# CHANGE  : v1.1.0 — GHA 첫 실행(run 42780636492) 실측 결함 3건 처방
+# CHANGE  : v1.1.1 — 진단 지표 결함 처방(run 42782642010 실측). '개정 관측 비율'을 관측별 행 수로
+#           세어, 판본 창이 여러 개인 계열(DFII10·T10YIE 계열·RRPONTSYD)은 같은 관측이 창마다
+#           다시 회수되며 0.74~0.78 로 부풀었다. → 관측별 '서로 다른 값' 개수 > 1 로 센다.
+#           재구성 값·calendar 산출에는 영향 없음(바이트 동일 확인).
+#           v1.1.0 — GHA 첫 실행(run 42780636492) 실측 결함 3건 처방
 #             ① 일간 계열 5종 HTTPError: ALFRED 는 요청 1회당 판본일 2,000개 상한이 있고
 #                클라이언트 쪽 쪽나누기가 없다. → fred/series/vintagedates 로 판본일 목록을 먼저
 #                받고, 판본 1,900개 단위 실시간 창(window)으로 나눠 회수한다. 창 끝은 다음 창
@@ -57,7 +61,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-VERSION = "v1.1.0-PITREBUILD"
+VERSION = "v1.1.1-PITREBUILD"
 CONTRACT = "fred_prior_date_v1"          # LIVE 계약과 같은 규칙임을 표기
 UA = {"User-Agent": "Mozilla/5.0 argus-pit-rebuild"}   # 격언 #107: 명시 UA
 
@@ -358,7 +362,8 @@ def rebuild(df: pd.DataFrame, mode: str, api_key: str, cache_dir: Path,
                         lag = (fr - fr.index).dt.days
                         info["alfred_first_release_lag_days"] = dict(
                             median=float(lag.median()), p90=float(lag.quantile(0.9)), n_obs=int(len(lag)))
-                    info["alfred_revised_obs_share"] = round(float((al_rows.groupby("obs").size() > 1).mean()), 4)
+                    # 창 경계 중복 회수와 개정을 구분: 같은 관측의 '서로 다른 값' 수로 센다
+                    info["alfred_revised_obs_share"] = round(float((al_rows.groupby("obs")["value"].nunique() > 1).mean()), 4)
                 vals_a, used_a = build_pit(al_rows, dec, sp["max_age"])
                 cut = dec - pd.Timedelta(days=1)
                 seg = np.asarray(cut >= pd.Timestamp(meta["first_vintage"]))   # 판본 추적 구간
