@@ -69,61 +69,16 @@
     }
   ],
   "last_run": {
-    "run_utc": "2026-11-10T09:24:44+00:00",
+    "run_utc": "2026-11-11T02:46:28+00:00",
     "fetcher_ver": "v3.9.23",
-    "queried": [
-      {
-        "ticker": "EWZ",
-        "source": "yfinance_splits",
-        "events": [],
-        "errors": []
-      },
-      {
-        "ticker": "ITA",
-        "source": "yfinance_splits",
-        "events": [
-          [
-            "2026-11-05",
-            3.0
-          ]
-        ],
-        "errors": []
-      }
-    ],
-    "confirmed": [
-      {
-        "ticker": "ITA",
-        "ex_date": "2026-11-05",
-        "ratio": 3.0,
-        "source": "yfinance_splits"
-      }
-    ],
+    "queried": [],
+    "confirmed": [],
     "unconfirmed": [],
-    "applied": [
-      "argus_data.csv:ITA@2026-11-05÷3:460행"
-    ],
-    "touched_files": [
-      "BT_LONG_v5_complete.csv",
-      "BT_LONG_v6_FEAT_RF.csv",
-      "BT_LONG_v6_FEAT_RF_PIT.csv",
-      "BT_LONG_v6_FEAT_RF_PIT.manifest.json",
-      "BT_LONG_v6_PDBCTRUNC.csv",
-      "BT_LONG_v6_PDBCTRUNC_FEAT.csv"
-    ],
+    "applied": [],
+    "touched_files": [],
     "warnings": [],
     "price_breaks": [],
-    "status": "clean",
-    "large_moves": [
-      {
-        "ticker": "EWZ",
-        "date": "2026-10-26",
-        "ratio": 0.801831,
-        "source": "yfinance_splits",
-        "source_events": [],
-        "errors": [],
-        "split_like": false
-      }
-    ]
+    "status": "clean"
   },
   "checked": [
     {
@@ -135,5 +90,5 @@
       "checked_utc": "2026-11-10T09:24:44+00:00"
     }
   ],
-  "updated_utc": "2026-11-10T09:24:44+00:00"
+  "updated_utc": "2026-11-11T02:46:28+00:00"
 }
