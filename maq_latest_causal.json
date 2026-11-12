@@ -1,8 +1,8 @@
 {
- "date": "2026-11-10",
- "queue": 2,
- "grade": "2",
- "base_f63": 3.41,
+ "date": "2026-11-11",
+ "queue": 0,
+ "grade": "0",
+ "base_f63": -0.23,
  "base_f63_source": "LEGACY_RESEARCH_NOT_CAUSAL_VALIDATION",
  "schema_version": "maq_causal/1.0",
  "schema": "maq_causal/1.0",
@@ -21,38 +21,30 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-11-10",
-  "engine_date": "2026-11-10",
+  "input_date": "2026-11-11",
+  "engine_date": "2026-11-11",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
  "target_weights": {
-  "XLE": 1.0
+  "XLE": 0.5563406373449407,
+  "PAVE": 0.15680419391143208,
+  "XLU": 0.2601366473532193,
+  "ITA": 0.02671852139040799
  },
  "simulated_held": [
   "XLE"
  ],
- "strong": [
-  {
-   "ticker": "XLU",
-   "score": 2.7,
-   "ratio": 2.7
-  },
-  {
-   "ticker": "PAVE",
-   "score": 9.7,
-   "ratio": 2.42
-  }
- ],
- "super": [
-  "XLU",
-  "PAVE"
- ],
+ "strong": [],
+ "super": [],
  "held": [
-  "XLE"
+  "ITA",
+  "PAVE",
+  "XLE",
+  "XLU"
  ],
  "slots_full": false,
- "eff_slots": 1.0,
+ "eff_slots": 4.0,
  "pos_src": "causal_engine_target",
  "repro_held": [
   "XLE"
@@ -62,5 +54,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-11-11T03:05:10+00:00"
+ "generated_utc": "2026-11-12T04:23:44+00:00"
 }
