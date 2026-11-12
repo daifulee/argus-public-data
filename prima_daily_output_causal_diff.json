@@ -1,26 +1,79 @@
 {
   "schema": "causal_target_diff/1.0",
-  "previous_date": "2026-11-09",
+  "previous_date": "2026-11-10",
   "comparable": true,
-  "date": "2026-11-10",
-  "changed": false,
+  "date": "2026-11-11",
+  "changed": true,
   "actionable": false,
   "src": "causal_engine_target",
   "positions": {
-    "XLE": 1.0
+    "XLE": 0.5563406373449407,
+    "PAVE": 0.15680419391143208,
+    "XLU": 0.2601366473532193,
+    "ITA": 0.02671852139040799
   },
   "target_cash_weight": 0.0,
   "simulated_positions": {
-    "XLE": 0.9904145139759815
+    "XLE": 0.9905892542973824
   },
-  "simulated_cash_weight": 0.009585486024018519,
-  "observations": [],
+  "simulated_cash_weight": 0.009410745702617705,
+  "observations": [
+    {
+      "ticker": "ITA",
+      "previous_target": 0,
+      "target": 0.02671852139040799,
+      "delta": 0.02671852139040799
+    },
+    {
+      "ticker": "PAVE",
+      "previous_target": 0,
+      "target": 0.15680419391143208,
+      "delta": 0.15680419391143208
+    },
+    {
+      "ticker": "XLE",
+      "previous_target": 1.0,
+      "target": 0.5563406373449407,
+      "delta": -0.44365936265505934
+    },
+    {
+      "ticker": "XLU",
+      "previous_target": 0,
+      "target": 0.2601366473532193,
+      "delta": 0.2601366473532193
+    }
+  ],
   "entered": [],
   "exited": [],
   "reweighted": [],
   "actions": "",
-  "simulated_actions": [],
-  "change_reason": "목표 변화 없음",
+  "simulated_actions": [
+    {
+      "date": "2026-11-11 00:00:00",
+      "action": "BUY",
+      "ticker": "PAVE",
+      "reason": "SC7.6|B",
+      "pct": 100,
+      "signals": "m3_crash5"
+    },
+    {
+      "date": "2026-11-11 00:00:00",
+      "action": "BUY",
+      "ticker": "XLU",
+      "reason": "SC2.7|A",
+      "pct": 100,
+      "signals": "tnx4|m1_rise3|tyx471"
+    },
+    {
+      "date": "2026-11-11 00:00:00",
+      "action": "BUY",
+      "ticker": "ITA",
+      "reason": "SC1.7|C",
+      "pct": 100,
+      "signals": "tnx4|wti85|tyx471"
+    }
+  ],
+  "change_reason": "엔진 목표 변경 관측",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "generated_utc": "2026-11-11T03:03:53.094432+00:00"
+  "generated_utc": "2026-11-12T04:20:52.213720+00:00"
 }
