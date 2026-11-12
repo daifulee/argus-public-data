@@ -14,7 +14,7 @@ date,queue,grade,slots_full,strong,super,spy_close,fwd21_pct,fwd63_pct,pos_src,s
 2026-10-08,2,2,False,GLD:4.1|ITA:4.0,ITA|GLD,773.93,-4.99,,causal_engine_target,maq_causal/1.0
 2026-10-09,3,3+,False,GLD:4.1|ITA:4.0|QQQM:3.5,ITA|GLD,778.57,-3.32,,causal_engine_target,maq_causal/1.0
 2026-10-12,2,2,False,GLD:4.1|ITA:4.0,ITA|GLD,778.1,-3.62,,causal_engine_target,maq_causal/1.0
-2026-10-13,2,2,False,GLD:4.1|ITA:4.0,ITA|GLD,778.01,,,causal_engine_target,maq_causal/1.0
+2026-10-13,2,2,False,GLD:4.1|ITA:4.0,ITA|GLD,778.01,-2.34,,causal_engine_target,maq_causal/1.0
 2026-10-14,3,3+,False,GLD:4.1|ITA:4.0|PAVE:6.7,ITA|GLD,769.6,,,causal_engine_target,maq_causal/1.0
 2026-10-15,3,3+,False,GLD:4.1|ITA:4.0|PAVE:6.7,ITA|GLD,771.79,,,causal_engine_target,maq_causal/1.0
 2026-10-22,3,3+,False,PAVE:9.7|ITA:4.0|SLV:5.0,ITA|PAVE,763.96,,,causal_engine_target,maq_causal/1.0
@@ -31,3 +31,4 @@ date,queue,grade,slots_full,strong,super,spy_close,fwd21_pct,fwd63_pct,pos_src,s
 2026-11-06,0,0,False,,,735.29,,,causal_engine_target,maq_causal/1.0
 2026-11-09,3,3+,False,XLU:2.7|PAVE:9.7|ITA:4.0,XLU|ITA|PAVE,752.69,,,causal_engine_target,maq_causal/1.0
 2026-11-10,2,2,False,XLU:2.7|PAVE:9.7,XLU|PAVE,749.92,,,causal_engine_target,maq_causal/1.0
+2026-11-11,0,0,False,,,759.81,,,causal_engine_target,maq_causal/1.0
