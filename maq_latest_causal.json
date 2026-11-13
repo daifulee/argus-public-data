@@ -1,5 +1,5 @@
 {
- "date": "2026-11-11",
+ "date": "2026-11-12",
  "queue": 0,
  "grade": "0",
  "base_f63": -0.23,
@@ -21,19 +21,22 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-11-11",
-  "engine_date": "2026-11-11",
+  "input_date": "2026-11-12",
+  "engine_date": "2026-11-12",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
  "target_weights": {
   "XLE": 0.5563406373449407,
+  "ITA": 0.02671852139040799,
   "PAVE": 0.15680419391143208,
-  "XLU": 0.2601366473532193,
-  "ITA": 0.02671852139040799
+  "XLU": 0.2601366473532193
  },
  "simulated_held": [
-  "XLE"
+  "ITA",
+  "PAVE",
+  "XLE",
+  "XLU"
  ],
  "strong": [],
  "super": [],
@@ -47,12 +50,15 @@
  "eff_slots": 4.0,
  "pos_src": "causal_engine_target",
  "repro_held": [
-  "XLE"
+  "ITA",
+  "PAVE",
+  "XLE",
+  "XLU"
  ],
  "engine": "PRIMA2_v0.5.45-SHORT_HOLD_CAUSAL-CANDIDATE",
  "crown": "#110",
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-11-12T04:23:44+00:00"
+ "generated_utc": "2026-11-13T02:58:43+00:00"
 }
