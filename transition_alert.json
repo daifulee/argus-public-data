@@ -1,34 +1,46 @@
 {
   "schema": "transition_alert/2.0",
-  "date": "2026-11-11 00:00:00",
+  "date": "2026-11-12 00:00:00",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
   "crown": "#110",
   "src": "engine_target_observation",
   "target_src": "causal_engine_target",
-  "ledger_as_of": "2026-11-10",
+  "ledger_as_of": "2026-11-11",
   "prev": {
-    "XLE": 1.0
-  },
-  "target": {
     "XLE": 0.5563406373449407,
     "PAVE": 0.15680419391143208,
     "XLU": 0.2601366473532193,
     "ITA": 0.02671852139040799
+  },
+  "target": {
+    "XLE": 0.5563406373449407,
+    "ITA": 0.02671852139040799,
+    "PAVE": 0.15680419391143208,
+    "XLU": 0.2601366473532193
   },
   "cash": 0.0,
   "position_state": {
     "XLE": {
       "entry_date": "4947",
       "entry_price": 64.42304201171208,
-      "held_days": 49,
+      "held_days": 50,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
       "target_days": 63
     },
+    "ITA": {
+      "entry_date": "4997",
+      "entry_price": 71.7300033569336,
+      "held_days": 0,
+      "weight_factor": 1.0,
+      "level": "C",
+      "score": 1.7000000000000002,
+      "target_days": 42
+    },
     "PAVE": {
-      "entry_date": "2026-11-11 00:00:00",
-      "entry_price": 53.95000076293945,
+      "entry_date": "4997",
+      "entry_price": 53.58000183105469,
       "held_days": 0,
       "weight_factor": 1.0,
       "level": "B",
@@ -36,96 +48,88 @@
       "target_days": 63
     },
     "XLU": {
-      "entry_date": "2026-11-11 00:00:00",
-      "entry_price": 43.81999969482422,
+      "entry_date": "4997",
+      "entry_price": 43.810001373291016,
       "held_days": 0,
       "weight_factor": 1.0,
       "level": "A",
       "score": 2.7,
       "target_days": 21
-    },
-    "ITA": {
-      "entry_date": "2026-11-11 00:00:00",
-      "entry_price": 73.23999786376953,
-      "held_days": 0,
-      "weight_factor": 1.0,
-      "level": "C",
-      "score": 1.7000000000000002,
-      "target_days": 42
     }
   },
   "simulated_weights": {
-    "XLE": 0.9905892542973824
+    "XLE": 0.551334272340596,
+    "ITA": 0.025545199057256992,
+    "PAVE": 0.1520243956711822,
+    "XLU": 0.2538906911486647
   },
   "simulated_positions": {
     "XLE": {
       "entry_date": "2026-09-02",
       "entry_price": 64.42304201171208,
-      "held_days": 49,
-      "strategy_held_days": 49,
-      "actual_held_days": 49,
+      "held_days": 50,
+      "strategy_held_days": 50,
+      "actual_held_days": 50,
       "weight_factor": 1.0,
       "level": "B",
       "score": 3.9,
       "target_days": 63,
-      "quantity": 525419.3165841205,
+      "quantity": 292138.2349260357,
+      "quantity_unit": "adjusted_price_units"
+    },
+    "ITA": {
+      "entry_date": "2026-11-12",
+      "entry_price": 71.7300033569336,
+      "held_days": 0,
+      "strategy_held_days": 0,
+      "actual_held_days": 0,
+      "weight_factor": 1.0,
+      "level": "C",
+      "score": 1.7000000000000002,
+      "target_days": 42,
+      "quantity": 12139.349482677257,
+      "quantity_unit": "adjusted_price_units"
+    },
+    "PAVE": {
+      "entry_date": "2026-11-12",
+      "entry_price": 53.58000183105469,
+      "held_days": 0,
+      "strategy_held_days": 0,
+      "actual_held_days": 0,
+      "weight_factor": 1.0,
+      "level": "B",
+      "score": 7.571,
+      "target_days": 63,
+      "quantity": 96715.82396718851,
+      "quantity_unit": "adjusted_price_units"
+    },
+    "XLU": {
+      "entry_date": "2026-11-12",
+      "entry_price": 43.810001373291016,
+      "held_days": 0,
+      "strategy_held_days": 0,
+      "actual_held_days": 0,
+      "weight_factor": 1.0,
+      "level": "A",
+      "score": 2.7,
+      "target_days": 21,
+      "quantity": 197542.47267765328,
       "quantity_unit": "adjusted_price_units"
     }
   },
-  "pending_orders": {
-    "signal_index": 4996,
-    "due_index": 4997,
-    "signal_date": "2026-11-11",
-    "quantity_deltas": {
-      "ITA": 12139.349482677257,
-      "PAVE": 96715.82396718851,
-      "XLE": -233281.08165808482,
-      "XLU": 197542.47267765328
-    },
-    "unit": "adjusted_price_units",
-    "status": "SIMULATED_PENDING_NOT_SENT"
-  },
-  "observations": [
-    {
-      "ticker": "ITA",
-      "previous_target": 0,
-      "target": 0.02671852139040799,
-      "delta": 0.02671852139040799,
-      "kind": "engine_target_change"
-    },
-    {
-      "ticker": "PAVE",
-      "previous_target": 0,
-      "target": 0.15680419391143208,
-      "delta": 0.15680419391143208,
-      "kind": "engine_target_change"
-    },
-    {
-      "ticker": "XLE",
-      "previous_target": 1.0,
-      "target": 0.5563406373449407,
-      "delta": -0.44365936265505934,
-      "kind": "engine_target_change"
-    },
-    {
-      "ticker": "XLU",
-      "previous_target": 0,
-      "target": 0.2601366473532193,
-      "delta": 0.2601366473532193,
-      "kind": "engine_target_change"
-    }
-  ],
+  "pending_orders": null,
+  "observations": [],
   "comparison_status": {
     "valid": true,
-    "expected": "2026-11-10",
-    "as_of": "2026-11-10",
+    "expected": "2026-11-11",
+    "as_of": "2026-11-11",
     "error": null
   },
   "previous_cash": 0.0,
-  "source_ledger_as_of": "2026-11-10",
+  "source_ledger_as_of": "2026-11-11",
   "ledger_integrity": {
     "source": "historical_engine_target",
-    "as_of": "2026-11-10",
+    "as_of": "2026-11-11",
     "pending_verification": [],
     "dev_open": [],
     "sessions": 1,
@@ -203,8 +207,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-11-11",
-    "engine_date": "2026-11-11",
+    "input_date": "2026-11-12",
+    "engine_date": "2026-11-12",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -212,6 +216,6 @@
   "action_block_reason": [
     "실계좌 또는 데이터 실행 근거 미충족"
   ],
-  "generated_at": "2026-11-12T04:25:11",
+  "generated_at": "2026-11-13T03:00:08",
   "note": "엔진 목표 관측 기록. 실행 가능한 실계좌 주문 계획 없음."
 }
