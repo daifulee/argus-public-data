@@ -1,8 +1,8 @@
 {
  "date": "2026-11-13",
- "queue": 3,
- "grade": "3+",
- "base_f63": 5.94,
+ "queue": 2,
+ "grade": "2",
+ "base_f63": 3.41,
  "base_f63_source": "LEGACY_RESEARCH_NOT_CAUSAL_VALIDATION",
  "schema_version": "maq_causal/1.0",
  "schema": "maq_causal/1.0",
@@ -27,21 +27,18 @@
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
  "target_weights": {
-  "GLD": 0.5641375242146576,
-  "ITA": 0.20914825727057826,
-  "SLV": 0.22671421851476412
+  "GLD": 0.5504018933521639,
+  "SLV": 0.22119417653363077,
+  "ITA": 0.20405591163836428,
+  "XLU": 0.024348018475841008
  },
  "simulated_held": [
   "GLD",
   "ITA",
-  "SLV"
+  "SLV",
+  "XLU"
  ],
  "strong": [
-  {
-   "ticker": "XLU",
-   "score": 2.7,
-   "ratio": 2.7
-  },
   {
    "ticker": "PAVE",
    "score": 9.7,
@@ -54,26 +51,27 @@
   }
  ],
  "super": [
-  "XLU",
   "PAVE"
  ],
  "held": [
   "GLD",
   "ITA",
-  "SLV"
+  "SLV",
+  "XLU"
  ],
  "slots_full": false,
- "eff_slots": 3.0,
+ "eff_slots": 4.0,
  "pos_src": "causal_engine_target",
  "repro_held": [
   "GLD",
   "ITA",
-  "SLV"
+  "SLV",
+  "XLU"
  ],
  "engine": "PRIMA2_v0.5.45-SHORT_HOLD_CAUSAL-CANDIDATE",
  "crown": "#110",
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-11-14T00:26:18+00:00"
+ "generated_utc": "2026-11-14T08:39:15+00:00"
 }
