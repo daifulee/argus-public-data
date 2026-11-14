@@ -13,49 +13,60 @@
     "XLU": 0.2601366473532193
   },
   "target": {
-    "GLD": 0.5641375242146576,
-    "ITA": 0.20914825727057826,
-    "SLV": 0.22671421851476412
+    "GLD": 0.5504018933521639,
+    "SLV": 0.22119417653363077,
+    "ITA": 0.20405591163836428,
+    "XLU": 0.024348018475841008
   },
   "cash": 0.0,
   "position_state": {
     "GLD": {
       "entry_date": "4032",
-      "entry_price": 224.9958921343017,
+      "entry_price": 215.25094567620644,
       "held_days": 84,
       "weight_factor": 1.0,
       "level": "A",
       "score": 5.0,
       "target_days": 63
     },
+    "SLV": {
+      "entry_date": "4536",
+      "entry_price": 46.89074689632597,
+      "held_days": 210,
+      "weight_factor": 1.0,
+      "level": "S",
+      "score": 12.5,
+      "target_days": 189
+    },
     "ITA": {
-      "entry_date": "4284",
-      "entry_price": 75.70841840890111,
+      "entry_date": "4914",
+      "entry_price": 76.90999857584634,
       "held_days": 84,
       "weight_factor": 1.0,
       "level": "A",
       "score": 4.1,
       "target_days": 42
     },
-    "SLV": {
-      "entry_date": "4536",
-      "entry_price": 46.904629685589356,
-      "held_days": 210,
+    "XLU": {
+      "entry_date": "4914",
+      "entry_price": 45.16999816894531,
+      "held_days": 84,
       "weight_factor": 1.0,
-      "level": "S",
-      "score": 12.5,
-      "target_days": 189
+      "level": "A",
+      "score": 2.7,
+      "target_days": 21
     }
   },
   "simulated_weights": {
-    "GLD": 0.5773375869501035,
-    "ITA": 0.20419671073058346,
-    "SLV": 0.20863151493515078
+    "GLD": 0.5621755795487395,
+    "SLV": 0.20315244576469343,
+    "ITA": 0.19883410813998015,
+    "XLU": 0.02473117539397092
   },
   "simulated_positions": {
     "GLD": {
       "entry_date": "2023-01-09",
-      "entry_price": 224.9958921343017,
+      "entry_price": 215.25094567620644,
       "held_days": 84,
       "strategy_held_days": 84,
       "actual_held_days": 966,
@@ -63,25 +74,12 @@
       "level": "A",
       "score": 5.0,
       "target_days": 63,
-      "quantity": 967.6559069043477,
-      "quantity_unit": "adjusted_price_units"
-    },
-    "ITA": {
-      "entry_date": "2024-01-10",
-      "entry_price": 75.70841840890111,
-      "held_days": 84,
-      "strategy_held_days": 84,
-      "actual_held_days": 714,
-      "weight_factor": 1.0,
-      "level": "A",
-      "score": 4.1,
-      "target_days": 42,
-      "quantity": 1701.1852316297518,
+      "quantity": 1224.3195438122268,
       "quantity_unit": "adjusted_price_units"
     },
     "SLV": {
       "entry_date": "2025-01-13",
-      "entry_price": 46.904629685589356,
+      "entry_price": 46.89074689632597,
       "held_days": 210,
       "strategy_held_days": 210,
       "actual_held_days": 462,
@@ -89,7 +87,33 @@
       "level": "S",
       "score": 12.5,
       "target_days": 189,
-      "quantity": 2816.5380744002396,
+      "quantity": 3563.6041549223305,
+      "quantity_unit": "adjusted_price_units"
+    },
+    "ITA": {
+      "entry_date": "2026-07-17",
+      "entry_price": 76.90999857584634,
+      "held_days": 84,
+      "strategy_held_days": 84,
+      "actual_held_days": 84,
+      "weight_factor": 1.0,
+      "level": "A",
+      "score": 4.1,
+      "target_days": 42,
+      "quantity": 2152.4121455447475,
+      "quantity_unit": "adjusted_price_units"
+    },
+    "XLU": {
+      "entry_date": "2026-07-17",
+      "entry_price": 45.16999816894531,
+      "held_days": 84,
+      "strategy_held_days": 84,
+      "actual_held_days": 84,
+      "weight_factor": 1.0,
+      "level": "A",
+      "score": 2.7,
+      "target_days": 21,
+      "quantity": 434.7091459828395,
       "quantity_unit": "adjusted_price_units"
     }
   },
@@ -98,15 +122,15 @@
     {
       "ticker": "GLD",
       "previous_target": 0,
-      "target": 0.5641375242146576,
-      "delta": 0.5641375242146576,
+      "target": 0.5504018933521639,
+      "delta": 0.5504018933521639,
       "kind": "engine_target_change"
     },
     {
       "ticker": "ITA",
       "previous_target": 0.02671852139040799,
-      "target": 0.20914825727057826,
-      "delta": 0.18242973588017028,
+      "target": 0.20405591163836428,
+      "delta": 0.1773373902479563,
       "kind": "engine_target_change"
     },
     {
@@ -119,8 +143,8 @@
     {
       "ticker": "SLV",
       "previous_target": 0,
-      "target": 0.22671421851476412,
-      "delta": 0.22671421851476412,
+      "target": 0.22119417653363077,
+      "delta": 0.22119417653363077,
       "kind": "engine_target_change"
     },
     {
@@ -133,8 +157,8 @@
     {
       "ticker": "XLU",
       "previous_target": 0.2601366473532193,
-      "target": 0,
-      "delta": -0.2601366473532193,
+      "target": 0.024348018475841008,
+      "delta": -0.23578862887737828,
       "kind": "engine_target_change"
     }
   ],
@@ -145,13 +169,13 @@
     "error": null
   },
   "previous_cash": 0.0,
-  "source_ledger_as_of": "2026-11-12",
+  "source_ledger_as_of": "2026-11-13",
   "ledger_integrity": {
     "source": "historical_engine_target",
-    "as_of": "2026-11-12",
+    "as_of": "2026-11-13",
     "pending_verification": [],
     "dev_open": [],
-    "sessions": 1,
+    "sessions": 0,
     "stale": false,
     "weights_valid": true
   },
@@ -209,9 +233,75 @@
   ],
   "reweights": [],
   "orders": [],
-  "current": {},
-  "real_positions": {},
-  "real_as_of": null,
+  "current": {
+    "SMH": 0.15079173240250518,
+    "QQQM": 0.14700464514655773,
+    "PAVE": 0.09094461391541,
+    "ITA": 0.08391969125006539,
+    "SPY": 0.07129785595749816,
+    "GLD": 0.21836546465795142
+  },
+  "real_positions": {
+    "SMH": {
+      "shares": 236,
+      "close": 486.75,
+      "value": 114873.0,
+      "entry_date": null,
+      "entry_price": null,
+      "note": "체결 정보 미제공 — SL·TARGET 청산 판정 불가"
+    },
+    "QQQM": {
+      "shares": 400,
+      "close": 279.9700012207031,
+      "value": 111988.0,
+      "entry_date": null,
+      "entry_price": null,
+      "note": "체결 정보 미제공 — SL·TARGET 청산 판정 불가"
+    },
+    "PAVE": {
+      "shares": 1304,
+      "close": 53.130001068115234,
+      "value": 69281.52,
+      "entry_date": null,
+      "entry_price": null,
+      "note": "체결 정보 미제공 — SL·TARGET 청산 판정 불가"
+    },
+    "ITA": {
+      "shares": 894,
+      "close": 71.51000213623047,
+      "value": 63929.94,
+      "entry_date": null,
+      "entry_price": null,
+      "note": "3:1 액면분할(2026-11-05) 이후 주수. 09-09 진술 298주 × 3 = 894주와 일치. 체결 정보 미제공"
+    },
+    "SPY": {
+      "shares": 72,
+      "close": 754.3699951171875,
+      "value": 54314.64,
+      "entry_date": null,
+      "entry_price": null,
+      "note": "체결 정보 미제공 — SL·TARGET 청산 판정 불가"
+    },
+    "GLD": {
+      "shares": 468,
+      "close": 355.45001220703125,
+      "value": 166350.61,
+      "entry_date": null,
+      "entry_price": null,
+      "note": "주수는 산출값 — shares_provenance 참조",
+      "shares_provenance": {
+        "method": "Commander 지시로 Claude 산출 — 평가액 ÷ (정본 종가 × 계좌 암시 환율)",
+        "commander_value_krw": 220000000,
+        "gld_close_usd": 355.45001220703125,
+        "fx_krw_per_usd": 1323.25,
+        "fx_source": "같은 계좌 화면 미국 ETF 5종 원화 현재가 ÷ 정본 종가, 평가액 가중 평균",
+        "raw": 467.74,
+        "rounded": 468,
+        "uncertainty": "평가액이 2억2천만 원 어림값이라 약 ±3주 오차 가능 (추정). 실제 주수 확인 시 새 진술로 교체"
+      }
+    }
+  },
+  "real_as_of": "2026-11-13",
   "orders_computable": false,
   "turnover": 0.0,
   "actionable": false,
@@ -219,22 +309,21 @@
     "data_fresh": true,
     "engine_valid": true,
     "inputs_complete": true,
-    "holdings_grounded": false,
+    "holdings_grounded": true,
     "signal_ready": true,
-    "action_ready": false,
-    "reasons": [
-      "BROKER_HOLDINGS_NOT_VERIFIED"
-    ],
+    "action_ready": true,
+    "reasons": [],
     "missing_inputs": [],
     "input_date": "2026-11-13",
     "engine_date": "2026-11-13",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
-  "holdings_grounded": false,
+  "holdings_grounded": true,
   "action_block_reason": [
-    "실계좌 또는 데이터 실행 근거 미충족"
+    "GLD 매수 자격 미달 또는 판정 결손",
+    "SLV 매수 자격 미달 또는 판정 결손"
   ],
-  "generated_at": "2026-11-14T00:27:31",
+  "generated_at": "2026-11-14T08:40:19",
   "note": "엔진 목표 관측 기록. 실행 가능한 실계좌 주문 계획 없음."
 }
