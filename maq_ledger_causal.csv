@@ -33,4 +33,4 @@ date,queue,grade,slots_full,strong,super,spy_close,fwd21_pct,fwd63_pct,pos_src,s
 2026-11-10,2,2,False,XLU:2.7|PAVE:9.7,XLU|PAVE,749.92,,,causal_engine_target,maq_causal/1.0
 2026-11-11,0,0,False,,,759.81,,,causal_engine_target,maq_causal/1.0
 2026-11-12,0,0,False,,,757.12,,,causal_engine_target,maq_causal/1.0
-2026-11-13,3,3+,False,XLU:2.7|PAVE:9.7|XLE:3.9,XLU|PAVE,754.37,,,causal_engine_target,maq_causal/1.0
+2026-11-13,2,2,False,PAVE:9.7|XLE:3.9,PAVE,754.37,,,causal_engine_target,maq_causal/1.0
