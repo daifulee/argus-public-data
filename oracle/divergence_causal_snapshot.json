@@ -1,36 +1,35 @@
 {
   "schema_version": "causal_divergence/1.0",
-  "as_of": "2026-11-12",
+  "as_of": "2026-11-13",
   "current": {
-    "prima": "XLE+XLU+PAVE+ITA",
+    "prima": "GLD+SLV+ITA",
     "oracle": "NLR+GLD+COPX+XLU+PAVE+SGOV+ITA+CIBR",
-    "common": "ITA+PAVE+XLU",
-    "prima_only": "XLE",
-    "oracle_only": "CIBR+COPX+GLD+NLR+SGOV",
-    "jaccard": 0.333,
+    "common": "GLD+ITA",
+    "prima_only": "SLV",
+    "oracle_only": "CIBR+COPX+NLR+PAVE+SGOV+XLU",
+    "jaccard": 0.222,
     "material": true
   },
   "prima_target_weights": {
-    "XLE": 0.5563406373449407,
-    "ITA": 0.02671852139040799,
-    "PAVE": 0.15680419391143208,
-    "XLU": 0.2601366473532193
+    "GLD": 0.5641375242146576,
+    "ITA": 0.20914825727057826,
+    "SLV": 0.22671421851476412
   },
   "prima_cash_weight": 0.0,
   "oracle_weights": {
-    "NLR": 0.2171782821717828,
-    "GLD": 0.1999800019998,
-    "COPX": 0.1795820417958204,
-    "XLU": 0.1442855714428557,
-    "PAVE": 0.12888711128887112,
-    "SGOV": 0.0999900009999,
-    "ITA": 0.0160983901609839,
-    "CIBR": 0.013998600139986
+    "NLR": 0.2138,
+    "GLD": 0.2,
+    "COPX": 0.1795,
+    "XLU": 0.1414,
+    "PAVE": 0.1291,
+    "SGOV": 0.1,
+    "ITA": 0.0182,
+    "CIBR": 0.018000000000000002
   },
   "oracle_cash_weight": 0.0,
   "prima_src": "causal_engine_target",
   "prima_engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "oracle_date": "2026-11-12",
+  "oracle_date": "2026-11-13",
   "oracle_src": "shadow_json",
   "readiness": {
     "data_fresh": true,
@@ -43,8 +42,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-11-12",
-    "engine_date": "2026-11-12",
+    "input_date": "2026-11-13",
+    "engine_date": "2026-11-13",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -55,5 +54,5 @@
     "count": 0,
     "policy": "read_only"
   },
-  "logged_utc": "2026-11-13T03:41:05.273968+00:00"
+  "logged_utc": "2026-11-14T00:25:05.854769+00:00"
 }
