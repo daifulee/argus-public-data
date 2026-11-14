@@ -2,18 +2,19 @@
   "schema_version": "causal_divergence/1.0",
   "as_of": "2026-11-13",
   "current": {
-    "prima": "GLD+SLV+ITA",
+    "prima": "GLD+SLV+ITA+XLU",
     "oracle": "NLR+GLD+COPX+XLU+PAVE+SGOV+ITA+CIBR",
-    "common": "GLD+ITA",
+    "common": "GLD+ITA+XLU",
     "prima_only": "SLV",
-    "oracle_only": "CIBR+COPX+NLR+PAVE+SGOV+XLU",
-    "jaccard": 0.222,
+    "oracle_only": "CIBR+COPX+NLR+PAVE+SGOV",
+    "jaccard": 0.333,
     "material": true
   },
   "prima_target_weights": {
-    "GLD": 0.5641375242146576,
-    "ITA": 0.20914825727057826,
-    "SLV": 0.22671421851476412
+    "GLD": 0.5504018933521639,
+    "SLV": 0.22119417653363077,
+    "ITA": 0.20405591163836428,
+    "XLU": 0.024348018475841008
   },
   "prima_cash_weight": 0.0,
   "oracle_weights": {
@@ -54,5 +55,5 @@
     "count": 0,
     "policy": "read_only"
   },
-  "logged_utc": "2026-11-14T00:25:05.854769+00:00"
+  "logged_utc": "2026-11-14T08:38:12.279242+00:00"
 }
