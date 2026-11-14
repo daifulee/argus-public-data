@@ -1,67 +1,33 @@
 {
   "schema": "causal_target_diff/1.0",
-  "previous_date": "2026-11-12",
-  "comparable": true,
+  "previous_date": null,
+  "comparable": false,
   "date": "2026-11-13",
-  "changed": true,
+  "changed": false,
   "actionable": false,
   "src": "causal_engine_target",
   "positions": {
-    "GLD": 0.5641375242146576,
-    "ITA": 0.20914825727057826,
-    "SLV": 0.22671421851476412
+    "GLD": 0.5504018933521639,
+    "SLV": 0.22119417653363077,
+    "ITA": 0.20405591163836428,
+    "XLU": 0.024348018475841008
   },
-  "target_cash_weight": 0.0,
   "simulated_positions": {
-    "GLD": 0.5773375869501035,
-    "ITA": 0.20419671073058346,
-    "SLV": 0.20863151493515078
+    "GLD": 0.5621755795487395,
+    "SLV": 0.20315244576469343,
+    "ITA": 0.19883410813998015,
+    "XLU": 0.02473117539397092
   },
-  "simulated_cash_weight": 0.009834187384162224,
-  "observations": [
-    {
-      "ticker": "GLD",
-      "previous_target": 0,
-      "target": 0.5641375242146576,
-      "delta": 0.5641375242146576
-    },
-    {
-      "ticker": "ITA",
-      "previous_target": 0.0267,
-      "target": 0.20914825727057826,
-      "delta": 0.18244825727057826
-    },
-    {
-      "ticker": "PAVE",
-      "previous_target": 0.1568,
-      "target": 0,
-      "delta": -0.1568
-    },
-    {
-      "ticker": "SLV",
-      "previous_target": 0,
-      "target": 0.22671421851476412,
-      "delta": 0.22671421851476412
-    },
-    {
-      "ticker": "XLE",
-      "previous_target": 0.5563,
-      "target": 0,
-      "delta": -0.5563
-    },
-    {
-      "ticker": "XLU",
-      "previous_target": 0.2601,
-      "target": 0,
-      "delta": -0.2601
-    }
-  ],
+  "simulated_cash_weight": 0.011106691152616081,
+  "target_cash_weight": 0.0,
+  "observations": [],
   "entered": [],
   "exited": [],
   "reweighted": [],
   "actions": "",
   "simulated_actions": [],
-  "change_reason": "엔진 목표 변경 관측",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "generated_utc": "2026-11-14T00:23:51.441972+00:00"
+  "change_reason": "엔진 전환일 — 기존 행 보존, 새 엔진 값은 다음 세션부터 기록",
+  "engine_transition_day": true,
+  "generated_utc": "2026-11-14T08:37:09.047591+00:00"
 }
