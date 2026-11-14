@@ -1,8 +1,8 @@
 {
- "date": "2026-11-12",
- "queue": 0,
- "grade": "0",
- "base_f63": -0.23,
+ "date": "2026-11-13",
+ "queue": 3,
+ "grade": "3+",
+ "base_f63": 5.94,
  "base_f63_source": "LEGACY_RESEARCH_NOT_CAUSAL_VALIDATION",
  "schema_version": "maq_causal/1.0",
  "schema": "maq_causal/1.0",
@@ -21,44 +21,59 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-11-12",
-  "engine_date": "2026-11-12",
+  "input_date": "2026-11-13",
+  "engine_date": "2026-11-13",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
  "target_weights": {
-  "XLE": 0.5563406373449407,
-  "ITA": 0.02671852139040799,
-  "PAVE": 0.15680419391143208,
-  "XLU": 0.2601366473532193
+  "GLD": 0.5641375242146576,
+  "ITA": 0.20914825727057826,
+  "SLV": 0.22671421851476412
  },
  "simulated_held": [
+  "GLD",
   "ITA",
-  "PAVE",
-  "XLE",
-  "XLU"
+  "SLV"
  ],
- "strong": [],
- "super": [],
+ "strong": [
+  {
+   "ticker": "XLU",
+   "score": 2.7,
+   "ratio": 2.7
+  },
+  {
+   "ticker": "PAVE",
+   "score": 9.7,
+   "ratio": 2.42
+  },
+  {
+   "ticker": "XLE",
+   "score": 3.9,
+   "ratio": 1.56
+  }
+ ],
+ "super": [
+  "XLU",
+  "PAVE"
+ ],
  "held": [
+  "GLD",
   "ITA",
-  "PAVE",
-  "XLE",
-  "XLU"
+  "SLV"
  ],
  "slots_full": false,
- "eff_slots": 4.0,
+ "eff_slots": 3.0,
  "pos_src": "causal_engine_target",
  "repro_held": [
+  "GLD",
   "ITA",
-  "PAVE",
-  "XLE",
-  "XLU"
+  "SLV"
  ],
  "engine": "PRIMA2_v0.5.45-SHORT_HOLD_CAUSAL-CANDIDATE",
  "crown": "#110",
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-11-13T03:42:30+00:00"
+ "generated_utc": "2026-11-14T00:26:18+00:00"
 }
