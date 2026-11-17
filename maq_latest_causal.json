@@ -1,5 +1,5 @@
 {
- "date": "2026-11-13",
+ "date": "2026-11-16",
  "queue": 2,
  "grade": "2",
  "base_f63": 3.41,
@@ -21,8 +21,8 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-11-13",
-  "engine_date": "2026-11-13",
+  "input_date": "2026-11-16",
+  "engine_date": "2026-11-16",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
@@ -40,18 +40,19 @@
  ],
  "strong": [
   {
-   "ticker": "PAVE",
-   "score": 9.7,
-   "ratio": 2.42
+   "ticker": "XLE",
+   "score": 10.3,
+   "ratio": 4.12
   },
   {
-   "ticker": "XLE",
-   "score": 3.9,
-   "ratio": 1.56
+   "ticker": "PAVE",
+   "score": 13.6,
+   "ratio": 3.4
   }
  ],
  "super": [
-  "PAVE"
+  "PAVE",
+  "XLE"
  ],
  "held": [
   "GLD",
@@ -73,5 +74,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-11-14T08:39:15+00:00"
+ "generated_utc": "2026-11-17T05:18:20+00:00"
 }
