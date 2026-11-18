@@ -1,8 +1,8 @@
 {
- "date": "2026-11-16",
- "queue": 2,
- "grade": "2",
- "base_f63": 3.41,
+ "date": "2026-11-17",
+ "queue": 7,
+ "grade": "3+",
+ "base_f63": 5.94,
  "base_f63_source": "LEGACY_RESEARCH_NOT_CAUSAL_VALIDATION",
  "schema_version": "maq_causal/1.0",
  "schema": "maq_causal/1.0",
@@ -21,16 +21,16 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-11-16",
-  "engine_date": "2026-11-16",
+  "input_date": "2026-11-17",
+  "engine_date": "2026-11-17",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
  "target_weights": {
-  "GLD": 0.5504018933521639,
-  "SLV": 0.22119417653363077,
-  "ITA": 0.20405591163836428,
-  "XLU": 0.024348018475841008
+  "GLD": 0.49536170401694757,
+  "SLV": 0.1990747588802677,
+  "ITA": 0.18365032047452787,
+  "XLU": 0.021913216628256908
  },
  "simulated_held": [
   "GLD",
@@ -40,18 +40,46 @@
  ],
  "strong": [
   {
-   "ticker": "XLE",
-   "score": 10.3,
-   "ratio": 4.12
-  },
-  {
    "ticker": "PAVE",
    "score": 13.6,
    "ratio": 3.4
+  },
+  {
+   "ticker": "XLE",
+   "score": 7.9,
+   "ratio": 3.16
+  },
+  {
+   "ticker": "SMH",
+   "score": 7.9,
+   "ratio": 2.63
+  },
+  {
+   "ticker": "COPX",
+   "score": 12.7,
+   "ratio": 2.54
+  },
+  {
+   "ticker": "CIBR",
+   "score": 7.4,
+   "ratio": 2.47
+  },
+  {
+   "ticker": "VEA",
+   "score": 4.0,
+   "ratio": 1.6
+  },
+  {
+   "ticker": "IWM",
+   "score": 6.9,
+   "ratio": 1.53
   }
  ],
  "super": [
+  "COPX",
+  "SMH",
   "PAVE",
+  "CIBR",
   "XLE"
  ],
  "held": [
@@ -74,5 +102,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-11-17T05:18:20+00:00"
+ "generated_utc": "2026-11-18T04:48:16+00:00"
 }
