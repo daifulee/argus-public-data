@@ -3,9 +3,9 @@
   "invariant": "1 row = 1 completed US equity regular session",
   "pre_repair": {
     "stage": "loaded_before_fetch",
-    "rows": 468,
+    "rows": 469,
     "start": "2025-01-06",
-    "end": "2026-11-16",
+    "end": "2026-11-17",
     "calendar_source": "exchange_calendars:XNYS",
     "nat_dates": 0,
     "ghost_n": 0,
@@ -42,5 +42,5 @@
     "carry_tickers": [],
     "tickers": 27
   },
-  "generated_utc": "2026-11-18T02:51:14Z"
+  "generated_utc": "2026-11-18T03:43:48Z"
 }
