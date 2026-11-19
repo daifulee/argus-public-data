@@ -1,9 +1,9 @@
 {
   "schema_version": "causal_divergence/1.0",
-  "as_of": "2026-11-17",
+  "as_of": "2026-11-18",
   "current": {
     "prima": "GLD+SLV+ITA+XLU",
-    "oracle": "NLR+GLD+COPX+XLU+PAVE+SGOV+CIBR+ITA",
+    "oracle": "SGOV+GLD+NLR+COPX+XLU+PAVE+CIBR+ITA",
     "common": "GLD+ITA+XLU",
     "prima_only": "SLV",
     "oracle_only": "CIBR+COPX+NLR+PAVE+SGOV",
@@ -11,26 +11,26 @@
     "material": true
   },
   "prima_target_weights": {
-    "GLD": 0.49536170401694757,
-    "SLV": 0.1990747588802677,
-    "ITA": 0.18365032047452787,
-    "XLU": 0.021913216628256908
+    "GLD": 0.5504018933521639,
+    "SLV": 0.22119417653363077,
+    "ITA": 0.20405591163836428,
+    "XLU": 0.024348018475841008
   },
-  "prima_cash_weight": 0.09999999999999998,
+  "prima_cash_weight": 0.0,
   "oracle_weights": {
-    "NLR": 0.21657834216578345,
-    "GLD": 0.1999800019998,
-    "COPX": 0.17988201179882013,
-    "XLU": 0.1402859714028597,
-    "PAVE": 0.1276872312768723,
-    "SGOV": 0.0999900009999,
-    "CIBR": 0.017798220177982202,
-    "ITA": 0.017798220177982202
+    "SGOV": 0.4,
+    "GLD": 0.3,
+    "NLR": 0.092,
+    "COPX": 0.0775,
+    "XLU": 0.0613,
+    "PAVE": 0.056100000000000004,
+    "CIBR": 0.0077,
+    "ITA": 0.0054
   },
   "oracle_cash_weight": 0.0,
   "prima_src": "causal_engine_target",
   "prima_engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "oracle_date": "2026-11-17",
+  "oracle_date": "2026-11-18",
   "oracle_src": "shadow_json",
   "readiness": {
     "data_fresh": true,
@@ -43,8 +43,8 @@
       "BROKER_HOLDINGS_NOT_VERIFIED"
     ],
     "missing_inputs": [],
-    "input_date": "2026-11-17",
-    "engine_date": "2026-11-17",
+    "input_date": "2026-11-18",
+    "engine_date": "2026-11-18",
     "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
     "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
   },
@@ -55,5 +55,5 @@
     "count": 0,
     "policy": "read_only"
   },
-  "logged_utc": "2026-11-18T04:47:02.342557+00:00"
+  "logged_utc": "2026-11-19T04:34:01.217413+00:00"
 }
