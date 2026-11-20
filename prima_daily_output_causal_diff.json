@@ -1,9 +1,9 @@
 {
   "schema": "causal_target_diff/1.0",
-  "previous_date": "2026-11-17",
+  "previous_date": "2026-11-18",
   "comparable": true,
-  "date": "2026-11-18",
-  "changed": true,
+  "date": "2026-11-19",
+  "changed": false,
   "actionable": false,
   "src": "causal_engine_target",
   "positions": {
@@ -14,38 +14,19 @@
   },
   "target_cash_weight": 0.0,
   "simulated_positions": {
-    "GLD": 0.5647589140538627,
-    "SLV": 0.19609019991968293,
-    "ITA": 0.20192697205875043,
-    "XLU": 0.025595224583522414
+    "GLD": 0.5654608437114801,
+    "SLV": 0.19464926281224926,
+    "ITA": 0.20227371773364175,
+    "XLU": 0.025763085254467483
   },
-  "simulated_cash_weight": 0.011628689384181469,
-  "observations": [
-    {
-      "ticker": "GLD",
-      "previous_target": 0.4954,
-      "target": 0.5504018933521639,
-      "delta": 0.05500189335216393
-    },
-    {
-      "ticker": "ITA",
-      "previous_target": 0.1837,
-      "target": 0.20405591163836428,
-      "delta": 0.020355911638364282
-    },
-    {
-      "ticker": "SLV",
-      "previous_target": 0.1991,
-      "target": 0.22119417653363077,
-      "delta": 0.02209417653363077
-    }
-  ],
+  "simulated_cash_weight": 0.011853090488161359,
+  "observations": [],
   "entered": [],
   "exited": [],
   "reweighted": [],
   "actions": "",
   "simulated_actions": [],
-  "change_reason": "엔진 목표 변경 관측",
+  "change_reason": "목표 변화 없음",
   "engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
-  "generated_utc": "2026-11-19T04:33:11.380937+00:00"
+  "generated_utc": "2026-11-20T04:21:18.607627+00:00"
 }
