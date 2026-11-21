@@ -1,5 +1,5 @@
 {
- "date": "2026-11-19",
+ "date": "2026-11-20",
  "queue": 7,
  "grade": "3+",
  "base_f63": 5.94,
@@ -21,16 +21,16 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-11-19",
-  "engine_date": "2026-11-19",
+  "input_date": "2026-11-20",
+  "engine_date": "2026-11-20",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
  "target_weights": {
-  "GLD": 0.5504018933521639,
-  "SLV": 0.22119417653363077,
-  "ITA": 0.20405591163836428,
-  "XLU": 0.024348018475841008
+  "GLD": 0.49536170401694757,
+  "SLV": 0.1990747588802677,
+  "ITA": 0.18365032047452787,
+  "XLU": 0.021913216628256908
  },
  "simulated_held": [
   "GLD",
@@ -45,14 +45,14 @@
    "ratio": 3.4
   },
   {
+   "ticker": "COPX",
+   "score": 16.7,
+   "ratio": 3.34
+  },
+  {
    "ticker": "XLE",
    "score": 7.9,
    "ratio": 3.16
-  },
-  {
-   "ticker": "COPX",
-   "score": 14.2,
-   "ratio": 2.84
   },
   {
    "ticker": "SMH",
@@ -102,5 +102,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-11-20T04:22:57+00:00"
+ "generated_utc": "2026-11-21T04:17:48+00:00"
 }
