@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-19",
-  "run_at": "2026-11-21T02:54:35.849535",
+  "date": "2026-11-20",
+  "run_at": "2026-11-22T01:45:18.604237",
   "version": "1.0.6",
   "regime": {
     "regime": "SLOWDOWN",
@@ -21,50 +21,51 @@
     },
     "confidence": "MEDIUM",
     "trigger_fired": [
-      "🌊TIDE=SLOWDOWN + 🔥INFERNO=STABLE"
+      "🌊TIDE=SLOWDOWN + 🔥INFERNO=STABLE",
+      "레짐 그래디언트 58 ≥ 50 (강화 경고)"
     ],
-    "gradient_adj_note": "프리셋 기준 (SGOV 40%)",
+    "gradient_adj_note": "SGOV 50%. 공격군 20%. RECESSION 전환 임박.",
     "allocation_final": {
       "SGOV": 40,
       "GLD": 30,
       "attack_core": 30
     },
-    "briefing_line": "🔴 침체 경계 (SLOWDOWN) | 달러RP 40% · GLD 30% · 공격 30% | 그래디언트 45/100\n  발동 근거: 🌊TIDE=SLOWDOWN + 🔥INFERNO=STABLE\n  그래디언트 조정: 프리셋 기준 (SGOV 40%)"
+    "briefing_line": "🔴 침체 경계 (SLOWDOWN) | 달러RP 40% · GLD 30% · 공격 30% | 그래디언트 58/100\n  발동 근거: 🌊TIDE=SLOWDOWN + 🔥INFERNO=STABLE / 레짐 그래디언트 58 ≥ 50 (강화 경고)\n  그래디언트 조정: SGOV 50%. 공격군 20%. RECESSION 전환 임박."
   },
-  "gradient": 44.9,
-  "conviction": 41.0,
+  "gradient": 57.8,
+  "conviction": 47.0,
   "integrity": "26/26",
   "smoke": false,
   "allocation": {
     "SGOV": 40.0,
-    "GLD": 30.0,
-    "NLR": 9.23,
-    "COPX": 7.75,
-    "XLU": 6.15,
-    "PAVE": 5.61,
-    "CIBR": 0.74,
-    "ITA": 0.52
+    "GLD": 29.99999999999999,
+    "NLR": 9.649999999999997,
+    "XLU": 7.399999999999999,
+    "COPX": 6.149999999999999,
+    "PAVE": 4.8,
+    "CIBR": 1.4399999999999995,
+    "ITA": 0.5599999999999998
   },
   "top_picks": [
     [
       "GLD",
-      0.19
+      0.22
     ],
     [
       "NLR",
-      0.17
-    ],
-    [
-      "COPX",
-      0.14
+      0.18
     ],
     [
       "XLU",
-      0.11
+      0.14
+    ],
+    [
+      "COPX",
+      0.12
     ],
     [
       "PAVE",
-      0.1
+      0.09
     ]
   ]
 }
