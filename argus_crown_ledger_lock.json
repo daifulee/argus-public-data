@@ -4,8 +4,8 @@
   "ledger_fp": "84ecc1c3cd191fed",
   "ledger_as_of": "2026-11-23",
   "rule_changed": false,
-  "ledger_changed": true,
+  "ledger_changed": false,
   "simultaneous_change": false,
-  "recorded_at": "2026-11-24T07:11:35",
+  "recorded_at": "2026-11-25T05:47:27",
   "purpose": "판본과 과거 목표 기록의 지문 관측. 최신 목표 및 실계좌 주문 판정과 분리."
 }
