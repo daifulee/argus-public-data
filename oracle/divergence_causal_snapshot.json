@@ -3,10 +3,10 @@
   "as_of": "2026-11-25",
   "current": {
     "prima": "GLD+SLV+ITA+XLU",
-    "oracle": "SGOV+GLD+NLR+COPX+XLU+PAVE+ITA+XLE",
+    "oracle": "SGOV+GLD+NLR+COPX+XLU+PAVE+CIBR+ITA",
     "common": "GLD+ITA+XLU",
     "prima_only": "SLV",
-    "oracle_only": "COPX+NLR+PAVE+SGOV+XLE",
+    "oracle_only": "CIBR+COPX+NLR+PAVE+SGOV",
     "jaccard": 0.333,
     "material": true
   },
@@ -20,14 +20,14 @@
   "oracle_weights": {
     "SGOV": 0.3999600039996,
     "GLD": 0.2999700029997,
-    "NLR": 0.09399060093990601,
-    "COPX": 0.0745925407459254,
-    "XLU": 0.068993100689931,
-    "PAVE": 0.0450954904509549,
-    "ITA": 0.011298870112988699,
-    "XLE": 0.0060993900609939014
+    "NLR": 0.08909109089091091,
+    "COPX": 0.0771922807719228,
+    "XLU": 0.0720927907209279,
+    "PAVE": 0.0513948605139486,
+    "CIBR": 0.0065993400659933995,
+    "ITA": 0.0036996300369963003
   },
-  "oracle_cash_weight": 1.1102230246251565e-16,
+  "oracle_cash_weight": 0.0,
   "prima_src": "causal_engine_target",
   "prima_engine": "PRIMA2_v0_5_45_CROWN110_CAUSAL_GUARD.py",
   "oracle_date": "2026-11-25",
@@ -55,5 +55,5 @@
     "count": 0,
     "policy": "read_only"
   },
-  "logged_utc": "2026-11-26T04:22:35.772756+00:00"
+  "logged_utc": "2026-11-26T05:31:06.532336+00:00"
 }
