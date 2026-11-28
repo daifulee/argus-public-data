@@ -1,5 +1,5 @@
 {
- "date": "2026-11-25",
+ "date": "2026-11-27",
  "queue": 7,
  "grade": "3+",
  "base_f63": 5.94,
@@ -21,8 +21,8 @@
    "BROKER_HOLDINGS_NOT_VERIFIED"
   ],
   "missing_inputs": [],
-  "input_date": "2026-11-25",
-  "engine_date": "2026-11-25",
+  "input_date": "2026-11-27",
+  "engine_date": "2026-11-27",
   "freshness_calendar": "XNYS_EXACT_LAST_COMPLETED_SESSION",
   "execution_scope": "SIMULATION_NOT_BROKER_ORDERS"
  },
@@ -50,14 +50,14 @@
    "ratio": 3.16
   },
   {
-   "ticker": "COPX",
-   "score": 14.2,
-   "ratio": 2.84
-  },
-  {
    "ticker": "SMH",
    "score": 7.9,
    "ratio": 2.63
+  },
+  {
+   "ticker": "COPX",
+   "score": 12.7,
+   "ratio": 2.54
   },
   {
    "ticker": "CIBR",
@@ -102,5 +102,5 @@
  "mode": "live",
  "observation_only": true,
  "capital_permission": false,
- "generated_utc": "2026-11-27T05:33:47+00:00"
+ "generated_utc": "2026-11-28T05:00:23+00:00"
 }
